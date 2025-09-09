@@ -1,0 +1,386 @@
+{% extends "mod_servicehosting_manage.html.twig" %}
+
+{% block content %}
+    {{ parent() }}
+    
+    {% if service.server.manager == 'Plesk' %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Application Auto Installer</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#installAppModal">
+                                <i class="fas fa-plus"></i> Install Application
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="installerType">Installer Type</label>
+                                    <select class="form-control" id="installerType" onchange="loadApplications()">
+                                        <option value="plesk">Plesk Default</option>
+                                        <option value="installatron">Installatron</option>
+                                        <option value="softaculous">Softaculous</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="categoryFilter">Category</label>
+                                    <select class="form-control" id="categoryFilter" onchange="filterApplications()">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="searchApp">Search Applications</label>
+                                    <input type="text" class="form-control" id="searchApp" placeholder="Search applications..." onkeyup="filterApplications()">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="applicationsGrid" class="row">
+                            <div class="col-md-12 text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading applications...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Installed Applications</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="installedApps">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading installed applications...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Install Application Modal -->
+        <div class="modal fade" id="installAppModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Install Application</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="installAppForm">
+                            <input type="hidden" id="selectedAppName" name="app_name">
+                            <input type="hidden" id="selectedInstallerType" name="installer_type">
+                            
+                            <div id="appInfo" class="mb-3">
+                                <h6 id="appTitle"></h6>
+                                <p id="appDescription" class="text-muted"></p>
+                            </div>
+                            
+                            <div id="appOptions">
+                                <!-- Dynamic options will be loaded here -->
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="installApplication()">Install Application</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Details Modal -->
+        <div class="modal fade" id="appDetailsModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Application Details</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="appDetailsContent">
+                            <!-- Application details will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="showInstallModal()">Install This Application</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let availableApps = [];
+            let categories = [];
+            let currentApp = null;
+
+            $(document).ready(function() {
+                loadCategories();
+                loadApplications();
+                loadInstalledApps();
+            });
+
+            function loadCategories() {
+                $.post('{{ "api/client/servicehosting/get_application_categories"|link }}', {}, function(data) {
+                    let html = '<option value="">All Categories</option>';
+                    for (let key in data) {
+                        html += '<option value="' + key + '">' + data[key] + '</option>';
+                    }
+                    $('#categoryFilter').html(html);
+                });
+            }
+
+            function loadApplications() {
+                const installerType = $('#installerType').val();
+                
+                $.post('{{ "api/client/servicehosting/get_available_applications"|link }}', {
+                    installer_type: installerType
+                }, function(data) {
+                    availableApps = data;
+                    displayApplications(data);
+                });
+            }
+
+            function displayApplications(apps) {
+                let html = '';
+                
+                for (let key in apps) {
+                    const app = apps[key];
+                    html += '<div class="col-md-4 mb-3 app-card" data-category="' + app.category + '" data-name="' + app.name.toLowerCase() + '">';
+                    html += '<div class="card h-100">';
+                    html += '<div class="card-body">';
+                    html += '<div class="d-flex justify-content-between align-items-start mb-2">';
+                    html += '<h6 class="card-title">' + app.name + '</h6>';
+                    html += '<span class="badge badge-secondary">' + app.category + '</span>';
+                    html += '</div>';
+                    html += '<p class="card-text text-muted small">' + app.description + '</p>';
+                    html += '<div class="d-flex justify-content-between align-items-center">';
+                    html += '<small class="text-muted">Version: ' + app.version + '</small>';
+                    html += '<div>';
+                    html += '<button class="btn btn-sm btn-outline-info mr-1" onclick="showAppDetails(\'' + key + '\')">Details</button>';
+                    html += '<button class="btn btn-sm btn-primary" onclick="showInstallForm(\'' + key + '\')">Install</button>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                }
+                
+                $('#applicationsGrid').html(html);
+            }
+
+            function filterApplications() {
+                const category = $('#categoryFilter').val();
+                const search = $('#searchApp').val().toLowerCase();
+                
+                $('.app-card').each(function() {
+                    const $card = $(this);
+                    const cardCategory = $card.data('category');
+                    const cardName = $card.data('name');
+                    
+                    let show = true;
+                    
+                    if (category && cardCategory !== category) {
+                        show = false;
+                    }
+                    
+                    if (search && !cardName.includes(search)) {
+                        show = false;
+                    }
+                    
+                    $card.toggle(show);
+                });
+            }
+
+            function showAppDetails(appKey) {
+                const app = availableApps[appKey];
+                currentApp = { key: appKey, ...app };
+                
+                let html = '<h5>' + app.name + '</h5>';
+                html += '<p class="text-muted">' + app.description + '</p>';
+                html += '<div class="row">';
+                html += '<div class="col-md-6">';
+                html += '<strong>Category:</strong> ' + app.category;
+                html += '</div>';
+                html += '<div class="col-md-6">';
+                html += '<strong>Version:</strong> ' + app.version;
+                html += '</div>';
+                html += '</div>';
+                
+                if (app.configurable && app.options) {
+                    html += '<h6 class="mt-3">Configuration Options:</h6>';
+                    html += '<ul>';
+                    for (let optionKey in app.options) {
+                        const option = app.options[optionKey];
+                        html += '<li><strong>' + option.label + ':</strong> ' + option.type + (option.required ? ' (Required)' : '') + '</li>';
+                    }
+                    html += '</ul>';
+                }
+                
+                $('#appDetailsContent').html(html);
+                $('#appDetailsModal').modal('show');
+            }
+
+            function showInstallForm(appKey) {
+                const app = availableApps[appKey];
+                currentApp = { key: appKey, ...app };
+                
+                $('#selectedAppName').val(appKey);
+                $('#selectedInstallerType').val($('#installerType').val());
+                $('#appTitle').text(app.name);
+                $('#appDescription').text(app.description);
+                
+                let html = '';
+                if (app.configurable && app.options) {
+                    for (let optionKey in app.options) {
+                        const option = app.options[optionKey];
+                        html += '<div class="form-group">';
+                        html += '<label for="option_' + optionKey + '">' + option.label + (option.required ? ' *' : '') + '</label>';
+                        
+                        if (option.type === 'text' || option.type === 'email' || option.type === 'password') {
+                            html += '<input type="' + option.type + '" class="form-control" id="option_' + optionKey + '" name="' + optionKey + '" value="' + (option.default || '') + '" ' + (option.required ? 'required' : '') + '>';
+                        } else if (option.type === 'select') {
+                            html += '<select class="form-control" id="option_' + optionKey + '" name="' + optionKey + '" ' + (option.required ? 'required' : '') + '>';
+                            if (option.options) {
+                                for (let optKey in option.options) {
+                                    html += '<option value="' + optKey + '">' + option.options[optKey] + '</option>';
+                                }
+                            }
+                            html += '</select>';
+                        }
+                        
+                        html += '</div>';
+                    }
+                } else {
+                    html = '<p class="text-muted">No configuration required for this application.</p>';
+                }
+                
+                $('#appOptions').html(html);
+                $('#installAppModal').modal('show');
+            }
+
+            function showInstallModal() {
+                $('#appDetailsModal').modal('hide');
+                showInstallForm(currentApp.key);
+            }
+
+            function installApplication() {
+                const formData = new FormData($('#installAppForm')[0]);
+                const options = {};
+                
+                // Collect form options
+                for (let pair of formData.entries()) {
+                    if (pair[0] !== 'app_name' && pair[0] !== 'installer_type') {
+                        options[pair[0]] = pair[1];
+                    }
+                }
+                
+                $.post('{{ "api/client/servicehosting/install_application_auto"|link }}', {
+                    order_id: {{ order.id }},
+                    app_name: $('#selectedAppName').val(),
+                    installer_type: $('#selectedInstallerType').val(),
+                    options: options
+                }, function(data) {
+                    if (data) {
+                        $('#installAppModal').modal('hide');
+                        $('#installAppForm')[0].reset();
+                        loadInstalledApps();
+                        showSuccess('Application installation started successfully');
+                    } else {
+                        showError('Failed to start application installation');
+                    }
+                });
+            }
+
+            function loadInstalledApps() {
+                $.post('{{ "api/client/servicehosting/get_installed_applications_auto"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.length > 0) {
+                        data.forEach(function(app) {
+                            html += '<div class="card mb-3">';
+                            html += '<div class="card-body">';
+                            html += '<div class="d-flex justify-content-between align-items-start">';
+                            html += '<div>';
+                            html += '<h6 class="card-title">' + app.app_name + '</h6>';
+                            html += '<p class="card-text text-muted small">Installed via ' + app.installer_type + '</p>';
+                            html += '</div>';
+                            html += '<div class="text-right">';
+                            html += '<span class="badge badge-' + getStatusBadgeClass(app.status) + '">' + app.status + '</span>';
+                            html += '<div class="btn-group btn-group-sm ml-2">';
+                            html += '<button class="btn btn-outline-primary" onclick="showAppBackups(' + app.id + ')">Backups</button>';
+                            html += '<button class="btn btn-outline-danger" onclick="deleteApp(' + app.id + ')">Delete</button>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '</div>';
+                            html += '<small class="text-muted">Installed: ' + new Date(app.created_at).toLocaleDateString() + '</small>';
+                            html += '</div>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html = '<p class="text-muted">No applications installed yet.</p>';
+                    }
+                    $('#installedApps').html(html);
+                });
+            }
+
+            function getStatusBadgeClass(status) {
+                switch (status) {
+                    case 'completed': return 'success';
+                    case 'installing': return 'warning';
+                    case 'failed': return 'danger';
+                    case 'updating': return 'info';
+                    default: return 'secondary';
+                }
+            }
+
+            function showAppBackups(installationId) {
+                // Implement backup management
+                alert('Backup management for installation ID: ' + installationId);
+            }
+
+            function deleteApp(installationId) {
+                if (confirm('Are you sure you want to delete this application and all its backups?')) {
+                    $.post('{{ "api/client/servicehosting/delete_application"|link }}', {
+                        installation_id: installationId
+                    }, function(data) {
+                        if (data) {
+                            loadInstalledApps();
+                            showSuccess('Application deleted successfully');
+                        } else {
+                            showError('Failed to delete application');
+                        }
+                    });
+                }
+            }
+
+            function showSuccess(message) {
+                // Add your success notification here
+                console.log('Success: ' + message);
+            }
+
+            function showError(message) {
+                // Add your error notification here
+                console.log('Error: ' + message);
+            }
+        </script>
+    {% endif %}
+{% endblock %}

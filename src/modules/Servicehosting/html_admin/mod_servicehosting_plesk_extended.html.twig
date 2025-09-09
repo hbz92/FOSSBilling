@@ -1,0 +1,358 @@
+{% extends "layout.html.twig" %}
+
+{% block meta_title %}{{ 'Plesk Extended Management'|trans }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Plesk Extended Management</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Server Statistics</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="serverStats">
+                                        <div class="text-center">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Plesk Products</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="pleskProducts">
+                                        <div class="text-center">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Plesk Customers</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="pleskCustomers">
+                                        <div class="text-center">
+                                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Plesk Servers</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="pleskServersTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>IP Address</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td colspan="4" class="text-center">
+                                                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Account Management</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="orderSelect">Select Order</label>
+                                                <select class="form-control" id="orderSelect">
+                                                    <option value="">Select an order...</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>&nbsp;</label>
+                                                <button type="button" class="btn btn-primary btn-block" onclick="loadAccountData()">
+                                                    Load Account Data
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="accountData" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5 class="card-title">Account URLs</h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="accountUrls">
+                                                            <div class="text-center">
+                                                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h5 class="card-title">Account Statistics</h5>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="accountStats">
+                                                            <div class="text-center">
+                                                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            loadOrders();
+            loadServerData();
+        });
+
+        function loadOrders() {
+            $.post('{{ "api/admin/servicehosting/account_get_list"|link }}', {
+                per_page: 100
+            }, function(data) {
+                let html = '';
+                if (data.list && data.list.length > 0) {
+                    data.list.forEach(function(account) {
+                        if (account.order && account.order.client) {
+                            html += '<option value="' + account.order.id + '">';
+                            html += account.order.client.first_name + ' ' + account.order.client.last_name;
+                            html += ' - ' + account.sld + account.tld;
+                            html += '</option>';
+                        }
+                    });
+                }
+                $('#orderSelect').html(html);
+            });
+        }
+
+        function loadServerData() {
+            // Load server statistics for the first Plesk server
+            $.post('{{ "api/admin/servicehosting/server_get_list"|link }}', {
+                per_page: 100
+            }, function(data) {
+                if (data.list && data.list.length > 0) {
+                    const pleskServer = data.list.find(server => server.manager === 'Plesk');
+                    if (pleskServer) {
+                        loadServerStatistics(pleskServer.id);
+                        loadPleskProducts(pleskServer.id);
+                        loadPleskCustomers(pleskServer.id);
+                        loadPleskServers(pleskServer.id);
+                    }
+                }
+            });
+        }
+
+        function loadServerStatistics(serverId) {
+            $.post('{{ "api/admin/servicehosting/get_server_statistics"|link }}', {
+                server_id: serverId
+            }, function(data) {
+                let html = '';
+                if (data.uptime !== undefined) {
+                    html += '<div class="mb-2"><strong>Uptime:</strong> ' + data.uptime + ' days</div>';
+                }
+                if (data.load_average !== undefined) {
+                    html += '<div class="mb-2"><strong>Load Average:</strong> ' + data.load_average + '</div>';
+                }
+                if (data.memory_usage !== undefined) {
+                    html += '<div class="mb-2"><strong>Memory Usage:</strong> ' + data.memory_usage + '%</div>';
+                }
+                if (data.disk_usage !== undefined) {
+                    html += '<div class="mb-2"><strong>Disk Usage:</strong> ' + data.disk_usage + '%</div>';
+                }
+                $('#serverStats').html(html);
+            });
+        }
+
+        function loadPleskProducts(serverId) {
+            $.post('{{ "api/admin/servicehosting/get_all_plesk_products"|link }}', {
+                server_id: serverId
+            }, function(data) {
+                let html = '';
+                if (data.length > 0) {
+                    data.forEach(function(product) {
+                        html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                        html += '<span>' + product.name + ' v' + product.version + '</span>';
+                        html += '<span class="badge badge-' + (product.status === 'active' ? 'success' : 'warning') + '">' + product.status + '</span>';
+                        html += '</div>';
+                    });
+                } else {
+                    html = '<p class="text-muted">No products found.</p>';
+                }
+                $('#pleskProducts').html(html);
+            });
+        }
+
+        function loadPleskCustomers(serverId) {
+            $.post('{{ "api/admin/servicehosting/get_all_plesk_customers"|link }}', {
+                server_id: serverId
+            }, function(data) {
+                let html = '';
+                if (data.length > 0) {
+                    data.slice(0, 5).forEach(function(customer) {
+                        html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                        html += '<span>' + customer.name + ' (' + customer.login + ')</span>';
+                        html += '<span class="badge badge-' + (customer.status === 'active' ? 'success' : 'warning') + '">' + customer.status + '</span>';
+                        html += '</div>';
+                    });
+                    if (data.length > 5) {
+                        html += '<p class="text-muted">... and ' + (data.length - 5) + ' more customers</p>';
+                    }
+                } else {
+                    html = '<p class="text-muted">No customers found.</p>';
+                }
+                $('#pleskCustomers').html(html);
+            });
+        }
+
+        function loadPleskServers(serverId) {
+            $.post('{{ "api/admin/servicehosting/get_all_plesk_servers"|link }}', {
+                server_id: serverId
+            }, function(data) {
+                let html = '';
+                if (data.length > 0) {
+                    data.forEach(function(server) {
+                        html += '<tr>';
+                        html += '<td>' + server.name + '</td>';
+                        html += '<td>' + server.ip + '</td>';
+                        html += '<td><span class="badge badge-' + (server.status === 'active' ? 'success' : 'warning') + '">' + server.status + '</span></td>';
+                        html += '<td>';
+                        html += '<button class="btn btn-sm btn-primary" onclick="viewServerDetails(\'' + server.name + '\')">View Details</button>';
+                        html += '</td>';
+                        html += '</tr>';
+                    });
+                } else {
+                    html = '<tr><td colspan="4" class="text-center">No servers found.</td></tr>';
+                }
+                $('#pleskServersTable tbody').html(html);
+            });
+        }
+
+        function loadAccountData() {
+            const orderId = $('#orderSelect').val();
+            if (!orderId) {
+                alert('Please select an order');
+                return;
+            }
+
+            $('#accountData').show();
+            loadAccountUrls(orderId);
+            loadAccountStatistics(orderId);
+        }
+
+        function loadAccountUrls(orderId) {
+            $.post('{{ "api/admin/servicehosting/get_plesk_urls"|link }}', {
+                order_id: orderId
+            }, function(data) {
+                let html = '';
+                if (data.admin_panel) {
+                    html += '<div class="mb-2"><a href="' + data.admin_panel + '" target="_blank" class="btn btn-primary btn-sm">Admin Panel</a></div>';
+                }
+                if (data.webmail) {
+                    html += '<div class="mb-2"><a href="' + data.webmail + '" target="_blank" class="btn btn-info btn-sm">Webmail</a></div>';
+                }
+                if (data.backup_manager) {
+                    html += '<div class="mb-2"><a href="' + data.backup_manager + '" target="_blank" class="btn btn-warning btn-sm">Backup Manager</a></div>';
+                }
+                if (data.wp_toolkit) {
+                    html += '<div class="mb-2"><a href="' + data.wp_toolkit + '" target="_blank" class="btn btn-success btn-sm">WP Toolkit</a></div>';
+                }
+                if (data.plesk_panel) {
+                    html += '<div class="mb-2"><a href="' + data.plesk_panel + '" target="_blank" class="btn btn-secondary btn-sm">Plesk Panel</a></div>';
+                }
+                $('#accountUrls').html(html);
+            });
+        }
+
+        function loadAccountStatistics(orderId) {
+            // Load various account statistics
+            $.post('{{ "api/admin/servicehosting/get_addon_domains"|link }}', {
+                order_id: orderId
+            }, function(data) {
+                let html = '<div class="mb-2"><strong>Addon Domains:</strong> ' + data.length + '</div>';
+                
+                $.post('{{ "api/admin/servicehosting/get_databases"|link }}', {
+                    order_id: orderId
+                }, function(data) {
+                    html += '<div class="mb-2"><strong>Databases:</strong> ' + data.length + '</div>';
+                    
+                    $.post('{{ "api/admin/servicehosting/get_email_addresses"|link }}', {
+                        order_id: orderId
+                    }, function(data) {
+                        html += '<div class="mb-2"><strong>Email Addresses:</strong> ' + data.length + '</div>';
+                        
+                        $.post('{{ "api/admin/servicehosting/get_ftp_accounts"|link }}', {
+                            order_id: orderId
+                        }, function(data) {
+                            html += '<div class="mb-2"><strong>FTP Accounts:</strong> ' + data.length + '</div>';
+                            
+                            $.post('{{ "api/admin/servicehosting/get_subdomains"|link }}', {
+                                order_id: orderId
+                            }, function(data) {
+                                html += '<div class="mb-2"><strong>Subdomains:</strong> ' + data.length + '</div>';
+                                
+                                $('#accountStats').html(html);
+                            });
+                        });
+                    });
+                });
+            });
+        }
+
+        function viewServerDetails(serverName) {
+            alert('Server details for: ' + serverName);
+        }
+    </script>
+{% endblock %}

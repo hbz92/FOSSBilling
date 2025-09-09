@@ -450,6 +450,474 @@ class Admin extends \Api_Abstract
         return (int) $service->createHp($data['name'], $data);
     }
 
+    /**
+     * Get Plesk-specific URLs for an account
+     *
+     * @return array
+     */
+    public function get_plesk_urls($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getPleskUrls($s);
+    }
+
+    /**
+     * Get addon domains for an account
+     *
+     * @return array
+     */
+    public function get_addon_domains($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getAddonDomains($s);
+    }
+
+    /**
+     * Add addon domain
+     *
+     * @return bool
+     */
+    public function add_addon_domain($data)
+    {
+        $required = [
+            'domain' => 'Domain name is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->addAddonDomain($s, $data['domain']);
+    }
+
+    /**
+     * Get databases for an account
+     *
+     * @return array
+     */
+    public function get_databases($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getDatabases($s);
+    }
+
+    /**
+     * Create database
+     *
+     * @return bool
+     */
+    public function create_database($data)
+    {
+        $required = [
+            'name' => 'Database name is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        $type = $data['type'] ?? 'mysql';
+        return $service->createDatabase($s, $data['name'], $type);
+    }
+
+    /**
+     * Get email addresses for an account
+     *
+     * @return array
+     */
+    public function get_email_addresses($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getEmailAddresses($s);
+    }
+
+    /**
+     * Create email address
+     *
+     * @return bool
+     */
+    public function create_email_address($data)
+    {
+        $required = [
+            'email' => 'Email address is missing',
+            'password' => 'Password is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->createEmailAddress($s, $data['email'], $data['password']);
+    }
+
+    /**
+     * Get FTP accounts for an account
+     *
+     * @return array
+     */
+    public function get_ftp_accounts($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getFtpAccounts($s);
+    }
+
+    /**
+     * Create FTP account
+     *
+     * @return bool
+     */
+    public function create_ftp_account($data)
+    {
+        $required = [
+            'username' => 'Username is missing',
+            'password' => 'Password is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        $home = $data['home'] ?? '/';
+        return $service->createFtpAccount($s, $data['username'], $data['password'], $home);
+    }
+
+    /**
+     * Get SSL certificates for an account
+     *
+     * @return array
+     */
+    public function get_ssl_certificates($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getSslCertificates($s);
+    }
+
+    /**
+     * Get subdomains for an account
+     *
+     * @return array
+     */
+    public function get_subdomains($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getSubdomains($s);
+    }
+
+    /**
+     * Create subdomain
+     *
+     * @return bool
+     */
+    public function create_subdomain($data)
+    {
+        $required = [
+            'name' => 'Subdomain name is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->createSubdomain($s, $data['name']);
+    }
+
+    /**
+     * Get PHP settings for an account
+     *
+     * @return array
+     */
+    public function get_php_settings($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getPhpSettings($s);
+    }
+
+    /**
+     * Update PHP settings for an account
+     *
+     * @return bool
+     */
+    public function update_php_settings($data)
+    {
+        $required = [
+            'settings' => 'PHP settings are missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->updatePhpSettings($s, $data['settings']);
+    }
+
+    /**
+     * Get installed applications for an account
+     *
+     * @return array
+     */
+    public function get_installed_applications($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        return $service->getInstalledApplications($s);
+    }
+
+    /**
+     * Install application
+     *
+     * @return bool
+     */
+    public function install_application($data)
+    {
+        $required = [
+            'app_name' => 'Application name is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $service = $this->getService();
+
+        $options = $data['options'] ?? [];
+        return $service->installApplication($s, $data['app_name'], $options);
+    }
+
+    /**
+     * Get all Plesk products and servers
+     *
+     * @return array
+     */
+    public function get_all_plesk_products($data)
+    {
+        $required = [
+            'server_id' => 'Server ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $data['server_id'], 'Server not found');
+        $service = $this->getService();
+
+        return $service->getAllPleskProducts($server);
+    }
+
+    /**
+     * Get all Plesk servers
+     *
+     * @return array
+     */
+    public function get_all_plesk_servers($data)
+    {
+        $required = [
+            'server_id' => 'Server ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $data['server_id'], 'Server not found');
+        $service = $this->getService();
+
+        return $service->getAllPleskServers($server);
+    }
+
+    /**
+     * Get all Plesk customers
+     *
+     * @return array
+     */
+    public function get_all_plesk_customers($data)
+    {
+        $required = [
+            'server_id' => 'Server ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $data['server_id'], 'Server not found');
+        $service = $this->getService();
+
+        return $service->getAllPleskCustomers($server);
+    }
+
+    /**
+     * Get server statistics
+     *
+     * @return array
+     */
+    public function get_server_statistics($data)
+    {
+        $required = [
+            'server_id' => 'Server ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $data['server_id'], 'Server not found');
+        $service = $this->getService();
+
+        return $service->getServerStatistics($server);
+    }
+
+    /**
+     * Get available applications for auto installer
+     *
+     * @return array
+     */
+    public function get_available_applications($data)
+    {
+        $installerType = $data['installer_type'] ?? 'plesk';
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->getAvailableApplications($installerType);
+    }
+
+    /**
+     * Get application categories
+     *
+     * @return array
+     */
+    public function get_application_categories($data)
+    {
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->getCategories();
+    }
+
+    /**
+     * Get installer types
+     *
+     * @return array
+     */
+    public function get_installer_types($data)
+    {
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->getInstallerTypes();
+    }
+
+    /**
+     * Install application
+     *
+     * @return bool
+     */
+    public function install_application($data)
+    {
+        $required = [
+            'app_name' => 'Application name is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        [$order, $s] = $this->_getService($data);
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        $options = $data['options'] ?? [];
+        $installerType = $data['installer_type'] ?? 'plesk';
+
+        return $autoInstaller->installApplication($s, $data['app_name'], $options, $installerType);
+    }
+
+    /**
+     * Get installed applications for account
+     *
+     * @return array
+     */
+    public function get_installed_applications($data)
+    {
+        [$order, $s] = $this->_getService($data);
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->getInstalledApplications($s);
+    }
+
+    /**
+     * Create backup for application
+     *
+     * @return bool
+     */
+    public function create_application_backup($data)
+    {
+        $required = [
+            'installation_id' => 'Installation ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->createBackup($data['installation_id']);
+    }
+
+    /**
+     * Get backups for application
+     *
+     * @return array
+     */
+    public function get_application_backups($data)
+    {
+        $required = [
+            'installation_id' => 'Installation ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->getBackups($data['installation_id']);
+    }
+
+    /**
+     * Restore application from backup
+     *
+     * @return bool
+     */
+    public function restore_application_backup($data)
+    {
+        $required = [
+            'backup_id' => 'Backup ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->restoreFromBackup($data['backup_id']);
+    }
+
+    /**
+     * Delete application and its backups
+     *
+     * @return bool
+     */
+    public function delete_application($data)
+    {
+        $required = [
+            'installation_id' => 'Installation ID is missing',
+        ];
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $autoInstaller = new \Box\Mod\Servicehosting\ServicePleskAutoInstaller();
+        $autoInstaller->setDi($this->di);
+
+        return $autoInstaller->deleteApplication($data['installation_id']);
+    }
+
     public function _getService($data)
     {
         $required = [

@@ -1139,4 +1139,406 @@ class Service implements InjectionAwareInterface
 
         return json_encode(array_values($array));
     }
+
+    /**
+     * Get Plesk-specific URLs for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getPleskUrls(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return [
+            'admin_panel' => $manager->getAdminLoginUrl(),
+            'webmail' => $manager->getWebmailUrl($account),
+            'backup_manager' => $manager->getBackupManagerUrl($account),
+            'wp_toolkit' => $manager->getWpToolkitUrl($account),
+            'plesk_panel' => $manager->getLoginUrl($account),
+        ];
+    }
+
+    /**
+     * Get addon domains for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getAddonDomains(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getAddonDomains($account);
+    }
+
+    /**
+     * Add addon domain
+     *
+     * @param Model_ServiceHosting $model
+     * @param string $domain
+     * @return bool
+     */
+    public function addAddonDomain(\Model_ServiceHosting $model, string $domain): bool
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return false;
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->addAddonDomain($account, $domain);
+    }
+
+    /**
+     * Get databases for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getDatabases(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getDatabases($account);
+    }
+
+    /**
+     * Create database
+     *
+     * @param Model_ServiceHosting $model
+     * @param string $name
+     * @param string $type
+     * @return bool
+     */
+    public function createDatabase(\Model_ServiceHosting $model, string $name, string $type = 'mysql'): bool
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return false;
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->createDatabase($account, $name, $type);
+    }
+
+    /**
+     * Get email addresses for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getEmailAddresses(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getEmailAddresses($account);
+    }
+
+    /**
+     * Create email address
+     *
+     * @param Model_ServiceHosting $model
+     * @param string $email
+     * @param string $password
+     * @return bool
+     */
+    public function createEmailAddress(\Model_ServiceHosting $model, string $email, string $password): bool
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return false;
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->createEmailAddress($account, $email, $password);
+    }
+
+    /**
+     * Get FTP accounts for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getFtpAccounts(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getFtpAccounts($account);
+    }
+
+    /**
+     * Create FTP account
+     *
+     * @param Model_ServiceHosting $model
+     * @param string $username
+     * @param string $password
+     * @param string $home
+     * @return bool
+     */
+    public function createFtpAccount(\Model_ServiceHosting $model, string $username, string $password, string $home = '/'): bool
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return false;
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->createFtpAccount($account, $username, $password, $home);
+    }
+
+    /**
+     * Get SSL certificates for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getSslCertificates(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getSslCertificates($account);
+    }
+
+    /**
+     * Get subdomains for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getSubdomains(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getSubdomains($account);
+    }
+
+    /**
+     * Create subdomain
+     *
+     * @param Model_ServiceHosting $model
+     * @param string $name
+     * @return bool
+     */
+    public function createSubdomain(\Model_ServiceHosting $model, string $name): bool
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return false;
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->createSubdomain($account, $name);
+    }
+
+    /**
+     * Get PHP settings for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getPhpSettings(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getPhpSettings($account);
+    }
+
+    /**
+     * Update PHP settings for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @param array $settings
+     * @return bool
+     */
+    public function updatePhpSettings(\Model_ServiceHosting $model, array $settings): bool
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return false;
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->updatePhpSettings($account, $settings);
+    }
+
+    /**
+     * Get installed applications for an account
+     *
+     * @param Model_ServiceHosting $model
+     * @return array
+     */
+    public function getInstalledApplications(\Model_ServiceHosting $model): array
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->getInstalledApplications($account);
+    }
+
+    /**
+     * Install application
+     *
+     * @param Model_ServiceHosting $model
+     * @param string $appName
+     * @param array $options
+     * @return bool
+     */
+    public function installApplication(\Model_ServiceHosting $model, string $appName, array $options = []): bool
+    {
+        $server = $this->di['db']->getExistingModelById('ServiceHostingServer', $model->service_hosting_server_id, 'Server not found');
+        
+        if ($server->manager !== 'Plesk') {
+            return false;
+        }
+
+        $manager = $this->getServerManager($server);
+        [$adapter, $account] = $this->_getAM($model);
+
+        return $manager->installApplication($account, $appName, $options);
+    }
+
+    /**
+     * Get all Plesk products and servers
+     *
+     * @param Model_ServiceHostingServer $server
+     * @return array
+     */
+    public function getAllPleskProducts(\Model_ServiceHostingServer $server): array
+    {
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        return $manager->getAllPleskProducts();
+    }
+
+    /**
+     * Get all Plesk servers
+     *
+     * @param Model_ServiceHostingServer $server
+     * @return array
+     */
+    public function getAllPleskServers(\Model_ServiceHostingServer $server): array
+    {
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        return $manager->getAllPleskServers();
+    }
+
+    /**
+     * Get all Plesk customers
+     *
+     * @param Model_ServiceHostingServer $server
+     * @return array
+     */
+    public function getAllPleskCustomers(\Model_ServiceHostingServer $server): array
+    {
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        return $manager->getAllPleskCustomers();
+    }
+
+    /**
+     * Get server statistics
+     *
+     * @param Model_ServiceHostingServer $server
+     * @return array
+     */
+    public function getServerStatistics(\Model_ServiceHostingServer $server): array
+    {
+        if ($server->manager !== 'Plesk') {
+            return [];
+        }
+
+        $manager = $this->getServerManager($server);
+        return $manager->getServerStatistics();
+    }
 }
