@@ -1,0 +1,8 @@
+{
+  "id": "mfa",
+  "type": "mod",
+  "name": "Multi-Factor Authentication",
+  "description": "Adds TOTP-based multi-factor authentication to FOSSBilling",
+  "icon_url": "icon.svg",
+  "version": "1.0.0"
+}

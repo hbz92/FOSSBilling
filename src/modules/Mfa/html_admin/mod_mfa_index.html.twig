@@ -1,0 +1,224 @@
+{% extends "mod_admin_layout.html.twig" %}
+
+{% block meta_title %}{{ 'Multi-Factor Authentication Management' | trans }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-shield-alt"></i>
+                    {{ 'Multi-Factor Authentication Overview' | trans }}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="panel panel-primary">
+                            <div class="panel-body text-center">
+                                <h3 class="text-primary">{{ stats.total_enabled }}</h3>
+                                <p>{{ 'Clients with MFA Enabled' | trans }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-success">
+                            <div class="panel-body text-center">
+                                <h3 class="text-success">{{ stats.successful_logins_today }}</h3>
+                                <p>{{ 'Successful Logins Today' | trans }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-warning">
+                            <div class="panel-body text-center">
+                                <h3 class="text-warning">{{ stats.failed_attempts_today }}</h3>
+                                <p>{{ 'Failed Attempts Today' | trans }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="panel panel-info">
+                            <div class="panel-body text-center">
+                                <h3 class="text-info">{{ stats.adoption_rate }}%</h3>
+                                <p>{{ 'MFA Adoption Rate' | trans }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">{{ 'Weekly Statistics' | trans }}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <dl class="dl-horizontal">
+                                    <dt>{{ 'Successful Logins' | trans }}:</dt>
+                                    <dd>{{ stats.successful_logins_week }}</dd>
+                                    
+                                    <dt>{{ 'Failed Attempts' | trans }}:</dt>
+                                    <dd>{{ stats.failed_attempts_week }}</dd>
+                                    
+                                    <dt>{{ 'Total Clients' | trans }}:</dt>
+                                    <dd>{{ stats.total_clients }}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">{{ 'Quick Actions' | trans }}</h4>
+                            </div>
+                            <div class="panel-body">
+                                <button type="button" class="btn btn-info" onclick="loadEnabledClients()">
+                                    <i class="fa fa-users"></i> {{ 'View Enabled Clients' | trans }}
+                                </button>
+                                
+                                <button type="button" class="btn btn-warning" onclick="cleanSessions()">
+                                    <i class="fa fa-trash"></i> {{ 'Clean Expired Sessions' | trans }}
+                                </button>
+                                
+                                <button type="button" class="btn btn-primary" onclick="loadRecentActivity()">
+                                    <i class="fa fa-history"></i> {{ 'View Recent Activity' | trans }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="content-area">
+    <!-- Dynamic content will be loaded here -->
+</div>
+
+<!-- Enabled Clients Modal -->
+<div class="modal fade" id="enabledClientsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{ 'Clients with MFA Enabled' | trans }}</h4>
+            </div>
+            <div class="modal-body">
+                <div id="enabled-clients-content">
+                    <div class="text-center">
+                        <i class="fa fa-spinner fa-spin"></i> {{ 'Loading...' | trans }}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Close' | trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity Modal -->
+<div class="modal fade" id="recentActivityModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{ 'Recent MFA Activity' | trans }}</h4>
+            </div>
+            <div class="modal-body">
+                <div id="recent-activity-content">
+                    <div class="text-center">
+                        <i class="fa fa-spinner fa-spin"></i> {{ 'Loading...' | trans }}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Close' | trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function loadEnabledClients() {
+    $('#enabled-clients-content').html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> {{ "Loading..." | trans }}</div>');
+    $('#enabledClientsModal').modal('show');
+    
+    $.get('/admin/mfa/enabled-clients', function(data) {
+        let html = '<div class="table-responsive"><table class="table table-striped">';
+        html += '<thead><tr><th>{{ "Client" | trans }}</th><th>{{ "Email" | trans }}</th><th>{{ "Enabled Since" | trans }}</th><th>{{ "Successful Logins" | trans }}</th><th>{{ "Failed Attempts" | trans }}</th><th>{{ "Actions" | trans }}</th></tr></thead>';
+        html += '<tbody>';
+        
+        data.clients.forEach(function(client) {
+            html += '<tr>';
+            html += '<td>' + client.first_name + ' ' + client.last_name + '</td>';
+            html += '<td>' + client.email + '</td>';
+            html += '<td>' + client.created_at + '</td>';
+            html += '<td><span class="label label-success">' + client.successful_logins + '</span></td>';
+            html += '<td><span class="label label-warning">' + client.failed_attempts + '</span></td>';
+            html += '<td>';
+            html += '<button class="btn btn-xs btn-info" onclick="viewClientLogs(' + client.client_id + ')">{{ "View Logs" | trans }}</button> ';
+            html += '<button class="btn btn-xs btn-danger" onclick="forceDisableMfa(' + client.client_id + ')">{{ "Force Disable" | trans }}</button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+        $('#enabled-clients-content').html(html);
+    });
+}
+
+function loadRecentActivity() {
+    $('#recent-activity-content').html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> {{ "Loading..." | trans }}</div>');
+    $('#recentActivityModal').modal('show');
+    
+    let html = '<div class="table-responsive"><table class="table table-striped">';
+    html += '<thead><tr><th>{{ "Client" | trans }}</th><th>{{ "Action" | trans }}</th><th>{{ "IP Address" | trans }}</th><th>{{ "Time" | trans }}</th></tr></thead>';
+    html += '<tbody>';
+    
+    {% for activity in stats.recent_activity %}
+    html += '<tr>';
+    html += '<td>' + '{{ activity.first_name }} {{ activity.last_name }}<br><small class="text-muted">{{ activity.email }}</small>' + '</td>';
+    html += '<td>';
+    if ('{{ activity.success }}' === '1') {
+        html += '<span class="label label-success">{{ activity.method | trans }}</span>';
+    } else {
+        html += '<span class="label label-danger">{{ activity.method | trans }}</span>';
+    }
+    html += '</td>';
+    html += '<td>{{ activity.ip_address }}</td>';
+    html += '<td>{{ activity.created_at }}</td>';
+    html += '</tr>';
+    {% endfor %}
+    
+    html += '</tbody></table></div>';
+    $('#recent-activity-content').html(html);
+}
+
+function cleanSessions() {
+    if (confirm('{{ "Are you sure you want to clean expired MFA sessions?" | trans }}')) {
+        $.post('/admin/mfa/clean-sessions', function(data) {
+            alert('{{ "Cleaned" | trans }} ' + data.cleaned_count + ' {{ "expired sessions" | trans }}');
+        });
+    }
+}
+
+function viewClientLogs(clientId) {
+    // Implementation for viewing client logs
+    console.log('View logs for client:', clientId);
+}
+
+function forceDisableMfa(clientId) {
+    if (confirm('{{ "Are you sure you want to force disable MFA for this client?" | trans }}')) {
+        $.post('/admin/mfa/force-disable', {client_id: clientId}, function(data) {
+            alert(data.message);
+            loadEnabledClients(); // Refresh the list
+        });
+    }
+}
+</script>
+{% endblock %}
