@@ -341,7 +341,7 @@ class Service implements InjectionAwareInterface
     /**
      * Log MFA action
      */
-    private function logMfaAction(int $clientId, string $action, bool $success): void
+    public function logMfaAction(int $clientId, string $action, bool $success): void
     {
         $db = $this->di['db'];
         $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
@@ -381,6 +381,105 @@ class Service implements InjectionAwareInterface
     {
         $db = $this->di['db'];
         return $db->exec('DELETE FROM mfa_sessions WHERE expires_at < NOW()');
+    }
+
+    /**
+     * Get MFA statistics
+     */
+    public function getStatistics(): array
+    {
+        $db = $this->di['db'];
+        
+        // Total clients with MFA enabled
+        $totalEnabled = $db->getOne('SELECT COUNT(*) FROM mfa_settings WHERE enabled = 1');
+        
+        // Total clients
+        $totalClients = $db->getOne('SELECT COUNT(*) FROM client');
+        
+        // Recent MFA logins (last 24 hours)
+        $recentLogins = $db->getOne(
+            'SELECT COUNT(*) FROM mfa_logs WHERE success = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)'
+        );
+        
+        // Failed attempts (last 24 hours)
+        $failedAttempts = $db->getOne(
+            'SELECT COUNT(*) FROM mfa_logs WHERE success = 0 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)'
+        );
+        
+        // Active remembered devices
+        $activeDevices = $db->getOne(
+            'SELECT COUNT(*) FROM mfa_sessions WHERE expires_at > NOW()'
+        );
+        
+        return [
+            'total_enabled' => (int) $totalEnabled,
+            'total_clients' => (int) $totalClients,
+            'enabled_percentage' => $totalClients > 0 ? round(($totalEnabled / $totalClients) * 100, 2) : 0,
+            'recent_logins' => (int) $recentLogins,
+            'failed_attempts' => (int) $failedAttempts,
+            'active_devices' => (int) $activeDevices
+        ];
+    }
+
+    /**
+     * Get clients with MFA enabled
+     */
+    public function getEnabledClients(int $limit = 50, int $offset = 0): array
+    {
+        $db = $this->di['db'];
+        
+        $clients = $db->getAll(
+            'SELECT 
+                c.id, 
+                c.first_name, 
+                c.last_name, 
+                c.email, 
+                c.created_at as client_created,
+                m.enabled,
+                m.created_at as mfa_enabled_at,
+                m.updated_at as mfa_updated_at
+            FROM client c
+            INNER JOIN mfa_settings m ON c.id = m.client_id
+            WHERE m.enabled = 1
+            ORDER BY m.created_at DESC
+            LIMIT :limit OFFSET :offset',
+            [
+                ':limit' => $limit,
+                ':offset' => $offset
+            ]
+        );
+        
+        return $clients;
+    }
+
+    /**
+     * Force disable MFA for a client (admin only)
+     */
+    public function forceDisableMfa(int $clientId): bool
+    {
+        $db = $this->di['db'];
+        
+        // Check if client exists
+        $client = $db->load('client', $clientId);
+        if (!$client) {
+            throw new \FOSSBilling\InformationException('Client not found');
+        }
+        
+        // Disable MFA
+        $db->exec(
+            'UPDATE mfa_settings SET enabled = 0, updated_at = NOW() WHERE client_id = :client_id',
+            [':client_id' => $clientId]
+        );
+        
+        // Clear all remembered devices for this client
+        $db->exec(
+            'DELETE FROM mfa_sessions WHERE client_id = :client_id',
+            [':client_id' => $clientId]
+        );
+        
+        $this->logMfaAction($clientId, 'force_disabled', true);
+        
+        return true;
     }
 
     /**
