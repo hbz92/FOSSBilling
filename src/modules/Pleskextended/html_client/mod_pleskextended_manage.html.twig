@@ -1,0 +1,840 @@
+{% extends "mod_servicehosting_manage.html.twig" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-server"></i>
+                    {{ 'Plesk Extended Management'|trans }}
+                </h3>
+            </div>
+            <div class="card-body">
+                {% if service.manager == 'Plesk' %}
+                    <!-- Plesk URLs -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <h5>{{ 'Quick Access'|trans }}</h5>
+                            <div class="btn-group" role="group">
+                                <a href="#" class="btn btn-primary" id="plesk-panel-btn">
+                                    <i class="fas fa-tachometer-alt"></i> {{ 'Plesk Panel'|trans }}
+                                </a>
+                                <a href="#" class="btn btn-info" id="webmail-btn">
+                                    <i class="fas fa-envelope"></i> {{ 'Webmail'|trans }}
+                                </a>
+                                <a href="#" class="btn btn-warning" id="backup-manager-btn">
+                                    <i class="fas fa-download"></i> {{ 'Backup Manager'|trans }}
+                                </a>
+                                <a href="#" class="btn btn-success" id="wp-toolkit-btn">
+                                    <i class="fab fa-wordpress"></i> {{ 'WP Toolkit'|trans }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Management Tabs -->
+                    <ul class="nav nav-tabs" id="plesk-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="domains-tab" data-bs-toggle="tab" data-bs-target="#domains" type="button" role="tab">
+                                <i class="fas fa-globe"></i> {{ 'Domains'|trans }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="databases-tab" data-bs-toggle="tab" data-bs-target="#databases" type="button" role="tab">
+                                <i class="fas fa-database"></i> {{ 'Databases'|trans }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab">
+                                <i class="fas fa-envelope"></i> {{ 'Email'|trans }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ftp-tab" data-bs-toggle="tab" data-bs-target="#ftp" type="button" role="tab">
+                                <i class="fas fa-folder"></i> {{ 'FTP'|trans }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ssl-tab" data-bs-toggle="tab" data-bs-target="#ssl" type="button" role="tab">
+                                <i class="fas fa-lock"></i> {{ 'SSL'|trans }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="php-tab" data-bs-toggle="tab" data-bs-target="#php" type="button" role="tab">
+                                <i class="fab fa-php"></i> {{ 'PHP'|trans }}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="apps-tab" data-bs-toggle="tab" data-bs-target="#apps" type="button" role="tab">
+                                <i class="fas fa-cubes"></i> {{ 'Applications'|trans }}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="plesk-tab-content">
+                        <!-- Domains Tab -->
+                        <div class="tab-pane fade show active" id="domains" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>{{ 'Addon Domains'|trans }}</h6>
+                                    <div id="addon-domains-list">
+                                        <div class="text-center">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" id="add-addon-domain-btn">
+                                        <i class="fas fa-plus"></i> {{ 'Add Domain'|trans }}
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>{{ 'Subdomains'|trans }}</h6>
+                                    <div id="subdomains-list">
+                                        <div class="text-center">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm" id="add-subdomain-btn">
+                                        <i class="fas fa-plus"></i> {{ 'Add Subdomain'|trans }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Databases Tab -->
+                        <div class="tab-pane fade" id="databases" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6>{{ 'Databases'|trans }}</h6>
+                                <button class="btn btn-primary btn-sm" id="add-database-btn">
+                                    <i class="fas fa-plus"></i> {{ 'Add Database'|trans }}
+                                </button>
+                            </div>
+                            <div id="databases-list">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Tab -->
+                        <div class="tab-pane fade" id="email" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6>{{ 'Email Addresses'|trans }}</h6>
+                                <button class="btn btn-primary btn-sm" id="add-email-btn">
+                                    <i class="fas fa-plus"></i> {{ 'Add Email'|trans }}
+                                </button>
+                            </div>
+                            <div id="email-list">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FTP Tab -->
+                        <div class="tab-pane fade" id="ftp" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6>{{ 'FTP Accounts'|trans }}</h6>
+                                <button class="btn btn-primary btn-sm" id="add-ftp-btn">
+                                    <i class="fas fa-plus"></i> {{ 'Add FTP Account'|trans }}
+                                </button>
+                            </div>
+                            <div id="ftp-list">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SSL Tab -->
+                        <div class="tab-pane fade" id="ssl" role="tabpanel">
+                            <h6>{{ 'SSL Certificates'|trans }}</h6>
+                            <div id="ssl-list">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PHP Tab -->
+                        <div class="tab-pane fade" id="php" role="tabpanel">
+                            <h6>{{ 'PHP Settings'|trans }}</h6>
+                            <div id="php-settings">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Applications Tab -->
+                        <div class="tab-pane fade" id="apps" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6>{{ 'Installed Applications'|trans }}</h6>
+                                <button class="btn btn-primary btn-sm" id="install-app-btn">
+                                    <i class="fas fa-plus"></i> {{ 'Install Application'|trans }}
+                                </button>
+                            </div>
+                            <div id="apps-list">
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        {{ 'This service is not managed by Plesk Extended.'|trans }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Add Domain Modal -->
+<div class="modal fade" id="addDomainModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'Add Domain'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-domain-form">
+                    <div class="mb-3">
+                        <label for="domain-name" class="form-label">{{ 'Domain Name'|trans }}</label>
+                        <input type="text" class="form-control" id="domain-name" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
+                <button type="button" class="btn btn-primary" id="save-domain-btn">{{ 'Add Domain'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Database Modal -->
+<div class="modal fade" id="addDatabaseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'Add Database'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-database-form">
+                    <div class="mb-3">
+                        <label for="db-name" class="form-label">{{ 'Database Name'|trans }}</label>
+                        <input type="text" class="form-control" id="db-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="db-type" class="form-label">{{ 'Database Type'|trans }}</label>
+                        <select class="form-select" id="db-type">
+                            <option value="mysql">MySQL</option>
+                            <option value="postgresql">PostgreSQL</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
+                <button type="button" class="btn btn-primary" id="save-database-btn">{{ 'Add Database'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Email Modal -->
+<div class="modal fade" id="addEmailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'Add Email Address'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-email-form">
+                    <div class="mb-3">
+                        <label for="email-address" class="form-label">{{ 'Email Address'|trans }}</label>
+                        <input type="email" class="form-control" id="email-address" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email-password" class="form-label">{{ 'Password'|trans }}</label>
+                        <input type="password" class="form-control" id="email-password" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
+                <button type="button" class="btn btn-primary" id="save-email-btn">{{ 'Add Email'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add FTP Modal -->
+<div class="modal fade" id="addFtpModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'Add FTP Account'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-ftp-form">
+                    <div class="mb-3">
+                        <label for="ftp-username" class="form-label">{{ 'Username'|trans }}</label>
+                        <input type="text" class="form-control" id="ftp-username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ftp-password" class="form-label">{{ 'Password'|trans }}</label>
+                        <input type="password" class="form-control" id="ftp-password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ftp-home" class="form-label">{{ 'Home Directory'|trans }}</label>
+                        <input type="text" class="form-control" id="ftp-home" value="/">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
+                <button type="button" class="btn btn-primary" id="save-ftp-btn">{{ 'Add FTP Account'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Install Application Modal -->
+<div class="modal fade" id="installAppModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'Install Application'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="install-app-form">
+                    <div class="mb-3">
+                        <label for="installer-type" class="form-label">{{ 'Installer Type'|trans }}</label>
+                        <select class="form-select" id="installer-type">
+                            <option value="plesk">Plesk Default</option>
+                            <option value="installatron">Installatron</option>
+                            <option value="softaculous">Softaculous</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="app-name" class="form-label">{{ 'Application'|trans }}</label>
+                        <select class="form-select" id="app-name" required>
+                            <option value="">{{ 'Select Application'|trans }}</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'Cancel'|trans }}</button>
+                <button type="button" class="btn btn-primary" id="save-app-btn">{{ 'Install Application'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const orderId = {{ order.id }};
+    
+    // Load Plesk URLs
+    loadPleskUrls();
+    
+    // Load data for each tab
+    loadAddonDomains();
+    loadSubdomains();
+    loadDatabases();
+    loadEmailAddresses();
+    loadFtpAccounts();
+    loadSslCertificates();
+    loadPhpSettings();
+    loadInstalledApps();
+    
+    // Event listeners
+    document.getElementById('add-addon-domain-btn').addEventListener('click', function() {
+        new bootstrap.Modal(document.getElementById('addDomainModal')).show();
+    });
+    
+    document.getElementById('add-database-btn').addEventListener('click', function() {
+        new bootstrap.Modal(document.getElementById('addDatabaseModal')).show();
+    });
+    
+    document.getElementById('add-email-btn').addEventListener('click', function() {
+        new bootstrap.Modal(document.getElementById('addEmailModal')).show();
+    });
+    
+    document.getElementById('add-ftp-btn').addEventListener('click', function() {
+        new bootstrap.Modal(document.getElementById('addFtpModal')).show();
+    });
+    
+    document.getElementById('install-app-btn').addEventListener('click', function() {
+        new bootstrap.Modal(document.getElementById('installAppModal')).show();
+    });
+    
+    // Form submissions
+    document.getElementById('save-domain-btn').addEventListener('click', function() {
+        const domain = document.getElementById('domain-name').value;
+        addAddonDomain(domain);
+    });
+    
+    document.getElementById('save-database-btn').addEventListener('click', function() {
+        const name = document.getElementById('db-name').value;
+        const type = document.getElementById('db-type').value;
+        addDatabase(name, type);
+    });
+    
+    document.getElementById('save-email-btn').addEventListener('click', function() {
+        const email = document.getElementById('email-address').value;
+        const password = document.getElementById('email-password').value;
+        addEmailAddress(email, password);
+    });
+    
+    document.getElementById('save-ftp-btn').addEventListener('click', function() {
+        const username = document.getElementById('ftp-username').value;
+        const password = document.getElementById('ftp-password').value;
+        const home = document.getElementById('ftp-home').value;
+        addFtpAccount(username, password, home);
+    });
+    
+    document.getElementById('save-app-btn').addEventListener('click', function() {
+        const appName = document.getElementById('app-name').value;
+        const installerType = document.getElementById('installer-type').value;
+        installApplication(appName, installerType);
+    });
+    
+    // Load applications when installer type changes
+    document.getElementById('installer-type').addEventListener('change', function() {
+        loadAvailableApplications(this.value);
+    });
+    
+    function loadPleskUrls() {
+        fetch(`/api/client/pleskextended/get_plesk_urls`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                document.getElementById('plesk-panel-btn').href = data.result.plesk_panel;
+                document.getElementById('webmail-btn').href = data.result.webmail;
+                document.getElementById('backup-manager-btn').href = data.result.backup_manager;
+                document.getElementById('wp-toolkit-btn').href = data.result.wp_toolkit;
+            }
+        })
+        .catch(error => console.error('Error loading Plesk URLs:', error));
+    }
+    
+    function loadAddonDomains() {
+        fetch(`/api/client/pleskextended/get_addon_domains`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('addon-domains-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(domain => `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${domain.name}</span>
+                        <span class="badge bg-${domain.status === 'active' ? 'success' : 'warning'}">${domain.status}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No addon domains found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('addon-domains-list').innerHTML = '<p class="text-danger">Error loading domains.</p>';
+        });
+    }
+    
+    function loadSubdomains() {
+        fetch(`/api/client/pleskextended/get_subdomains`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('subdomains-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(subdomain => `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${subdomain.name}</span>
+                        <span class="badge bg-${subdomain.status === 'active' ? 'success' : 'warning'}">${subdomain.status}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No subdomains found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('subdomains-list').innerHTML = '<p class="text-danger">Error loading subdomains.</p>';
+        });
+    }
+    
+    function loadDatabases() {
+        fetch(`/api/client/pleskextended/get_databases`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('databases-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(db => `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${db.name} (${db.type})</span>
+                        <span class="badge bg-${db.status === 'active' ? 'success' : 'warning'}">${db.status}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No databases found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('databases-list').innerHTML = '<p class="text-danger">Error loading databases.</p>';
+        });
+    }
+    
+    function loadEmailAddresses() {
+        fetch(`/api/client/pleskextended/get_email_addresses`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('email-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(email => `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${email.name}</span>
+                        <span class="badge bg-${email.enabled === 'true' ? 'success' : 'warning'}">${email.enabled === 'true' ? 'Enabled' : 'Disabled'}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No email addresses found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('email-list').innerHTML = '<p class="text-danger">Error loading email addresses.</p>';
+        });
+    }
+    
+    function loadFtpAccounts() {
+        fetch(`/api/client/pleskextended/get_ftp_accounts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('ftp-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(ftp => `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${ftp.name} (${ftp.home})</span>
+                        <span class="badge bg-${ftp.enabled === 'true' ? 'success' : 'warning'}">${ftp.enabled === 'true' ? 'Enabled' : 'Disabled'}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No FTP accounts found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('ftp-list').innerHTML = '<p class="text-danger">Error loading FTP accounts.</p>';
+        });
+    }
+    
+    function loadSslCertificates() {
+        fetch(`/api/client/pleskextended/get_ssl_certificates`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('ssl-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(cert => `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${cert.name}</span>
+                        <span class="badge bg-${cert.status === 'active' ? 'success' : 'warning'}">${cert.status}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No SSL certificates found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('ssl-list').innerHTML = '<p class="text-danger">Error loading SSL certificates.</p>';
+        });
+    }
+    
+    function loadPhpSettings() {
+        fetch(`/api/client/pleskextended/get_php_settings`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('php-settings');
+            if (data.result) {
+                container.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Version:</strong> ${data.result.version || 'N/A'}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Enabled:</strong> ${data.result.enabled === 'true' ? 'Yes' : 'No'}
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<p class="text-muted">No PHP settings found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('php-settings').innerHTML = '<p class="text-danger">Error loading PHP settings.</p>';
+        });
+    }
+    
+    function loadInstalledApps() {
+        fetch(`/api/client/pleskextended/get_installed_applications_auto`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('apps-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(app => `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${app.app_name} (${app.installer_type})</span>
+                        <span class="badge bg-${app.status === 'installed' ? 'success' : 'warning'}">${app.status}</span>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No applications installed.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('apps-list').innerHTML = '<p class="text-danger">Error loading applications.</p>';
+        });
+    }
+    
+    function loadAvailableApplications(installerType) {
+        fetch(`/api/client/pleskextended/get_available_applications`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ installer_type: installerType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('app-name');
+            select.innerHTML = '<option value="">{{ 'Select Application'|trans }}</option>';
+            if (data.result && data.result.length > 0) {
+                data.result.forEach(app => {
+                    const option = document.createElement('option');
+                    option.value = app.id;
+                    option.textContent = app.name;
+                    select.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading applications:', error));
+    }
+    
+    function addAddonDomain(domain) {
+        fetch(`/api/client/pleskextended/add_addon_domain`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId, domain: domain })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                bootstrap.Modal.getInstance(document.getElementById('addDomainModal')).hide();
+                document.getElementById('domain-name').value = '';
+                loadAddonDomains();
+                showAlert('success', 'Domain added successfully!');
+            } else {
+                showAlert('danger', 'Error adding domain: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Error adding domain: ' + error.message);
+        });
+    }
+    
+    function addDatabase(name, type) {
+        fetch(`/api/client/pleskextended/create_database`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId, name: name, type: type })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                bootstrap.Modal.getInstance(document.getElementById('addDatabaseModal')).hide();
+                document.getElementById('db-name').value = '';
+                loadDatabases();
+                showAlert('success', 'Database created successfully!');
+            } else {
+                showAlert('danger', 'Error creating database: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Error creating database: ' + error.message);
+        });
+    }
+    
+    function addEmailAddress(email, password) {
+        fetch(`/api/client/pleskextended/create_email_address`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId, email: email, password: password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                bootstrap.Modal.getInstance(document.getElementById('addEmailModal')).hide();
+                document.getElementById('email-address').value = '';
+                document.getElementById('email-password').value = '';
+                loadEmailAddresses();
+                showAlert('success', 'Email address created successfully!');
+            } else {
+                showAlert('danger', 'Error creating email address: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Error creating email address: ' + error.message);
+        });
+    }
+    
+    function addFtpAccount(username, password, home) {
+        fetch(`/api/client/pleskextended/create_ftp_account`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId, username: username, password: password, home: home })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                bootstrap.Modal.getInstance(document.getElementById('addFtpModal')).hide();
+                document.getElementById('ftp-username').value = '';
+                document.getElementById('ftp-password').value = '';
+                document.getElementById('ftp-home').value = '/';
+                loadFtpAccounts();
+                showAlert('success', 'FTP account created successfully!');
+            } else {
+                showAlert('danger', 'Error creating FTP account: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Error creating FTP account: ' + error.message);
+        });
+    }
+    
+    function installApplication(appName, installerType) {
+        fetch(`/api/client/pleskextended/install_application_auto`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order_id: orderId, app_name: appName, installer_type: installerType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                bootstrap.Modal.getInstance(document.getElementById('installAppModal')).hide();
+                document.getElementById('app-name').value = '';
+                loadInstalledApps();
+                showAlert('success', 'Application installation started!');
+            } else {
+                showAlert('danger', 'Error installing application: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Error installing application: ' + error.message);
+        });
+    }
+    
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.card-body').firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

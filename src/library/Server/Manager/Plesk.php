@@ -23,6 +23,55 @@ class Server_Manager_Plesk extends Server_Manager
     {
         return [
             'label' => 'Plesk',
+            'fields' => [
+                'host' => [
+                    'label' => 'Server hostname or IP',
+                    'required' => true,
+                ],
+                'username' => [
+                    'label' => 'Username',
+                    'required' => true,
+                ],
+                'password' => [
+                    'label' => 'Password',
+                    'required' => true,
+                    'type' => 'password',
+                ],
+                'port' => [
+                    'label' => 'Port',
+                    'default' => '8443',
+                ],
+                'secure' => [
+                    'label' => 'Use secure connection (HTTPS)',
+                    'type' => 'checkbox',
+                    'default' => true,
+                ],
+                'power_user_view' => [
+                    'label' => 'Enable Power User Panel View',
+                    'type' => 'checkbox',
+                    'default' => false,
+                ],
+                'client_sync' => [
+                    'label' => 'Enable Client Details Synchronization',
+                    'type' => 'checkbox',
+                    'default' => true,
+                ],
+                'default_php_version' => [
+                    'label' => 'Default PHP Version',
+                    'default' => '8.1',
+                ],
+                'metric_billing' => [
+                    'label' => 'Enable Metric Billing',
+                    'type' => 'checkbox',
+                    'default' => false,
+                ],
+                'custom_panel_url' => [
+                    'label' => 'Custom Panel URL (optional)',
+                ],
+                'custom_webmail_url' => [
+                    'label' => 'Custom Webmail URL (optional)',
+                ],
+            ],
         ];
     }
 
@@ -745,5 +794,533 @@ class Server_Manager_Plesk extends Server_Manager
         // Check if the IP type was successfully changed to 'shared'
         return isset($response->reseller->{'ippool-set-ip'}->result->status)
             && $response->reseller->{'ippool-set-ip'}->result->status == 'ok';
+    }
+
+    /**
+     * Get administrator panel login URL
+     *
+     * @return string
+     */
+    public function getAdminLoginUrl(): string
+    {
+        $protocol = $this->_config['secure'] ? 'https' : 'http';
+        $customUrl = $this->_config['custom_panel_url'] ?? null;
+        
+        if ($customUrl) {
+            return $customUrl;
+        }
+        
+        return $protocol . '://' . $this->_config['host'] . ':' . $this->_config['port'];
+    }
+
+    /**
+     * Get webmail login URL
+     *
+     * @param Server_Account|null $account
+     * @return string
+     */
+    public function getWebmailUrl(?Server_Account $account = null): string
+    {
+        $customUrl = $this->_config['custom_webmail_url'] ?? null;
+        
+        if ($customUrl) {
+            return $customUrl;
+        }
+        
+        $protocol = $this->_config['secure'] ? 'https' : 'http';
+        $url = $protocol . '://' . $this->_config['host'] . ':' . $this->_config['port'] . '/webmail';
+        
+        if ($account) {
+            $sessionId = $this->_client->session()->create($account->getUsername(), $_SERVER['REMOTE_ADDR']);
+            $url .= '?PHPSESSID=' . $sessionId;
+        }
+        
+        return $url;
+    }
+
+    /**
+     * Get backup manager URL
+     *
+     * @param Server_Account|null $account
+     * @return string
+     */
+    public function getBackupManagerUrl(?Server_Account $account = null): string
+    {
+        $protocol = $this->_config['secure'] ? 'https' : 'http';
+        $url = $protocol . '://' . $this->_config['host'] . ':' . $this->_config['port'] . '/backup';
+        
+        if ($account) {
+            $sessionId = $this->_client->session()->create($account->getUsername(), $_SERVER['REMOTE_ADDR']);
+            $url .= '?PHPSESSID=' . $sessionId;
+        }
+        
+        return $url;
+    }
+
+    /**
+     * Get WordPress Toolkit URL
+     *
+     * @param Server_Account|null $account
+     * @return string
+     */
+    public function getWpToolkitUrl(?Server_Account $account = null): string
+    {
+        $protocol = $this->_config['secure'] ? 'https' : 'http';
+        $url = $protocol . '://' . $this->_config['host'] . ':' . $this->_config['port'] . '/wp-toolkit';
+        
+        if ($account) {
+            $sessionId = $this->_client->session()->create($account->getUsername(), $_SERVER['REMOTE_ADDR']);
+            $url .= '?PHPSESSID=' . $sessionId;
+        }
+        
+        return $url;
+    }
+
+    /**
+     * Get addon domains for an account
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getAddonDomains(Server_Account $account): array
+    {
+        $response = $this->_client->webspace()->get('name', $account->getDomain());
+        $domains = [];
+        
+        if (isset($response->webspace->get->result->data->gen_info->{'addon-domains'}->domain)) {
+            foreach ($response->webspace->get->result->data->gen_info->{'addon-domains'}->domain as $domain) {
+                $domains[] = [
+                    'name' => (string) $domain->name,
+                    'status' => (string) $domain->status,
+                ];
+            }
+        }
+        
+        return $domains;
+    }
+
+    /**
+     * Add addon domain
+     *
+     * @param Server_Account $account
+     * @param string $domain
+     * @return bool
+     */
+    public function addAddonDomain(Server_Account $account, string $domain): bool
+    {
+        $params = [
+            'webspace' => [
+                'add-subdomain' => [
+                    'filter' => [
+                        'name' => $account->getDomain(),
+                    ],
+                    'subdomain' => [
+                        'name' => $domain,
+                        'parent' => $account->getDomain(),
+                    ],
+                ],
+            ],
+        ];
+        
+        $response = $this->_client->webspace()->request($params);
+        return isset($response->webspace->{'add-subdomain'}->result->status) 
+            && $response->webspace->{'add-subdomain'}->result->status == 'ok';
+    }
+
+    /**
+     * Get databases for an account
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getDatabases(Server_Account $account): array
+    {
+        $response = $this->_client->database()->get('webspace', $account->getDomain());
+        $databases = [];
+        
+        if (isset($response->database->get->result)) {
+            foreach ($response->database->get->result as $db) {
+                $databases[] = [
+                    'name' => (string) $db->name,
+                    'type' => (string) $db->type,
+                    'status' => (string) $db->status,
+                ];
+            }
+        }
+        
+        return $databases;
+    }
+
+    /**
+     * Create database
+     *
+     * @param Server_Account $account
+     * @param string $name
+     * @param string $type
+     * @return bool
+     */
+    public function createDatabase(Server_Account $account, string $name, string $type = 'mysql'): bool
+    {
+        $params = [
+            'database' => [
+                'add-db' => [
+                    'webspace' => $account->getDomain(),
+                    'name' => $name,
+                    'type' => $type,
+                ],
+            ],
+        ];
+        
+        $response = $this->_client->database()->request($params);
+        return isset($response->database->{'add-db'}->result->status) 
+            && $response->database->{'add-db'}->result->status == 'ok';
+    }
+
+    /**
+     * Get email addresses for an account
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getEmailAddresses(Server_Account $account): array
+    {
+        $response = $this->_client->mail()->get('webspace', $account->getDomain());
+        $emails = [];
+        
+        if (isset($response->mail->get->result)) {
+            foreach ($response->mail->get->result as $email) {
+                $emails[] = [
+                    'name' => (string) $email->name,
+                    'mailbox' => (string) $email->mailbox,
+                    'enabled' => (string) $email->enabled,
+                ];
+            }
+        }
+        
+        return $emails;
+    }
+
+    /**
+     * Create email address
+     *
+     * @param Server_Account $account
+     * @param string $email
+     * @param string $password
+     * @return bool
+     */
+    public function createEmailAddress(Server_Account $account, string $email, string $password): bool
+    {
+        $params = [
+            'mail' => [
+                'create' => [
+                    'filter' => [
+                        'webspace' => $account->getDomain(),
+                    ],
+                    'name' => $email,
+                    'mailbox' => [
+                        'enabled' => 'true',
+                        'password' => $password,
+                    ],
+                ],
+            ],
+        ];
+        
+        $response = $this->_client->mail()->request($params);
+        return isset($response->mail->create->result->status) 
+            && $response->mail->create->result->status == 'ok';
+    }
+
+    /**
+     * Get FTP accounts for an account
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getFtpAccounts(Server_Account $account): array
+    {
+        $response = $this->_client->ftp()->get('webspace', $account->getDomain());
+        $ftpAccounts = [];
+        
+        if (isset($response->ftp->get->result)) {
+            foreach ($response->ftp->get->result as $ftp) {
+                $ftpAccounts[] = [
+                    'name' => (string) $ftp->name,
+                    'home' => (string) $ftp->home,
+                    'enabled' => (string) $ftp->enabled,
+                ];
+            }
+        }
+        
+        return $ftpAccounts;
+    }
+
+    /**
+     * Create FTP account
+     *
+     * @param Server_Account $account
+     * @param string $username
+     * @param string $password
+     * @param string $home
+     * @return bool
+     */
+    public function createFtpAccount(Server_Account $account, string $username, string $password, string $home = '/'): bool
+    {
+        $params = [
+            'ftp' => [
+                'create' => [
+                    'filter' => [
+                        'webspace' => $account->getDomain(),
+                    ],
+                    'name' => $username,
+                    'password' => $password,
+                    'home' => $home,
+                ],
+            ],
+        ];
+        
+        $response = $this->_client->ftp()->request($params);
+        return isset($response->ftp->create->result->status) 
+            && $response->ftp->create->result->status == 'ok';
+    }
+
+    /**
+     * Get SSL certificates for an account
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getSslCertificates(Server_Account $account): array
+    {
+        $response = $this->_client->certificate()->get('webspace', $account->getDomain());
+        $certificates = [];
+        
+        if (isset($response->certificate->get->result)) {
+            foreach ($response->certificate->get->result as $cert) {
+                $certificates[] = [
+                    'name' => (string) $cert->name,
+                    'status' => (string) $cert->status,
+                    'expiry' => (string) $cert->expiry,
+                ];
+            }
+        }
+        
+        return $certificates;
+    }
+
+    /**
+     * Get subdomains for an account
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getSubdomains(Server_Account $account): array
+    {
+        $response = $this->_client->subdomain()->get('webspace', $account->getDomain());
+        $subdomains = [];
+        
+        if (isset($response->subdomain->get->result)) {
+            foreach ($response->subdomain->get->result as $subdomain) {
+                $subdomains[] = [
+                    'name' => (string) $subdomain->name,
+                    'status' => (string) $subdomain->status,
+                ];
+            }
+        }
+        
+        return $subdomains;
+    }
+
+    /**
+     * Create subdomain
+     *
+     * @param Server_Account $account
+     * @param string $name
+     * @return bool
+     */
+    public function createSubdomain(Server_Account $account, string $name): bool
+    {
+        $params = [
+            'subdomain' => [
+                'create' => [
+                    'filter' => [
+                        'webspace' => $account->getDomain(),
+                    ],
+                    'name' => $name,
+                ],
+            ],
+        ];
+        
+        $response = $this->_client->subdomain()->request($params);
+        return isset($response->subdomain->create->result->status) 
+            && $response->subdomain->create->result->status == 'ok';
+    }
+
+    /**
+     * Get PHP settings for an account
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getPhpSettings(Server_Account $account): array
+    {
+        $response = $this->_client->webspace()->get('name', $account->getDomain());
+        $phpSettings = [];
+        
+        if (isset($response->webspace->get->result->data->hosting->vrt_hst->php_settings)) {
+            $php = $response->webspace->get->result->data->hosting->vrt_hst->php_settings;
+            $phpSettings = [
+                'version' => (string) $php->version,
+                'enabled' => (string) $php->enabled,
+                'settings' => (array) $php->settings,
+            ];
+        }
+        
+        return $phpSettings;
+    }
+
+    /**
+     * Update PHP settings for an account
+     *
+     * @param Server_Account $account
+     * @param array $settings
+     * @return bool
+     */
+    public function updatePhpSettings(Server_Account $account, array $settings): bool
+    {
+        $params = [
+            'webspace' => [
+                'set' => [
+                    'filter' => [
+                        'name' => $account->getDomain(),
+                    ],
+                    'values' => [
+                        'hosting' => [
+                            'vrt_hst' => [
+                                'php_settings' => $settings,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+        
+        $response = $this->_client->webspace()->request($params);
+        return isset($response->webspace->set->result->status) 
+            && $response->webspace->set->result->status == 'ok';
+    }
+
+    /**
+     * Get installed applications
+     *
+     * @param Server_Account $account
+     * @return array
+     */
+    public function getInstalledApplications(Server_Account $account): array
+    {
+        // This would require integration with Installatron/Softaculous APIs
+        // For now, return empty array - implementation depends on specific auto-installer
+        return [];
+    }
+
+    /**
+     * Install application
+     *
+     * @param Server_Account $account
+     * @param string $appName
+     * @param array $options
+     * @return bool
+     */
+    public function installApplication(Server_Account $account, string $appName, array $options = []): bool
+    {
+        // This would require integration with Installatron/Softaculous APIs
+        // For now, return false - implementation depends on specific auto-installer
+        return false;
+    }
+
+    /**
+     * Get server statistics
+     *
+     * @return array
+     */
+    public function getServerStatistics(): array
+    {
+        $stats = $this->_client->server()->getStatistics();
+        
+        return [
+            'uptime' => $stats->other->uptime,
+            'load_average' => $stats->other->load_average,
+            'memory_usage' => $stats->other->memory_usage,
+            'disk_usage' => $stats->other->disk_usage,
+        ];
+    }
+
+    /**
+     * Get all Plesk products and servers
+     *
+     * @return array
+     */
+    public function getAllPleskProducts(): array
+    {
+        $response = $this->_client->product()->get();
+        $products = [];
+        
+        if (isset($response->product->get->result)) {
+            foreach ($response->product->get->result as $product) {
+                $products[] = [
+                    'name' => (string) $product->name,
+                    'version' => (string) $product->version,
+                    'status' => (string) $product->status,
+                ];
+            }
+        }
+        
+        return $products;
+    }
+
+    /**
+     * Get all Plesk servers
+     *
+     * @return array
+     */
+    public function getAllPleskServers(): array
+    {
+        $response = $this->_client->server()->get();
+        $servers = [];
+        
+        if (isset($response->server->get->result)) {
+            foreach ($response->server->get->result as $server) {
+                $servers[] = [
+                    'name' => (string) $server->name,
+                    'ip' => (string) $server->ip,
+                    'status' => (string) $server->status,
+                ];
+            }
+        }
+        
+        return $servers;
+    }
+
+    /**
+     * Get all Plesk customers
+     *
+     * @return array
+     */
+    public function getAllPleskCustomers(): array
+    {
+        $response = $this->_client->customer()->get();
+        $customers = [];
+        
+        if (isset($response->customer->get->result)) {
+            foreach ($response->customer->get->result as $customer) {
+                $customers[] = [
+                    'login' => (string) $customer->login,
+                    'name' => (string) $customer->name,
+                    'email' => (string) $customer->email,
+                    'status' => (string) $customer->status,
+                ];
+            }
+        }
+        
+        return $customers;
     }
 }

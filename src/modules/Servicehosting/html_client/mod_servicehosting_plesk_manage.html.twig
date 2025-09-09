@@ -1,0 +1,592 @@
+{% extends "mod_servicehosting_manage.html.twig" %}
+
+{% block content %}
+    {{ parent() }}
+    
+    {% if service.server.manager == 'Plesk' %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Plesk Control Panel</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <a href="{{ service.plesk_urls.plesk_panel }}" target="_blank" class="btn btn-primary btn-block">
+                                    <i class="fas fa-cog"></i> Plesk Panel
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ service.plesk_urls.webmail }}" target="_blank" class="btn btn-info btn-block">
+                                    <i class="fas fa-envelope"></i> Webmail
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ service.plesk_urls.backup_manager }}" target="_blank" class="btn btn-warning btn-block">
+                                    <i class="fas fa-download"></i> Backup Manager
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ service.plesk_urls.wp_toolkit }}" target="_blank" class="btn btn-success btn-block">
+                                    <i class="fas fa-wordpress"></i> WP Toolkit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Addon Domains</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addDomainModal">
+                                <i class="fas fa-plus"></i> Add Domain
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="addonDomainsList">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Subdomains</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addSubdomainModal">
+                                <i class="fas fa-plus"></i> Add Subdomain
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="subdomainsList">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Databases</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addDatabaseModal">
+                                <i class="fas fa-plus"></i> Add Database
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="databasesList">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Email Addresses</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addEmailModal">
+                                <i class="fas fa-plus"></i> Add Email
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="emailsList">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">FTP Accounts</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#addFtpModal">
+                                <i class="fas fa-plus"></i> Add FTP Account
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="ftpAccountsList">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">SSL Certificates</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="sslCertificatesList">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">PHP Settings</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="phpSettings">
+                            <div class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Domain Modal -->
+        <div class="modal fade" id="addDomainModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Addon Domain</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addDomainForm">
+                            <div class="form-group">
+                                <label for="domainName">Domain Name</label>
+                                <input type="text" class="form-control" id="domainName" name="domain" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="addDomain()">Add Domain</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Subdomain Modal -->
+        <div class="modal fade" id="addSubdomainModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Subdomain</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addSubdomainForm">
+                            <div class="form-group">
+                                <label for="subdomainName">Subdomain Name</label>
+                                <input type="text" class="form-control" id="subdomainName" name="name" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="addSubdomain()">Add Subdomain</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Database Modal -->
+        <div class="modal fade" id="addDatabaseModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Database</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addDatabaseForm">
+                            <div class="form-group">
+                                <label for="databaseName">Database Name</label>
+                                <input type="text" class="form-control" id="databaseName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="databaseType">Database Type</label>
+                                <select class="form-control" id="databaseType" name="type">
+                                    <option value="mysql">MySQL</option>
+                                    <option value="postgresql">PostgreSQL</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="addDatabase()">Add Database</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Email Modal -->
+        <div class="modal fade" id="addEmailModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Email Address</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addEmailForm">
+                            <div class="form-group">
+                                <label for="emailAddress">Email Address</label>
+                                <input type="email" class="form-control" id="emailAddress" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="emailPassword">Password</label>
+                                <input type="password" class="form-control" id="emailPassword" name="password" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="addEmail()">Add Email</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add FTP Modal -->
+        <div class="modal fade" id="addFtpModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add FTP Account</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addFtpForm">
+                            <div class="form-group">
+                                <label for="ftpUsername">Username</label>
+                                <input type="text" class="form-control" id="ftpUsername" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ftpPassword">Password</label>
+                                <input type="password" class="form-control" id="ftpPassword" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ftpHome">Home Directory</label>
+                                <input type="text" class="form-control" id="ftpHome" name="home" value="/">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="addFtp()">Add FTP Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function() {
+                loadPleskData();
+            });
+
+            function loadPleskData() {
+                loadAddonDomains();
+                loadSubdomains();
+                loadDatabases();
+                loadEmails();
+                loadFtpAccounts();
+                loadSslCertificates();
+                loadPhpSettings();
+            }
+
+            function loadAddonDomains() {
+                $.post('{{ "api/client/servicehosting/get_addon_domains"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.length > 0) {
+                        data.forEach(function(domain) {
+                            html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                            html += '<span>' + domain.name + '</span>';
+                            html += '<span class="badge badge-' + (domain.status === 'active' ? 'success' : 'warning') + '">' + domain.status + '</span>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html = '<p class="text-muted">No addon domains found.</p>';
+                    }
+                    $('#addonDomainsList').html(html);
+                });
+            }
+
+            function loadSubdomains() {
+                $.post('{{ "api/client/servicehosting/get_subdomains"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.length > 0) {
+                        data.forEach(function(subdomain) {
+                            html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                            html += '<span>' + subdomain.name + '</span>';
+                            html += '<span class="badge badge-' + (subdomain.status === 'active' ? 'success' : 'warning') + '">' + subdomain.status + '</span>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html = '<p class="text-muted">No subdomains found.</p>';
+                    }
+                    $('#subdomainsList').html(html);
+                });
+            }
+
+            function loadDatabases() {
+                $.post('{{ "api/client/servicehosting/get_databases"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.length > 0) {
+                        data.forEach(function(db) {
+                            html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                            html += '<span>' + db.name + ' (' + db.type + ')</span>';
+                            html += '<span class="badge badge-' + (db.status === 'active' ? 'success' : 'warning') + '">' + db.status + '</span>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html = '<p class="text-muted">No databases found.</p>';
+                    }
+                    $('#databasesList').html(html);
+                });
+            }
+
+            function loadEmails() {
+                $.post('{{ "api/client/servicehosting/get_email_addresses"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.length > 0) {
+                        data.forEach(function(email) {
+                            html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                            html += '<span>' + email.name + '</span>';
+                            html += '<span class="badge badge-' + (email.enabled === 'true' ? 'success' : 'warning') + '">' + (email.enabled === 'true' ? 'Enabled' : 'Disabled') + '</span>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html = '<p class="text-muted">No email addresses found.</p>';
+                    }
+                    $('#emailsList').html(html);
+                });
+            }
+
+            function loadFtpAccounts() {
+                $.post('{{ "api/client/servicehosting/get_ftp_accounts"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.length > 0) {
+                        data.forEach(function(ftp) {
+                            html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                            html += '<span>' + ftp.name + ' (' + ftp.home + ')</span>';
+                            html += '<span class="badge badge-' + (ftp.enabled === 'true' ? 'success' : 'warning') + '">' + (ftp.enabled === 'true' ? 'Enabled' : 'Disabled') + '</span>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html = '<p class="text-muted">No FTP accounts found.</p>';
+                    }
+                    $('#ftpAccountsList').html(html);
+                });
+            }
+
+            function loadSslCertificates() {
+                $.post('{{ "api/client/servicehosting/get_ssl_certificates"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.length > 0) {
+                        data.forEach(function(cert) {
+                            html += '<div class="d-flex justify-content-between align-items-center mb-2">';
+                            html += '<span>' + cert.name + '</span>';
+                            html += '<span class="badge badge-' + (cert.status === 'active' ? 'success' : 'warning') + '">' + cert.status + '</span>';
+                            html += '</div>';
+                        });
+                    } else {
+                        html = '<p class="text-muted">No SSL certificates found.</p>';
+                    }
+                    $('#sslCertificatesList').html(html);
+                });
+            }
+
+            function loadPhpSettings() {
+                $.post('{{ "api/client/servicehosting/get_php_settings"|link }}', {
+                    order_id: {{ order.id }}
+                }, function(data) {
+                    let html = '';
+                    if (data.version) {
+                        html += '<div class="row">';
+                        html += '<div class="col-md-6">';
+                        html += '<strong>PHP Version:</strong> ' + data.version;
+                        html += '</div>';
+                        html += '<div class="col-md-6">';
+                        html += '<strong>Status:</strong> <span class="badge badge-' + (data.enabled === 'true' ? 'success' : 'warning') + '">' + (data.enabled === 'true' ? 'Enabled' : 'Disabled') + '</span>';
+                        html += '</div>';
+                        html += '</div>';
+                    } else {
+                        html = '<p class="text-muted">No PHP settings found.</p>';
+                    }
+                    $('#phpSettings').html(html);
+                });
+            }
+
+            function addDomain() {
+                const domain = $('#domainName').val();
+                if (!domain) return;
+
+                $.post('{{ "api/client/servicehosting/add_addon_domain"|link }}', {
+                    order_id: {{ order.id }},
+                    domain: domain
+                }, function(data) {
+                    if (data) {
+                        $('#addDomainModal').modal('hide');
+                        $('#addDomainForm')[0].reset();
+                        loadAddonDomains();
+                        showSuccess('Domain added successfully');
+                    } else {
+                        showError('Failed to add domain');
+                    }
+                });
+            }
+
+            function addSubdomain() {
+                const name = $('#subdomainName').val();
+                if (!name) return;
+
+                $.post('{{ "api/client/servicehosting/add_subdomain"|link }}', {
+                    order_id: {{ order.id }},
+                    name: name
+                }, function(data) {
+                    if (data) {
+                        $('#addSubdomainModal').modal('hide');
+                        $('#addSubdomainForm')[0].reset();
+                        loadSubdomains();
+                        showSuccess('Subdomain added successfully');
+                    } else {
+                        showError('Failed to add subdomain');
+                    }
+                });
+            }
+
+            function addDatabase() {
+                const name = $('#databaseName').val();
+                const type = $('#databaseType').val();
+                if (!name) return;
+
+                $.post('{{ "api/client/servicehosting/create_database"|link }}', {
+                    order_id: {{ order.id }},
+                    name: name,
+                    type: type
+                }, function(data) {
+                    if (data) {
+                        $('#addDatabaseModal').modal('hide');
+                        $('#addDatabaseForm')[0].reset();
+                        loadDatabases();
+                        showSuccess('Database created successfully');
+                    } else {
+                        showError('Failed to create database');
+                    }
+                });
+            }
+
+            function addEmail() {
+                const email = $('#emailAddress').val();
+                const password = $('#emailPassword').val();
+                if (!email || !password) return;
+
+                $.post('{{ "api/client/servicehosting/create_email_address"|link }}', {
+                    order_id: {{ order.id }},
+                    email: email,
+                    password: password
+                }, function(data) {
+                    if (data) {
+                        $('#addEmailModal').modal('hide');
+                        $('#addEmailForm')[0].reset();
+                        loadEmails();
+                        showSuccess('Email address created successfully');
+                    } else {
+                        showError('Failed to create email address');
+                    }
+                });
+            }
+
+            function addFtp() {
+                const username = $('#ftpUsername').val();
+                const password = $('#ftpPassword').val();
+                const home = $('#ftpHome').val();
+                if (!username || !password) return;
+
+                $.post('{{ "api/client/servicehosting/create_ftp_account"|link }}', {
+                    order_id: {{ order.id }},
+                    username: username,
+                    password: password,
+                    home: home
+                }, function(data) {
+                    if (data) {
+                        $('#addFtpModal').modal('hide');
+                        $('#addFtpForm')[0].reset();
+                        loadFtpAccounts();
+                        showSuccess('FTP account created successfully');
+                    } else {
+                        showError('Failed to create FTP account');
+                    }
+                });
+            }
+
+            function showSuccess(message) {
+                // Add your success notification here
+                console.log('Success: ' + message);
+            }
+
+            function showError(message) {
+                // Add your error notification here
+                console.log('Error: ' + message);
+            }
+        </script>
+    {% endif %}
+{% endblock %}
