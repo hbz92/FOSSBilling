@@ -179,7 +179,7 @@
 
 <script>
 function viewClientMfaDetails(clientId) {
-    bb.get('admin/mfa/client_details', {client_id: clientId}, function(result) {
+    $.get('{{ 'api/admin/mfa/client_details'|link }}', {client_id: clientId}, function(result) {
         // Show details in a modal
         console.log('Client MFA details:', result);
     });
@@ -187,8 +187,8 @@ function viewClientMfaDetails(clientId) {
 
 function resetClientMfa(clientId) {
     if (confirm('{{ 'Are you sure you want to reset MFA for this client? They will need to reconfigure it.' | trans }}')) {
-        bb.post('admin/mfa/reset_client', {client_id: clientId, CSRFToken: '{{ CSRFToken }}'}, function(result) {
-            bb.msg(result.message, result.success ? 'info' : 'error');
+        $.post('{{ 'api/admin/mfa/reset_client'|link }}', {client_id: clientId, CSRFToken: '{{ CSRFToken }}'}, function(result) {
+            alert(result.message);
             if (result.success) {
                 location.reload();
             }
@@ -198,8 +198,8 @@ function resetClientMfa(clientId) {
 
 function disableClientMfa(clientId) {
     if (confirm('{{ 'Are you sure you want to disable MFA for this client?' | trans }}')) {
-        bb.post('admin/mfa/force_disable', {client_id: clientId, CSRFToken: '{{ CSRFToken }}'}, function(result) {
-            bb.msg(result.message, result.success ? 'info' : 'error');
+        $.post('{{ 'api/admin/mfa/force_disable'|link }}', {client_id: clientId, CSRFToken: '{{ CSRFToken }}'}, function(result) {
+            alert(result.message);
             if (result.success) {
                 location.reload();
             }

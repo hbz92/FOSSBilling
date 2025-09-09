@@ -29,7 +29,7 @@
         <h3 class="card-title">{{ 'MFA Global Settings' | trans }}</h3>
     </div>
     <div class="card-body">
-        <form method="post" action="{{ 'api/admin/mfa/update_settings'|bb_api_url }}" class="api-form" data-api-reload="1">
+        <form method="post" action="{{ 'api/admin/mfa/update_settings'|link }}" class="api-form" data-api-reload="1">
             <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
             
             <div class="mb-3 row">
@@ -172,7 +172,7 @@
         <h3 class="card-title">{{ 'Email/SMS Configuration' | trans }}</h3>
     </div>
     <div class="card-body">
-        <form method="post" action="{{ 'api/admin/mfa/update_notification_settings'|bb_api_url }}" class="api-form" data-api-reload="1">
+        <form method="post" action="{{ 'api/admin/mfa/update_notification_settings'|link }}" class="api-form" data-api-reload="1">
             <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
             
             <div class="mb-3 row">
@@ -249,7 +249,7 @@
             <div class="col-md-6">
                 <h5>{{ 'Force Reset MFA' | trans }}</h5>
                 <p>{{ 'Force all clients to reconfigure their MFA settings' | trans }}</p>
-                <button class="btn btn-warning" onclick="if(confirm('{{ 'Are you sure? This will require all clients to reconfigure MFA.' | trans }}')) bb.post('admin/mfa/force_reset_all', {CSRFToken: '{{ CSRFToken }}'})">
+                <button class="btn btn-warning" onclick="if(confirm('{{ 'Are you sure? This will require all clients to reconfigure MFA.' | trans }}')) $.post('{{ 'api/admin/mfa/force_reset_all'|link }}', {CSRFToken: '{{ CSRFToken }}'}, function(data) { alert(data.message); location.reload(); })">
                     <svg class="icon">
                         <use xlink:href="#refresh" />
                     </svg>
@@ -259,7 +259,7 @@
             <div class="col-md-6">
                 <h5>{{ 'Clear Sessions' | trans }}</h5>
                 <p>{{ 'Remove all remembered devices and active MFA sessions' | trans }}</p>
-                <button class="btn btn-danger" onclick="if(confirm('{{ 'Are you sure? This will log out all MFA sessions.' | trans }}')) bb.post('admin/mfa/clear_all_sessions', {CSRFToken: '{{ CSRFToken }}'})">
+                <button class="btn btn-danger" onclick="if(confirm('{{ 'Are you sure? This will log out all MFA sessions.' | trans }}')) $.post('{{ 'api/admin/mfa/clear_all_sessions'|link }}', {CSRFToken: '{{ CSRFToken }}'}, function(data) { alert(data.message); location.reload(); })">
                     <svg class="icon">
                         <use xlink:href="#trash" />
                     </svg>

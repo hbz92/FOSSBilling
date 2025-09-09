@@ -206,7 +206,7 @@ function showDetails(details) {
 }
 
 function exportLogs() {
-    window.location.href = bb.restUrl('admin/mfa/export_logs', {CSRFToken: '{{ CSRFToken }}'});
+    window.location.href = '{{ 'api/admin/mfa/export_logs'|link }}?CSRFToken={{ CSRFToken }}';
 }
 </script>
 {% endblock %}
