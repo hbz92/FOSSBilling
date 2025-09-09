@@ -12,115 +12,137 @@ declare(strict_types=1);
 
 namespace Box\Mod\Mfa\Controller;
 
-class Admin extends \FOSSBilling\Controller
+class Admin implements \FOSSBilling\InjectionAwareInterface
 {
-    /**
-     * MFA admin dashboard
-     */
-    public function index()
+    protected ?\Pimple\Container $di = null;
+
+    public function setDi(\Pimple\Container $di): void
     {
+        $this->di = $di;
+    }
+
+    public function getDi(): ?\Pimple\Container
+    {
+        return $this->di;
+    }
+
+    public function fetchNavigation()
+    {
+        return [
+            'group' => [
+                'index' => 500,
+                'location' => 'mfa',
+                'label' => __trans('MFA'),
+                'class' => 'security',
+            ],
+            'subpages' => [
+                [
+                    'location' => 'mfa',
+                    'label' => __trans('Overview'),
+                    'uri' => $this->di['url']->adminLink('mfa'),
+                    'index' => 100,
+                    'class' => '',
+                ],
+            ],
+        ];
+    }
+
+    public function register(\Box_App &$app)
+    {
+        $app->get('/mfa', 'get_index', [], static::class);
+        $app->get('/mfa/', 'get_index', [], static::class);
+        $app->get('/mfa/index', 'get_index', [], static::class);
+        $app->get('/mfa/enabled-clients', 'get_enabled_clients', [], static::class);
+        $app->get('/mfa/statistics', 'get_statistics', [], static::class);
+        $app->get('/mfa/clean-sessions', 'get_clean_sessions', [], static::class);
+        $app->get('/mfa/force-disable/:client_id', 'get_force_disable', ['client_id' => '[0-9]+'], static::class);
+        $app->get('/mfa/client-logs/:id', 'get_client_logs', ['id' => '[0-9]+'], static::class);
+        $app->get('/mfa/client-status/:id', 'get_client_status', ['id' => '[0-9]+'], static::class);
+    }
+
+    public function get_index(\Box_App $app)
+    {
+        $this->di['is_admin_logged'];
         $service = $this->getService();
         $stats = $service->getStatistics();
         
-        return $this->render('mod_mfa_index', [
+        return $app->render('mod_mfa_index', [
             'stats' => $stats
         ]);
     }
 
-    /**
-     * Get enabled clients
-     */
-    public function enabled_clients()
+    public function get_enabled_clients(\Box_App $app)
     {
+        $this->di['is_admin_logged'];
         $service = $this->getService();
         $clients = $service->getEnabledClients();
         
-        return $this->render('mod_mfa_enabled_clients', [
+        return $app->render('mod_mfa_enabled_clients', [
             'clients' => $clients
         ]);
     }
 
-    /**
-     * Get MFA statistics
-     */
-    public function statistics()
+    public function get_statistics(\Box_App $app)
     {
+        $this->di['is_admin_logged'];
         $service = $this->getService();
         $stats = $service->getStatistics();
         
-        return $this->render('mod_mfa_statistics', [
+        return $app->render('mod_mfa_statistics', [
             'stats' => $stats
         ]);
     }
 
-    /**
-     * Clean expired sessions
-     */
-    public function clean_sessions()
+    public function get_clean_sessions(\Box_App $app)
     {
+        $this->di['is_admin_logged'];
         $service = $this->getService();
         $cleaned = $service->cleanExpiredSessions();
         
-        return $this->render('mod_mfa_clean_sessions', [
+        return $app->render('mod_mfa_clean_sessions', [
             'cleaned_count' => $cleaned
         ]);
     }
 
-    /**
-     * Force disable MFA for a client
-     */
-    public function force_disable()
+    public function get_force_disable(\Box_App $app, $client_id)
     {
-        $clientId = $this->di['request']->get('client_id');
-        if (!$clientId) {
-            throw new \FOSSBilling\InformationException('Client ID is required');
-        }
-
+        $this->di['is_admin_logged'];
         $service = $this->getService();
-        $service->forceDisableMfa($clientId);
+        $service->forceDisableMfa($client_id);
         
-        return $this->render('mod_mfa_force_disable', [
-            'client_id' => $clientId
+        return $app->render('mod_mfa_force_disable', [
+            'client_id' => $client_id
         ]);
     }
 
-    /**
-     * Get client logs
-     */
-    public function client_logs()
+    public function get_client_logs(\Box_App $app, $id)
     {
-        $clientId = $this->di['request']->get('id');
-        if (!$clientId) {
-            throw new \FOSSBilling\InformationException('Client ID is required');
-        }
-
+        $this->di['is_admin_logged'];
         $service = $this->getService();
-        $logs = $service->getMfaLogs($clientId);
+        $logs = $service->getMfaLogs($id);
         
-        return $this->render('mod_mfa_client_logs', [
-            'client_id' => $clientId,
+        return $app->render('mod_mfa_client_logs', [
+            'client_id' => $id,
             'logs' => $logs
         ]);
     }
 
-    /**
-     * Get client status
-     */
-    public function client_status()
+    public function get_client_status(\Box_App $app, $id)
     {
-        $clientId = $this->di['request']->get('id');
-        if (!$clientId) {
-            throw new \FOSSBilling\InformationException('Client ID is required');
-        }
-
+        $this->di['is_admin_logged'];
         $service = $this->getService();
-        $isEnabled = $service->isMfaEnabled($clientId);
-        $settings = $isEnabled ? $service->getMfaSettings($clientId) : null;
+        $isEnabled = $service->isMfaEnabled($id);
+        $settings = $isEnabled ? $service->getMfaSettings($id) : null;
         
-        return $this->render('mod_mfa_client_status', [
-            'client_id' => $clientId,
+        return $app->render('mod_mfa_client_status', [
+            'client_id' => $id,
             'enabled' => $isEnabled,
             'settings' => $settings
         ]);
+    }
+
+    private function getService()
+    {
+        return $this->di['mod_service']('mfa');
     }
 }
