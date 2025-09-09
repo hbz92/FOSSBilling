@@ -391,23 +391,23 @@ class Service implements InjectionAwareInterface
         $db = $this->di['db'];
         
         // Total clients with MFA enabled
-        $totalEnabled = $db->getOne('SELECT COUNT(*) FROM mfa_settings WHERE enabled = 1');
+        $totalEnabled = $db->getCell('SELECT COUNT(*) FROM mfa_settings WHERE enabled = 1');
         
         // Total clients
-        $totalClients = $db->getOne('SELECT COUNT(*) FROM client');
+        $totalClients = $db->getCell('SELECT COUNT(*) FROM client');
         
         // Recent MFA logins (last 24 hours)
-        $recentLogins = $db->getOne(
+        $recentLogins = $db->getCell(
             'SELECT COUNT(*) FROM mfa_logs WHERE success = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)'
         );
         
         // Failed attempts (last 24 hours)
-        $failedAttempts = $db->getOne(
+        $failedAttempts = $db->getCell(
             'SELECT COUNT(*) FROM mfa_logs WHERE success = 0 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)'
         );
         
         // Active remembered devices
-        $activeDevices = $db->getOne(
+        $activeDevices = $db->getCell(
             'SELECT COUNT(*) FROM mfa_sessions WHERE expires_at > NOW()'
         );
         
