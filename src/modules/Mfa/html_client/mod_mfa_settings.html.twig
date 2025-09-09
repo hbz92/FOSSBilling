@@ -1,0 +1,190 @@
+{% extends "mod_client_layout.html.twig" %}
+
+{% block meta_title %}{{ 'Multi-Factor Authentication Settings' | trans }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-shield-alt"></i>
+                    {{ 'Multi-Factor Authentication Settings' | trans }}
+                </h3>
+            </div>
+            <div class="panel-body">
+                {% if enabled %}
+                    <div class="alert alert-success">
+                        <i class="fa fa-check-circle"></i>
+                        <strong>{{ 'MFA is currently enabled' | trans }}</strong>
+                        <p>{{ 'Your account is protected with multi-factor authentication.' | trans }}</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <i class="fa fa-key"></i>
+                                        {{ 'Backup Codes' | trans }}
+                                    </h4>
+                                </div>
+                                <div class="panel-body">
+                                    <p>{{ 'You have %s backup codes remaining.' | trans | format(backup_codes_count) }}</p>
+                                    <p class="text-muted">{{ 'Use these codes if you lose access to your authenticator app.' | trans }}</p>
+                                    
+                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#regenerateBackupCodesModal">
+                                        <i class="fa fa-refresh"></i> {{ 'Regenerate Backup Codes' | trans }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <i class="fa fa-times"></i>
+                                        {{ 'Disable MFA' | trans }}
+                                    </h4>
+                                </div>
+                                <div class="panel-body">
+                                    <p>{{ 'Disable multi-factor authentication for your account.' | trans }}</p>
+                                    <p class="text-muted">{{ 'This will make your account less secure.' | trans }}</p>
+                                    
+                                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#disableMfaModal">
+                                        <i class="fa fa-times"></i> {{ 'Disable MFA' | trans }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <i class="fa fa-info-circle"></i>
+                                {{ 'MFA Information' | trans }}
+                            </h4>
+                        </div>
+                        <div class="panel-body">
+                            <dl class="dl-horizontal">
+                                <dt>{{ 'Status' | trans }}:</dt>
+                                <dd><span class="label label-success">{{ 'Enabled' | trans }}</span></dd>
+                                
+                                <dt>{{ 'Enabled Since' | trans }}:</dt>
+                                <dd>{{ created_at | date('Y-m-d H:i:s') }}</dd>
+                                
+                                <dt>{{ 'Backup Codes' | trans }}:</dt>
+                                <dd>{{ backup_codes_count }} {{ 'remaining' | trans }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <strong>{{ 'MFA is not enabled' | trans }}</strong>
+                        <p>{{ 'Your account is not protected with multi-factor authentication.' | trans }}</p>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="/client/mfa/setup" class="btn btn-primary btn-lg">
+                            <i class="fa fa-shield-alt"></i> {{ 'Enable MFA' | trans }}
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Disable MFA Modal -->
+<div class="modal fade" id="disableMfaModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{ 'Disable Multi-Factor Authentication' | trans }}</h4>
+            </div>
+            <form method="post" action="/client/mfa/disable">
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <strong>{{ 'Warning:' | trans }}</strong>
+                        {{ 'Disabling MFA will make your account less secure. Are you sure you want to continue?' | trans }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="disable_verification_code">{{ 'Enter your MFA code to confirm:' | trans }}</label>
+                        <input type="text" 
+                               class="form-control text-center" 
+                               name="verification_code" 
+                               id="disable_verification_code"
+                               placeholder="000000" 
+                               maxlength="6" 
+                               pattern="[0-9]{6}"
+                               required
+                               style="font-size: 18px; letter-spacing: 2px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Cancel' | trans }}</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-times"></i> {{ 'Disable MFA' | trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Regenerate Backup Codes Modal -->
+<div class="modal fade" id="regenerateBackupCodesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{ 'Regenerate Backup Codes' | trans }}</h4>
+            </div>
+            <form method="post" action="/client/mfa/regenerate-backup-codes">
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        <strong>{{ 'Warning:' | trans }}</strong>
+                        {{ 'This will invalidate all your existing backup codes. Make sure you have access to your authenticator app.' | trans }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regenerate_verification_code">{{ 'Enter your MFA code to confirm:' | trans }}</label>
+                        <input type="text" 
+                               class="form-control text-center" 
+                               name="verification_code" 
+                               id="regenerate_verification_code"
+                               placeholder="000000" 
+                               maxlength="6" 
+                               pattern="[0-9]{6}"
+                               required
+                               style="font-size: 18px; letter-spacing: 2px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Cancel' | trans }}</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa fa-refresh"></i> {{ 'Regenerate Codes' | trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-format verification code inputs
+document.querySelectorAll('input[name="verification_code"]').forEach(function(input) {
+    input.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+});
+</script>
+{% endblock %}

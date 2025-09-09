@@ -1,0 +1,114 @@
+{% extends "mod_client_layout.html.twig" %}
+
+{% block meta_title %}{{ 'Multi-Factor Authentication Setup' | trans }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-shield-alt"></i>
+                    {{ 'Setup Multi-Factor Authentication' | trans }}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle"></i>
+                    {{ 'Multi-Factor Authentication (MFA) adds an extra layer of security to your account by requiring a second form of verification in addition to your password.' | trans }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>{{ 'Step 1: Install an Authenticator App' | trans }}</h4>
+                        <p>{{ 'Download and install one of these authenticator apps on your mobile device:' | trans }}</p>
+                        <ul>
+                            <li><strong>Google Authenticator</strong> (iOS/Android)</li>
+                            <li><strong>Microsoft Authenticator</strong> (iOS/Android)</li>
+                            <li><strong>Authy</strong> (iOS/Android)</li>
+                            <li><strong>1Password</strong> (iOS/Android)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>{{ 'Step 2: Scan QR Code' | trans }}</h4>
+                        <p>{{ 'Open your authenticator app and scan this QR code:' | trans }}</p>
+                        <div class="text-center">
+                            <img src="{{ qr_code }}" alt="QR Code" class="img-responsive" style="max-width: 200px; margin: 0 auto;">
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>{{ 'Manual Entry' | trans }}</h4>
+                        <p>{{ 'If you cannot scan the QR code, enter this key manually:' | trans }}</p>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="{{ manual_entry_key }}" readonly id="secret-key">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" onclick="copyToClipboard('secret-key')">
+                                    <i class="fa fa-copy"></i> {{ 'Copy' | trans }}
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>{{ 'Step 3: Verify Setup' | trans }}</h4>
+                        <p>{{ 'Enter the 6-digit code from your authenticator app to verify the setup:' | trans }}</p>
+                        <form method="post" action="/client/mfa/enable">
+                            <input type="hidden" name="secret" value="{{ secret }}">
+                            <div class="form-group">
+                                <input type="text" 
+                                       class="form-control text-center" 
+                                       name="verification_code" 
+                                       placeholder="000000" 
+                                       maxlength="6" 
+                                       pattern="[0-9]{6}"
+                                       required
+                                       style="font-size: 18px; letter-spacing: 2px;">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-check"></i> {{ 'Enable MFA' | trans }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    <strong>{{ 'Important:' | trans }}</strong>
+                    {{ 'Make sure to save your backup codes in a safe place. You will need them if you lose access to your authenticator app.' | trans }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(elementId) {
+    const element = document.getElementById(elementId);
+    element.select();
+    element.setSelectionRange(0, 99999); // For mobile devices
+    document.execCommand('copy');
+    
+    // Show feedback
+    const button = element.nextElementSibling.querySelector('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fa fa-check"></i> {{ "Copied!" | trans }}';
+    button.classList.remove('btn-default');
+    button.classList.add('btn-success');
+    
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.classList.remove('btn-success');
+        button.classList.add('btn-default');
+    }, 2000);
+}
+
+// Auto-format verification code input
+document.querySelector('input[name="verification_code"]').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+</script>
+{% endblock %}

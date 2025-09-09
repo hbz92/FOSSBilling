@@ -1,0 +1,151 @@
+{% extends "mod_client_layout.html.twig" %}
+
+{% block meta_title %}{{ 'Multi-Factor Authentication Verification' | trans }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    <i class="fa fa-shield-alt"></i>
+                    {{ 'Multi-Factor Authentication' | trans }}
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="text-center">
+                    <i class="fa fa-mobile-alt fa-4x text-primary" style="margin-bottom: 20px;"></i>
+                    <h4>{{ 'Enter your authentication code' | trans }}</h4>
+                    <p class="text-muted">{{ 'Please enter the 6-digit code from your authenticator app for %s' | trans | format(client_name) }}</p>
+                </div>
+
+                <form method="post" action="/client/mfa/process-verification">
+                    <div class="form-group">
+                        <label for="mfa_code">{{ 'Authentication Code' | trans }}</label>
+                        <input type="text" 
+                               class="form-control text-center" 
+                               name="mfa_code" 
+                               id="mfa_code"
+                               placeholder="000000" 
+                               maxlength="6" 
+                               pattern="[0-9]{6}"
+                               required
+                               autocomplete="off"
+                               style="font-size: 24px; letter-spacing: 4px; height: 60px;">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="remember_device" value="1">
+                                {{ 'Remember this device for 30 days' | trans }}
+                            </label>
+                        </div>
+                        <small class="text-muted">{{ 'This will skip MFA verification on this device for 30 days.' | trans }}</small>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            <i class="fa fa-check"></i> {{ 'Verify & Continue' | trans }}
+                        </button>
+                    </div>
+                </form>
+
+                <hr>
+
+                <div class="text-center">
+                    <h5>{{ 'Having trouble?' | trans }}</h5>
+                    <p class="text-muted">{{ 'If you cannot access your authenticator app, you can use one of your backup codes instead.' | trans }}</p>
+                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#backupCodeModal">
+                        <i class="fa fa-key"></i> {{ 'Use Backup Code' | trans }}
+                    </button>
+                </div>
+
+                <div class="text-center" style="margin-top: 20px;">
+                    <a href="/client/login" class="btn btn-default">
+                        <i class="fa fa-arrow-left"></i> {{ 'Back to Login' | trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Code Modal -->
+<div class="modal fade" id="backupCodeModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{ 'Use Backup Code' | trans }}</h4>
+            </div>
+            <form method="post" action="/client/mfa/process-verification">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        {{ 'Enter one of your backup codes. Each code can only be used once.' | trans }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="backup_code">{{ 'Backup Code' | trans }}</label>
+                        <input type="text" 
+                               class="form-control text-center" 
+                               name="mfa_code" 
+                               id="backup_code"
+                               placeholder="XXXXXXXX" 
+                               maxlength="8" 
+                               pattern="[A-Z0-9]{8}"
+                               required
+                               autocomplete="off"
+                               style="font-size: 18px; letter-spacing: 2px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Cancel' | trans }}</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-key"></i> {{ 'Use Backup Code' | trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-format MFA code input
+document.getElementById('mfa_code').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+
+// Auto-format backup code input
+document.getElementById('backup_code').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
+});
+
+// Auto-focus on code input
+document.getElementById('mfa_code').focus();
+
+// Auto-submit when 6 digits are entered
+document.getElementById('mfa_code').addEventListener('input', function(e) {
+    if (e.target.value.length === 6) {
+        setTimeout(() => {
+            e.target.form.submit();
+        }, 500);
+    }
+});
+
+// Handle form submission with loading state
+document.querySelector('form').addEventListener('submit', function(e) {
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> {{ "Verifying..." | trans }}';
+    submitBtn.disabled = true;
+    
+    // Re-enable after 10 seconds in case of error
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 10000);
+});
+</script>
+{% endblock %}
