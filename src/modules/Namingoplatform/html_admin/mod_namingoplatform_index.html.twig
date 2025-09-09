@@ -1,0 +1,178 @@
+{% extends "mod_index.html.twig" %}
+
+{% block meta_title %}Namingo Platform Dashboard{% endblock %}
+
+{% block content %}
+<div class="namingo-dashboard">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Namingo Platform Dashboard</h1>
+            <p class="lead">Complete domain management platform with AI-powered suggestions</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Active Domains</h5>
+                    <h2 class="stat-number">{{ stats.active_domains ?? 0 }}</h2>
+                    <small class="text-muted">+{{ stats.new_domains ?? 0 }} this month</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly Revenue</h5>
+                    <h2 class="stat-number">€{{ stats.monthly_revenue ?? 0 }}</h2>
+                    <small class="text-muted">+{{ stats.revenue_growth ?? 0 }}% growth</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">AI Suggestions</h5>
+                    <h2 class="stat-number">{{ stats.ai_suggestions ?? 0 }}</h2>
+                    <small class="text-muted">{{ stats.conversion_rate ?? 0 }}% conversion</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Active Clients</h5>
+                    <h2 class="stat-number">{{ stats.active_clients ?? 0 }}</h2>
+                    <small class="text-muted">+{{ stats.new_clients ?? 0 }} new</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        <a href="{{ 'namingoplatform/domains'|link }}" class="btn btn-primary">
+                            <i class="fas fa-globe"></i> Manage Domains
+                        </a>
+                        <a href="{{ 'namingoplatform/dns'|link }}" class="btn btn-success">
+                            <i class="fas fa-server"></i> DNS Management
+                        </a>
+                        <a href="{{ 'namingoplatform/suggestions'|link }}" class="btn btn-info">
+                            <i class="fas fa-lightbulb"></i> AI Suggestions
+                        </a>
+                        <a href="{{ 'namingoplatform/analytics'|link }}" class="btn btn-warning">
+                            <i class="fas fa-chart-bar"></i> Analytics
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Domain Registrations</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th>Client</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>example.com</td>
+                                    <td>John Doe</td>
+                                    <td>2024-01-15</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>test.net</td>
+                                    <td>Jane Smith</td>
+                                    <td>2024-01-14</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>AI Usage Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="aiUsageChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    border-left: 4px solid #007bff;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.namingo-dashboard .card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+}
+</style>
+
+<script>
+// AI Usage Chart
+const ctx = document.getElementById('aiUsageChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'AI Suggestions Generated',
+            data: [120, 150, 180, 200, 250, 300],
+            borderColor: '#007bff',
+            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
