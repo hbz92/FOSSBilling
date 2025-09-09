@@ -52,6 +52,9 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
         $app->get('/mfa', 'get_index', [], static::class);
         $app->get('/mfa/', 'get_index', [], static::class);
         $app->get('/mfa/index', 'get_index', [], static::class);
+        $app->get('/mfa/settings', 'get_settings', [], static::class);
+        $app->get('/mfa/clients', 'get_clients', [], static::class);
+        $app->get('/mfa/logs', 'get_logs', [], static::class);
         $app->get('/mfa/enabled-clients', 'get_enabled_clients', [], static::class);
         $app->get('/mfa/statistics', 'get_statistics', [], static::class);
         $app->get('/mfa/clean-sessions', 'get_clean_sessions', [], static::class);
@@ -63,11 +66,64 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
     public function get_index(\Box_App $app)
     {
         $this->di['is_admin_logged'];
-        $service = $this->getService();
-        $stats = $service->getStatistics();
         
-        return $app->render('mod_mfa_index', [
-            'stats' => $stats
+        // Check if a specific tab is requested
+        $tab = $app->getQuery('tab');
+        
+        switch ($tab) {
+            case 'settings':
+                return $this->get_settings($app);
+            case 'clients':
+                return $this->get_clients($app);
+            case 'logs':
+                return $this->get_logs($app);
+            default:
+                // Show overview by default
+                $service = $this->getService();
+                $stats = $service->getStatistics();
+                
+                return $app->render('mod_mfa_index', [
+                    'stats' => $stats
+                ]);
+        }
+    }
+    
+    public function get_settings(\Box_App $app)
+    {
+        $this->di['is_admin_logged'];
+        $service = $this->getService();
+        
+        // Get current settings from database or config
+        $settings = $service->getGlobalSettings();
+        
+        return $app->render('mod_mfa_settings', [
+            'settings' => $settings
+        ]);
+    }
+    
+    public function get_clients(\Box_App $app)
+    {
+        $this->di['is_admin_logged'];
+        $service = $this->getService();
+        
+        // Get list of clients with MFA status
+        $clients = $service->getAllClientsWithMfaStatus();
+        
+        return $app->render('mod_mfa_clients', [
+            'clients' => $clients
+        ]);
+    }
+    
+    public function get_logs(\Box_App $app)
+    {
+        $this->di['is_admin_logged'];
+        $service = $this->getService();
+        
+        // Get MFA activity logs
+        $logs = $service->getAllMfaLogs();
+        
+        return $app->render('mod_mfa_logs', [
+            'logs' => $logs
         ]);
     }
 

@@ -1,0 +1,284 @@
+{% extends request.ajax ? 'layout_blank.html.twig' : 'layout_default.html.twig' %}
+
+{% import 'macro_functions.html.twig' as mf %}
+
+{% set active_menu = 'system' %}
+
+{% block meta_title %}{{ 'MFA Configuration' | trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="{{ 'system'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#gear" />
+            </svg>
+            <span>{{ 'Settings' | trans }}</span>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ 'extension/settings/mfa'|alink }}">{{ 'Multi-Factor Authentication' | trans }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ 'Configuration' | trans }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="card mb-3">
+    <div class="card-header">
+        <h3 class="card-title">{{ 'MFA Global Settings' | trans }}</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ 'api/admin/mfa/update_settings'|bb_api_url }}" class="api-form" data-api-reload="1">
+            <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
+            
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'MFA Status' | trans }}</label>
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="enabled" id="mfa_enabled" value="1" {% if settings.enabled %}checked{% endif %}>
+                        <label class="form-check-label" for="mfa_enabled">
+                            {{ 'Enable MFA for all clients' | trans }}
+                        </label>
+                    </div>
+                    <small class="form-text text-muted">{{ 'When enabled, clients can configure MFA for their accounts' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Enforcement Policy' | trans }}</label>
+                <div class="col-md-6">
+                    <select class="form-select" name="enforcement_policy">
+                        <option value="optional" {% if settings.enforcement_policy == 'optional' %}selected{% endif %}>{{ 'Optional - Clients choose to enable MFA' | trans }}</option>
+                        <option value="mandatory_new" {% if settings.enforcement_policy == 'mandatory_new' %}selected{% endif %}>{{ 'Mandatory for new clients only' | trans }}</option>
+                        <option value="mandatory_all" {% if settings.enforcement_policy == 'mandatory_all' %}selected{% endif %}>{{ 'Mandatory for all clients' | trans }}</option>
+                        <option value="mandatory_admins" {% if settings.enforcement_policy == 'mandatory_admins' %}selected{% endif %}>{{ 'Mandatory for admin accounts only' | trans }}</option>
+                    </select>
+                    <small class="form-text text-muted">{{ 'Choose when MFA should be required' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Grace Period' | trans }}</label>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="grace_period_days" value="{{ settings.grace_period_days|default(7) }}" min="0" max="90">
+                        <span class="input-group-text">{{ 'days' | trans }}</span>
+                    </div>
+                    <small class="form-text text-muted">{{ 'Number of days before mandatory MFA is enforced for existing users (0 = immediate)' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Allowed Methods' | trans }}</label>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="methods[]" value="totp" id="method_totp" {% if 'totp' in settings.allowed_methods %}checked{% endif %}>
+                        <label class="form-check-label" for="method_totp">
+                            {{ 'TOTP (Google Authenticator, Authy, etc.)' | trans }}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="methods[]" value="email" id="method_email" {% if 'email' in settings.allowed_methods %}checked{% endif %}>
+                        <label class="form-check-label" for="method_email">
+                            {{ 'Email verification codes' | trans }}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="methods[]" value="sms" id="method_sms" {% if 'sms' in settings.allowed_methods %}checked{% endif %}>
+                        <label class="form-check-label" for="method_sms">
+                            {{ 'SMS verification codes' | trans }}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="methods[]" value="backup" id="method_backup" {% if 'backup' in settings.allowed_methods %}checked{% endif %}>
+                        <label class="form-check-label" for="method_backup">
+                            {{ 'Backup codes' | trans }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Remember Device Duration' | trans }}</label>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="remember_device_days" value="{{ settings.remember_device_days|default(30) }}" min="0" max="365">
+                        <span class="input-group-text">{{ 'days' | trans }}</span>
+                    </div>
+                    <small class="form-text text-muted">{{ 'How long to remember a trusted device (0 = disabled)' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Failed Attempts Limit' | trans }}</label>
+                <div class="col-md-6">
+                    <input type="number" class="form-control" name="max_failed_attempts" value="{{ settings.max_failed_attempts|default(5) }}" min="1" max="10">
+                    <small class="form-text text-muted">{{ 'Lock account after this many failed MFA attempts' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Lockout Duration' | trans }}</label>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="lockout_duration_minutes" value="{{ settings.lockout_duration_minutes|default(30) }}" min="5" max="1440">
+                        <span class="input-group-text">{{ 'minutes' | trans }}</span>
+                    </div>
+                    <small class="form-text text-muted">{{ 'How long to lock an account after reaching the failed attempts limit' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Backup Codes' | trans }}</label>
+                <div class="col-md-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="auto_generate_backup_codes" value="1" id="auto_backup" {% if settings.auto_generate_backup_codes %}checked{% endif %}>
+                        <label class="form-check-label" for="auto_backup">
+                            {{ 'Automatically generate backup codes when MFA is enabled' | trans }}
+                        </label>
+                    </div>
+                    <div class="mt-2">
+                        <label for="backup_codes_count">{{ 'Number of backup codes' | trans }}</label>
+                        <input type="number" class="form-control" name="backup_codes_count" id="backup_codes_count" value="{{ settings.backup_codes_count|default(10) }}" min="5" max="20">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'IP Whitelist' | trans }}</label>
+                <div class="col-md-6">
+                    <textarea class="form-control" name="ip_whitelist" rows="4" placeholder="192.168.1.0/24&#10;10.0.0.1">{{ settings.ip_whitelist }}</textarea>
+                    <small class="form-text text-muted">{{ 'IP addresses or ranges that bypass MFA (one per line)' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <div class="col-md-9 offset-md-3">
+                    <button type="submit" class="btn btn-primary">
+                        <svg class="icon">
+                            <use xlink:href="#check" />
+                        </svg>
+                        {{ 'Save Settings' | trans }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h3 class="card-title">{{ 'Email/SMS Configuration' | trans }}</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ 'api/admin/mfa/update_notification_settings'|bb_api_url }}" class="api-form" data-api-reload="1">
+            <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
+            
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Email Template' | trans }}</label>
+                <div class="col-md-6">
+                    <textarea class="form-control" name="email_template" rows="6">{{ settings.email_template|default('Your verification code is: {code}\n\nThis code will expire in {expiry} minutes.\n\nIf you did not request this code, please ignore this email.') }}</textarea>
+                    <small class="form-text text-muted">{{ 'Available variables: {code}, {expiry}, {client_name}' | trans }}</small>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'SMS Provider' | trans }}</label>
+                <div class="col-md-6">
+                    <select class="form-select" name="sms_provider">
+                        <option value="none" {% if settings.sms_provider == 'none' %}selected{% endif %}>{{ 'None - SMS disabled' | trans }}</option>
+                        <option value="twilio" {% if settings.sms_provider == 'twilio' %}selected{% endif %}>Twilio</option>
+                        <option value="nexmo" {% if settings.sms_provider == 'nexmo' %}selected{% endif %}>Nexmo/Vonage</option>
+                        <option value="messagebird" {% if settings.sms_provider == 'messagebird' %}selected{% endif %}>MessageBird</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3 row sms-config" {% if settings.sms_provider == 'none' %}style="display:none;"{% endif %}>
+                <label class="col-md-3 col-form-label">{{ 'SMS API Key' | trans }}</label>
+                <div class="col-md-6">
+                    <input type="password" class="form-control" name="sms_api_key" value="{{ settings.sms_api_key }}" placeholder="Enter API key">
+                </div>
+            </div>
+
+            <div class="mb-3 row sms-config" {% if settings.sms_provider == 'none' %}style="display:none;"{% endif %}>
+                <label class="col-md-3 col-form-label">{{ 'SMS API Secret' | trans }}</label>
+                <div class="col-md-6">
+                    <input type="password" class="form-control" name="sms_api_secret" value="{{ settings.sms_api_secret }}" placeholder="Enter API secret">
+                </div>
+            </div>
+
+            <div class="mb-3 row sms-config" {% if settings.sms_provider == 'none' %}style="display:none;"{% endif %}>
+                <label class="col-md-3 col-form-label">{{ 'SMS From Number' | trans }}</label>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="sms_from_number" value="{{ settings.sms_from_number }}" placeholder="+1234567890">
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-md-3 col-form-label">{{ 'Code Expiry' | trans }}</label>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="code_expiry_minutes" value="{{ settings.code_expiry_minutes|default(10) }}" min="1" max="60">
+                        <span class="input-group-text">{{ 'minutes' | trans }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <div class="col-md-9 offset-md-3">
+                    <button type="submit" class="btn btn-primary">
+                        <svg class="icon">
+                            <use xlink:href="#check" />
+                        </svg>
+                        {{ 'Save Notification Settings' | trans }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">{{ 'Maintenance Actions' | trans }}</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>{{ 'Force Reset MFA' | trans }}</h5>
+                <p>{{ 'Force all clients to reconfigure their MFA settings' | trans }}</p>
+                <button class="btn btn-warning" onclick="if(confirm('{{ 'Are you sure? This will require all clients to reconfigure MFA.' | trans }}')) bb.post('admin/mfa/force_reset_all', {CSRFToken: '{{ CSRFToken }}'})">
+                    <svg class="icon">
+                        <use xlink:href="#refresh" />
+                    </svg>
+                    {{ 'Reset All MFA' | trans }}
+                </button>
+            </div>
+            <div class="col-md-6">
+                <h5>{{ 'Clear Sessions' | trans }}</h5>
+                <p>{{ 'Remove all remembered devices and active MFA sessions' | trans }}</p>
+                <button class="btn btn-danger" onclick="if(confirm('{{ 'Are you sure? This will log out all MFA sessions.' | trans }}')) bb.post('admin/mfa/clear_all_sessions', {CSRFToken: '{{ CSRFToken }}'})">
+                    <svg class="icon">
+                        <use xlink:href="#trash" />
+                    </svg>
+                    {{ 'Clear All Sessions' | trans }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('select[name="sms_provider"]').change(function() {
+        if ($(this).val() === 'none') {
+            $('.sms-config').hide();
+        } else {
+            $('.sms-config').show();
+        }
+    });
+});
+</script>
+{% endblock %}

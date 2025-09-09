@@ -252,4 +252,127 @@ class Admin extends \Api_Abstract
             'message' => 'MFA configuration updated successfully'
         ];
     }
+    
+    /**
+     * Get global MFA settings
+     * 
+     * @return array
+     */
+    public function get_settings()
+    {
+        $service = $this->getService();
+        return $service->getGlobalSettings();
+    }
+    
+    /**
+     * Update global MFA settings
+     * 
+     * @param array $data
+     * @return bool
+     */
+    public function update_settings($data)
+    {
+        $service = $this->getService();
+        
+        // Validate and sanitize input
+        $settings = [
+            'enabled' => isset($data['enabled']) ? (bool)$data['enabled'] : true,
+            'enforcement_policy' => $data['enforcement_policy'] ?? 'optional',
+            'grace_period_days' => (int)($data['grace_period_days'] ?? 7),
+            'allowed_methods' => $data['methods'] ?? ['totp', 'email', 'backup'],
+            'remember_device_days' => (int)($data['remember_device_days'] ?? 30),
+            'max_failed_attempts' => (int)($data['max_failed_attempts'] ?? 5),
+            'lockout_duration_minutes' => (int)($data['lockout_duration_minutes'] ?? 30),
+            'auto_generate_backup_codes' => isset($data['auto_generate_backup_codes']) ? (bool)$data['auto_generate_backup_codes'] : true,
+            'backup_codes_count' => (int)($data['backup_codes_count'] ?? 10),
+            'ip_whitelist' => $data['ip_whitelist'] ?? '',
+            'email_template' => $data['email_template'] ?? 'Your verification code is: {code}\n\nThis code will expire in {expiry} minutes.',
+            'sms_provider' => $data['sms_provider'] ?? 'none',
+            'code_expiry_minutes' => (int)($data['code_expiry_minutes'] ?? 10)
+        ];
+        
+        return $service->updateGlobalSettings($settings);
+    }
+    
+    /**
+     * Update notification settings (email/SMS)
+     * 
+     * @param array $data
+     * @return bool
+     */
+    public function update_notification_settings($data)
+    {
+        $service = $this->getService();
+        
+        // Get current settings
+        $settings = $service->getGlobalSettings();
+        
+        // Update notification-specific settings
+        $settings['email_template'] = $data['email_template'] ?? $settings['email_template'];
+        $settings['sms_provider'] = $data['sms_provider'] ?? $settings['sms_provider'];
+        $settings['sms_api_key'] = $data['sms_api_key'] ?? ($settings['sms_api_key'] ?? '');
+        $settings['sms_api_secret'] = $data['sms_api_secret'] ?? ($settings['sms_api_secret'] ?? '');
+        $settings['sms_from_number'] = $data['sms_from_number'] ?? ($settings['sms_from_number'] ?? '');
+        $settings['code_expiry_minutes'] = (int)($data['code_expiry_minutes'] ?? $settings['code_expiry_minutes']);
+        
+        return $service->updateGlobalSettings($settings);
+    }
+    
+    /**
+     * Get all clients with MFA status
+     * 
+     * @return array
+     */
+    public function get_clients_list()
+    {
+        $service = $this->getService();
+        return $service->getAllClientsWithMfaStatus();
+    }
+    
+    /**
+     * Get MFA activity logs
+     * 
+     * @param array $data
+     * @return array
+     */
+    public function get_activity_logs($data = [])
+    {
+        $service = $this->getService();
+        $limit = (int)($data['limit'] ?? 100);
+        return $service->getAllMfaLogs($limit);
+    }
+    
+    /**
+     * Force reset all MFA settings
+     * 
+     * @return array
+     */
+    public function force_reset_all()
+    {
+        $service = $this->getService();
+        $affected = $service->forceResetAllMfa();
+        
+        return [
+            'success' => true,
+            'message' => sprintf('MFA reset for %d clients', $affected),
+            'affected_count' => $affected
+        ];
+    }
+    
+    /**
+     * Clear all MFA sessions
+     * 
+     * @return array
+     */
+    public function clear_all_sessions()
+    {
+        $service = $this->getService();
+        $cleared = $service->clearAllSessions();
+        
+        return [
+            'success' => true,
+            'message' => sprintf('Cleared %d MFA sessions', $cleared),
+            'cleared_count' => $cleared
+        ];
+    }
 }
