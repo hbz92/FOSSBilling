@@ -1,0 +1,52 @@
+{
+  "id": "namingoplatform",
+  "type": "mod",
+  "name": "Namingo Platform",
+  "description": "Plateforme complète de gestion de domaines avec IA, DNS, WHOIS et gestion multi-registraire",
+  "version": "2.0.0",
+  "author": "Namingo",
+  "author_url": "https://namingo.org",
+  "icon_url": "icon.svg",
+  "minimum_boxbilling_version": "4.22.0",
+  "project_url": "https://github.com/namingo/namingoplatform",
+  "homepage_url": "https://namingo.org",
+  "license": "Apache-2.0",
+  "dependencies": [],
+  "config": {
+    "centralnic": {
+      "api_key": "",
+      "test_mode": false,
+      "enabled": true
+    },
+    "icann_reseller": {
+      "provider": "",
+      "api_key": "",
+      "test_mode": false,
+      "enabled": false
+    },
+    "ai_services": {
+      "namestudio": {
+        "enabled": true,
+        "api_key": ""
+      },
+      "domainaide": {
+        "enabled": false,
+        "api_key": ""
+      },
+      "namelix": {
+        "enabled": true
+      }
+    },
+    "dns": {
+      "provider": "bind9",
+      "auto_ssl": true,
+      "dnssec": true,
+      "cdn_integration": false
+    },
+    "notifications": {
+      "email": true,
+      "sms": false,
+      "webhook": ""
+    }
+  }
+}

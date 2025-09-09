@@ -1,0 +1,273 @@
+{% extends "mod_index.html.twig" %}
+
+{% block meta_title %}Domain Management{% endblock %}
+
+{% block content %}
+<div class="namingo-client-dashboard">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Domain Management</h1>
+            <p class="lead">Manage your domains with AI-powered suggestions and advanced DNS control</p>
+        </div>
+    </div>
+
+    <!-- Domain Search -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card search-card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-search"></i> Find Your Perfect Domain
+                    </h5>
+                    <form method="post" action="{{ 'namingoplatform/search'|link }}" id="domainSearchForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="keyword" placeholder="Enter keywords for your domain..." 
+                                           id="domainKeyword" required>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary btn-lg" type="submit">
+                                            <i class="fas fa-magic"></i> AI Search
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control form-control-lg" name="tlds">
+                                    <option value=".com,.net,.org">Popular TLDs</option>
+                                    <option value=".com">.com only</option>
+                                    <option value=".com,.net,.org,.info,.biz">All TLDs</option>
+                                    <option value=".io,.ai,.co">Tech TLDs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="ai_enhanced" checked>
+                                    <label class="form-check-label">
+                                        Enhanced AI suggestions
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="premium_domains">
+                                    <label class="form-check-label">
+                                        Include premium domains
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Domains -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-globe"></i> My Domains</h5>
+                    <a href="{{ 'namingoplatform/domains'|link }}" class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if domains %}
+                        <div class="row">
+                            {% for domain in domains %}
+                            <div class="col-md-4 mb-3">
+                                <div class="domain-card">
+                                    <div class="domain-header">
+                                        <h6 class="domain-name">{{ domain.sld }}{{ domain.tld }}</h6>
+                                        <span class="domain-status badge 
+                                            {% if domain.status == 'active' %}bg-success
+                                            {% elseif domain.status == 'pending' %}bg-warning
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ domain.status|title }}
+                                        </span>
+                                    </div>
+                                    <div class="domain-info">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar"></i> 
+                                            Expires: {{ domain.expires_at|date('M d, Y') }}
+                                        </small>
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-server"></i> 
+                                            {{ domain.ns1 }}
+                                        </small>
+                                    </div>
+                                    <div class="domain-actions mt-2">
+                                        <a href="{{ 'namingoplatform/domain/' ~ domain.sld ~ domain.tld|link }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-cog"></i> Manage
+                                        </a>
+                                        <a href="{{ 'namingoplatform/dns'|link }}" 
+                                           class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-server"></i> DNS
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-globe fa-3x text-muted mb-3"></i>
+                            <h5>No domains yet</h5>
+                            <p class="text-muted">Start by searching for your perfect domain above!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Suggestions -->
+    {% if recent_suggestions %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-lightbulb"></i> Recent AI Suggestions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Keyword</th>
+                                    <th>Suggestions</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for suggestion in recent_suggestions %}
+                                <tr>
+                                    <td>{{ suggestion.keyword }}</td>
+                                    <td>{{ suggestion.suggestions_count }} domains</td>
+                                    <td>{{ suggestion.created_at|date('M d, Y') }}</td>
+                                    <td>
+                                        <a href="{{ 'namingoplatform/search?keyword=' ~ suggestion.keyword|link }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.search-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.search-card .card-title {
+    color: white;
+}
+
+.search-card .form-control {
+    border: none;
+    border-radius: 8px;
+}
+
+.search-card .btn-primary {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px;
+}
+
+.search-card .btn-primary:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.domain-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    transition: all 0.3s;
+    background: white;
+}
+
+.domain-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.domain-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.domain-name {
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    flex: 1;
+}
+
+.domain-status {
+    font-size: 0.75rem;
+}
+
+.domain-info {
+    margin-bottom: 10px;
+}
+
+.domain-actions .btn {
+    margin-right: 5px;
+}
+
+.namingo-client-dashboard .card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.namingo-client-dashboard .card-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+</style>
+
+<script>
+document.getElementById('domainSearchForm').addEventListener('submit', function(e) {
+    const keyword = document.getElementById('domainKeyword').value.trim();
+    if (!keyword) {
+        e.preventDefault();
+        alert('Please enter a keyword to search for domains.');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+    submitBtn.disabled = true;
+    
+    // Re-enable after 3 seconds (in case of slow response)
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }, 3000);
+});
+</script>
+{% endblock %}
