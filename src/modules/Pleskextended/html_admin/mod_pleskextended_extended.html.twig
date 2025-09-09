@@ -1,0 +1,603 @@
+{% extends "mod_servicehosting_manage.html.twig" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-server"></i>
+                    {{ 'Plesk Extended Administration'|trans }}
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- Server Selection -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label for="server-select" class="form-label">{{ 'Select Plesk Server'|trans }}</label>
+                        <select class="form-select" id="server-select">
+                            <option value="">{{ 'Select Server'|trans }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="order-select" class="form-label">{{ 'Select Order'|trans }}</label>
+                        <select class="form-select" id="order-select">
+                            <option value="">{{ 'Select Order'|trans }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Management Tabs -->
+                <ul class="nav nav-tabs" id="admin-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                            <i class="fas fa-chart-line"></i> {{ 'Overview'|trans }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab">
+                            <i class="fas fa-box"></i> {{ 'Products'|trans }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="servers-tab" data-bs-toggle="tab" data-bs-target="#servers" type="button" role="tab">
+                            <i class="fas fa-server"></i> {{ 'Servers'|trans }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="customers-tab" data-bs-toggle="tab" data-bs-target="#customers" type="button" role="tab">
+                            <i class="fas fa-users"></i> {{ 'Customers'|trans }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="apps-tab" data-bs-toggle="tab" data-bs-target="#apps" type="button" role="tab">
+                            <i class="fas fa-cubes"></i> {{ 'Applications'|trans }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">
+                            <i class="fas fa-cog"></i> {{ 'Settings'|trans }}
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="admin-tab-content">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ 'Total Servers'|trans }}</h5>
+                                        <h2 id="total-servers">-</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ 'Active Services'|trans }}</h5>
+                                        <h2 id="active-services">-</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ 'Total Customers'|trans }}</h5>
+                                        <h2 id="total-customers">-</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ 'Installed Apps'|trans }}</h5>
+                                        <h2 id="installed-apps">-</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>{{ 'Server Statistics'|trans }}</h5>
+                                <div id="server-stats">
+                                    <div class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>{{ 'Recent Activity'|trans }}</h5>
+                                <div id="recent-activity">
+                                    <p class="text-muted">{{ 'No recent activity'|trans }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Products Tab -->
+                    <div class="tab-pane fade" id="products" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>{{ 'Plesk Products'|trans }}</h5>
+                            <button class="btn btn-primary" id="refresh-products-btn">
+                                <i class="fas fa-sync"></i> {{ 'Refresh'|trans }}
+                            </button>
+                        </div>
+                        <div id="products-list">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Servers Tab -->
+                    <div class="tab-pane fade" id="servers" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>{{ 'Plesk Servers'|trans }}</h5>
+                            <button class="btn btn-primary" id="refresh-servers-btn">
+                                <i class="fas fa-sync"></i> {{ 'Refresh'|trans }}
+                            </button>
+                        </div>
+                        <div id="servers-list">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customers Tab -->
+                    <div class="tab-pane fade" id="customers" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>{{ 'Plesk Customers'|trans }}</h5>
+                            <button class="btn btn-primary" id="refresh-customers-btn">
+                                <i class="fas fa-sync"></i> {{ 'Refresh'|trans }}
+                            </button>
+                        </div>
+                        <div id="customers-list">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Applications Tab -->
+                    <div class="tab-pane fade" id="apps" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h5>{{ 'Available Applications'|trans }}</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-outline-primary" id="plesk-apps-btn">Plesk</button>
+                                    <button class="btn btn-outline-primary" id="installatron-apps-btn">Installatron</button>
+                                    <button class="btn btn-outline-primary" id="softaculous-apps-btn">Softaculous</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="available-apps">
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">{{ 'Loading...'|trans }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-pane fade" id="settings" role="tabpanel">
+                        <h5>{{ 'Plesk Extended Settings'|trans }}</h5>
+                        <form id="settings-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="default-php-version" class="form-label">{{ 'Default PHP Version'|trans }}</label>
+                                        <select class="form-select" id="default-php-version">
+                                            <option value="8.1">PHP 8.1</option>
+                                            <option value="8.2">PHP 8.2</option>
+                                            <option value="8.3">PHP 8.3</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="power-user-view">
+                                            <label class="form-check-label" for="power-user-view">
+                                                {{ 'Enable Power User Panel View'|trans }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="client-sync" checked>
+                                            <label class="form-check-label" for="client-sync">
+                                                {{ 'Enable Client Details Synchronization'|trans }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="metric-billing">
+                                            <label class="form-check-label" for="metric-billing">
+                                                {{ 'Enable Metric Billing'|trans }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="auto-installer-enabled" checked>
+                                            <label class="form-check-label" for="auto-installer-enabled">
+                                                {{ 'Enable Application Auto Installer'|trans }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="auto-installer-type" class="form-label">{{ 'Auto Installer Type'|trans }}</label>
+                                        <select class="form-select" id="auto-installer-type">
+                                            <option value="plesk">Plesk Default</option>
+                                            <option value="installatron">Installatron</option>
+                                            <option value="softaculous">Softaculous</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">{{ 'Save Settings'|trans }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let selectedServerId = null;
+    let selectedOrderId = null;
+    
+    // Load servers
+    loadServers();
+    
+    // Event listeners
+    document.getElementById('server-select').addEventListener('change', function() {
+        selectedServerId = this.value;
+        if (selectedServerId) {
+            loadOrders(selectedServerId);
+            loadServerStatistics(selectedServerId);
+        }
+    });
+    
+    document.getElementById('order-select').addEventListener('change', function() {
+        selectedOrderId = this.value;
+    });
+    
+    document.getElementById('refresh-products-btn').addEventListener('click', function() {
+        if (selectedServerId) {
+            loadProducts(selectedServerId);
+        }
+    });
+    
+    document.getElementById('refresh-servers-btn').addEventListener('click', function() {
+        if (selectedServerId) {
+            loadPleskServers(selectedServerId);
+        }
+    });
+    
+    document.getElementById('refresh-customers-btn').addEventListener('click', function() {
+        if (selectedServerId) {
+            loadCustomers(selectedServerId);
+        }
+    });
+    
+    document.getElementById('plesk-apps-btn').addEventListener('click', function() {
+        loadAvailableApplications('plesk');
+    });
+    
+    document.getElementById('installatron-apps-btn').addEventListener('click', function() {
+        loadAvailableApplications('installatron');
+    });
+    
+    document.getElementById('softaculous-apps-btn').addEventListener('click', function() {
+        loadAvailableApplications('softaculous');
+    });
+    
+    document.getElementById('settings-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveSettings();
+    });
+    
+    // Tab change events
+    document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+        tab.addEventListener('shown.bs.tab', function(event) {
+            const target = event.target.getAttribute('data-bs-target');
+            if (target === '#products' && selectedServerId) {
+                loadProducts(selectedServerId);
+            } else if (target === '#servers' && selectedServerId) {
+                loadPleskServers(selectedServerId);
+            } else if (target === '#customers' && selectedServerId) {
+                loadCustomers(selectedServerId);
+            } else if (target === '#apps') {
+                loadAvailableApplications('plesk');
+            }
+        });
+    });
+    
+    function loadServers() {
+        fetch('/api/admin/pleskextended/get_all_plesk_servers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('server-select');
+            select.innerHTML = '<option value="">{{ 'Select Server'|trans }}</option>';
+            if (data.result && data.result.length > 0) {
+                data.result.forEach(server => {
+                    const option = document.createElement('option');
+                    option.value = server.id;
+                    option.textContent = server.hostname;
+                    select.appendChild(option);
+                });
+            }
+        })
+        .catch(error => console.error('Error loading servers:', error));
+    }
+    
+    function loadOrders(serverId) {
+        // This would load orders for the selected server
+        // For now, just show a placeholder
+        const select = document.getElementById('order-select');
+        select.innerHTML = '<option value="">{{ 'Select Order'|trans }}</option>';
+    }
+    
+    function loadServerStatistics(serverId) {
+        fetch('/api/admin/pleskextended/get_server_statistics', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ server_id: serverId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('server-stats');
+            if (data.result) {
+                container.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Uptime:</strong> ${data.result.uptime || 'N/A'}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Load Average:</strong> ${data.result.load_average || 'N/A'}
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <strong>Memory Usage:</strong> ${data.result.memory_usage || 'N/A'}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Disk Usage:</strong> ${data.result.disk_usage || 'N/A'}
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '<p class="text-muted">No statistics available.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('server-stats').innerHTML = '<p class="text-danger">Error loading statistics.</p>';
+        });
+    }
+    
+    function loadProducts(serverId) {
+        fetch('/api/admin/pleskextended/get_all_plesk_products', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ server_id: serverId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('products-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(product => `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6 class="card-title">${product.name}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">Version: ${product.version}</small>
+                                <span class="badge bg-${product.status === 'active' ? 'success' : 'warning'} ms-2">${product.status}</span>
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No products found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('products-list').innerHTML = '<p class="text-danger">Error loading products.</p>';
+        });
+    }
+    
+    function loadPleskServers(serverId) {
+        fetch('/api/admin/pleskextended/get_all_plesk_servers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ server_id: serverId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('servers-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(server => `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6 class="card-title">${server.name}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">IP: ${server.ip}</small>
+                                <span class="badge bg-${server.status === 'active' ? 'success' : 'warning'} ms-2">${server.status}</span>
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No servers found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('servers-list').innerHTML = '<p class="text-danger">Error loading servers.</p>';
+        });
+    }
+    
+    function loadCustomers(serverId) {
+        fetch('/api/admin/pleskextended/get_all_plesk_customers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ server_id: serverId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('customers-list');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(customer => `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6 class="card-title">${customer.name}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">Login: ${customer.login} | Email: ${customer.email}</small>
+                                <span class="badge bg-${customer.status === 'active' ? 'success' : 'warning'} ms-2">${customer.status}</span>
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No customers found.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('customers-list').innerHTML = '<p class="text-danger">Error loading customers.</p>';
+        });
+    }
+    
+    function loadAvailableApplications(installerType) {
+        fetch('/api/admin/pleskextended/get_available_applications', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ installer_type: installerType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('available-apps');
+            if (data.result && data.result.length > 0) {
+                container.innerHTML = data.result.map(app => `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6 class="card-title">${app.name}</h6>
+                                    <p class="card-text">${app.description}</p>
+                                    <small class="text-muted">Version: ${app.version} | Category: ${app.category}</small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <button class="btn btn-primary btn-sm" onclick="installApp('${app.id}', '${installerType}')">
+                                        <i class="fas fa-download"></i> Install
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-muted">No applications available.</p>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('available-apps').innerHTML = '<p class="text-danger">Error loading applications.</p>';
+        });
+    }
+    
+    function saveSettings() {
+        const settings = {
+            default_php_version: document.getElementById('default-php-version').value,
+            power_user_view: document.getElementById('power-user-view').checked,
+            client_sync: document.getElementById('client-sync').checked,
+            metric_billing: document.getElementById('metric-billing').checked,
+            auto_installer_enabled: document.getElementById('auto-installer-enabled').checked,
+            auto_installer_type: document.getElementById('auto-installer-type').value
+        };
+        
+        // This would save settings via API
+        console.log('Saving settings:', settings);
+        showAlert('success', 'Settings saved successfully!');
+    }
+    
+    function installApp(appId, installerType) {
+        if (!selectedOrderId) {
+            showAlert('warning', 'Please select an order first.');
+            return;
+        }
+        
+        fetch('/api/admin/pleskextended/install_application', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                order_id: selectedOrderId, 
+                app_name: appId, 
+                installer_type: installerType 
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                showAlert('success', 'Application installation started!');
+            } else {
+                showAlert('danger', 'Error installing application: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            showAlert('danger', 'Error installing application: ' + error.message);
+        });
+    }
+    
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.card-body').firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

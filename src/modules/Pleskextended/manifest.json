@@ -1,0 +1,15 @@
+{
+  "id": "pleskextended",
+  "type": "mod",
+  "name": "Plesk Extended Features",
+  "description": "Extended Plesk management features including auto installer, remote management, and advanced administration",
+  "version": "1.0.0",
+  "author": "FOSSBilling",
+  "dependencies": {
+    "servicehosting": "1.0.0"
+  },
+  "requirements": {
+    "php": "8.1.0",
+    "plesk": "18.0.0"
+  }
+}

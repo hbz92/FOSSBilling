@@ -7,12 +7,15 @@ declare(strict_types=1);
  * SPDX-License-Identifier: Apache-2.0.
  *
  * @copyright FOSSBilling (https://www.fossbilling.org)
- * @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+ * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  */
 
-class Model_ServiceHostingPleskConfig extends RedBeanPHP\SimpleModel
+/**
+ * Service Hosting Plesk Configuration model.
+ */
+class Model_ServiceHostingPleskConfig extends RedBean_SimpleModel
 {
-    public const INSTALLER_PLESK = 'plesk';
-    public const INSTALLER_INSTALLATRON = 'installatron';
-    public const INSTALLER_SOFTACULOUS = 'softaculous';
+    public const CONFIG_TYPE_GLOBAL = 'global';
+    public const CONFIG_TYPE_SERVER = 'server';
+    public const CONFIG_TYPE_PRODUCT = 'product';
 }

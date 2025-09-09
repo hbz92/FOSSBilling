@@ -7,15 +7,19 @@ declare(strict_types=1);
  * SPDX-License-Identifier: Apache-2.0.
  *
  * @copyright FOSSBilling (https://www.fossbilling.org)
- * @license http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
+ * @license   http://www.apache.org/licenses/LICENSE-2.0 Apache-2.0
  */
 
-class Model_ServiceHostingAppInstallation extends RedBeanPHP\SimpleModel
+/**
+ * Service Hosting Application Installation model.
+ */
+class Model_ServiceHostingAppInstallation extends RedBean_SimpleModel
 {
     public const STATUS_INSTALLING = 'installing';
-    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_INSTALLED = 'installed';
     public const STATUS_FAILED = 'failed';
     public const STATUS_UPDATING = 'updating';
+    public const STATUS_DELETING = 'deleting';
 
     public const INSTALLER_PLESK = 'plesk';
     public const INSTALLER_INSTALLATRON = 'installatron';
