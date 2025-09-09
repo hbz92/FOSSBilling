@@ -68,7 +68,7 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
         $this->di['is_admin_logged'];
         
         // Check if a specific tab is requested
-        $tab = $app->getQuery('tab');
+        $tab = $_GET['tab'] ?? null;
         
         switch ($tab) {
             case 'settings':
