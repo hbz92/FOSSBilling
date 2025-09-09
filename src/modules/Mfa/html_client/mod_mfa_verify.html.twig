@@ -1,4 +1,6 @@
-{% extends "mod_client_layout.html.twig" %}
+{% extends request.ajax ? 'layout_blank.html.twig' : 'layout_default.html.twig' %}
+
+{% import 'macro_functions.html.twig' as mf %}
 
 {% block meta_title %}{{ 'Multi-Factor Authentication Verification' | trans }}{% endblock %}
 

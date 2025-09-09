@@ -1,8 +1,62 @@
-{% extends "mod_admin_layout.html.twig" %}
+{% extends request.ajax ? 'layout_blank.html.twig' : 'layout_default.html.twig' %}
 
-{% block meta_title %}{{ 'Multi-Factor Authentication Management' | trans }}{% endblock %}
+{% import 'macro_functions.html.twig' as mf %}
+
+{% set active_menu = 'system' %}
+
+{% block meta_title %}{{ 'Multi-Factor Authentication' | trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="{{ 'system'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#gear" />
+            </svg>
+            <span>{{ 'Settings' | trans }}</span>
+        </a>
+    </li>
+    <li class="breadcrumb-item active">{{ 'Multi-Factor Authentication' | trans }}</li>
+</ul>
+{% endblock %}
 
 {% block content %}
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" href="{{ 'mfa'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#chart" />
+            </svg>
+            {{ 'Overview' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink({'tab': 'settings'}) }}">
+            <svg class="icon">
+                <use xlink:href="#gear" />
+            </svg>
+            {{ 'Settings' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink({'tab': 'clients'}) }}">
+            <svg class="icon">
+                <use xlink:href="#users" />
+            </svg>
+            {{ 'Clients' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink({'tab': 'logs'}) }}">
+            <svg class="icon">
+                <use xlink:href="#history" />
+            </svg>
+            {{ 'Activity Logs' | trans }}
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
@@ -221,4 +275,5 @@ function forceDisableMfa(clientId) {
     }
 }
 </script>
+</div>
 {% endblock %}

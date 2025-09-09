@@ -1,0 +1,212 @@
+{% extends request.ajax ? 'layout_blank.html.twig' : 'layout_default.html.twig' %}
+
+{% import 'macro_functions.html.twig' as mf %}
+
+{% set active_menu = 'system' %}
+
+{% block meta_title %}{{ 'MFA - Activity Logs' | trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="{{ 'system'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#gear" />
+            </svg>
+            <span>{{ 'Settings' | trans }}</span>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ 'mfa'|alink }}">{{ 'Multi-Factor Authentication' | trans }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ 'Activity Logs' | trans }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#chart" />
+            </svg>
+            {{ 'Overview' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink({'tab': 'settings'}) }}">
+            <svg class="icon">
+                <use xlink:href="#gear" />
+            </svg>
+            {{ 'Settings' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink({'tab': 'clients'}) }}">
+            <svg class="icon">
+                <use xlink:href="#users" />
+            </svg>
+            {{ 'Clients' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" href="{{ 'mfa'|alink({'tab': 'logs'}) }}">
+            <svg class="icon">
+                <use xlink:href="#history" />
+            </svg>
+            {{ 'Activity Logs' | trans }}
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ 'MFA Activity Logs' | trans }}</h3>
+            <div class="card-tools">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-default" onclick="filterLogs('all')">{{ 'All' | trans }}</button>
+                    <button type="button" class="btn btn-sm btn-success" onclick="filterLogs('success')">{{ 'Successful' | trans }}</button>
+                    <button type="button" class="btn btn-sm btn-danger" onclick="filterLogs('failed')">{{ 'Failed' | trans }}</button>
+                </div>
+                <button class="btn btn-sm btn-primary ml-2" onclick="exportLogs()">
+                    <svg class="icon">
+                        <use xlink:href="#download" />
+                    </svg>
+                    {{ 'Export' | trans }}
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="logs-table">
+                    <thead>
+                        <tr>
+                            <th>{{ 'Date/Time' | trans }}</th>
+                            <th>{{ 'Client' | trans }}</th>
+                            <th>{{ 'Action' | trans }}</th>
+                            <th>{{ 'Method' | trans }}</th>
+                            <th>{{ 'Status' | trans }}</th>
+                            <th>{{ 'IP Address' | trans }}</th>
+                            <th>{{ 'User Agent' | trans }}</th>
+                            <th>{{ 'Details' | trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr data-status="{{ log.success ? 'success' : 'failed' }}">
+                            <td>{{ log.created_at|bb_datetime }}</td>
+                            <td>
+                                <a href="{{ 'client/manage'|alink }}/{{ log.client_id }}">
+                                    {{ log.first_name }} {{ log.last_name }}
+                                </a>
+                                <br>
+                                <small class="text-muted">{{ log.email }}</small>
+                            </td>
+                            <td>
+                                {% if log.action == 'verify' %}
+                                    <span class="badge badge-primary">{{ 'Verification' | trans }}</span>
+                                {% elseif log.action == 'setup' %}
+                                    <span class="badge badge-info">{{ 'Setup' | trans }}</span>
+                                {% elseif log.action == 'disable' %}
+                                    <span class="badge badge-warning">{{ 'Disable' | trans }}</span>
+                                {% elseif log.action == 'backup_code' %}
+                                    <span class="badge badge-secondary">{{ 'Backup Code' | trans }}</span>
+                                {% else %}
+                                    <span class="badge badge-light">{{ log.action }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.method %}
+                                    <span class="badge badge-info">{{ log.method|upper }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.success %}
+                                    <span class="badge badge-success">{{ 'Success' | trans }}</span>
+                                {% else %}
+                                    <span class="badge badge-danger">{{ 'Failed' | trans }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.ip_address|default('-') }}</td>
+                            <td>
+                                <span title="{{ log.user_agent|default('-') }}">
+                                    {{ log.user_agent|default('-')|slice(0, 30) }}{% if log.user_agent|length > 30 %}...{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if log.details %}
+                                    <button class="btn btn-xs btn-info" onclick='showDetails({{ log.details|json_encode }})'>
+                                        {{ 'View' | trans }}
+                                    </button>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">{{ 'No activity logs found' | trans }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if logs|length >= 100 %}
+            <div class="alert alert-info mt-3">
+                <svg class="icon">
+                    <use xlink:href="#info" />
+                </svg>
+                {{ 'Showing last 100 entries. Use export to get full logs.' | trans }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'Log Details' | trans }}</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <pre id="details-content"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'Close' | trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterLogs(status) {
+    if (status === 'all') {
+        $('#logs-table tbody tr').show();
+    } else if (status === 'success') {
+        $('#logs-table tbody tr').hide();
+        $('#logs-table tbody tr[data-status="success"]').show();
+    } else if (status === 'failed') {
+        $('#logs-table tbody tr').hide();
+        $('#logs-table tbody tr[data-status="failed"]').show();
+    }
+}
+
+function showDetails(details) {
+    $('#details-content').text(JSON.stringify(details, null, 2));
+    $('#detailsModal').modal('show');
+}
+
+function exportLogs() {
+    window.location.href = '{{ 'api/admin/mfa/export_logs'|link }}?CSRFToken={{ CSRFToken }}';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends request.ajax ? 'layout_blank.html.twig' : 'layout_default.html.twig' %}
+
+{% import 'macro_functions.html.twig' as mf %}
+
+{% set active_menu = 'system' %}
+
+{% block meta_title %}{{ 'MFA - Clients' | trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="{{ 'system'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#gear" />
+            </svg>
+            <span>{{ 'Settings' | trans }}</span>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ 'mfa'|alink }}">{{ 'Multi-Factor Authentication' | trans }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ 'Clients' | trans }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink }}">
+            <svg class="icon">
+                <use xlink:href="#chart" />
+            </svg>
+            {{ 'Overview' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink({'tab': 'settings'}) }}">
+            <svg class="icon">
+                <use xlink:href="#gear" />
+            </svg>
+            {{ 'Settings' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" href="{{ 'mfa'|alink({'tab': 'clients'}) }}">
+            <svg class="icon">
+                <use xlink:href="#users" />
+            </svg>
+            {{ 'Clients' | trans }}
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" href="{{ 'mfa'|alink({'tab': 'logs'}) }}">
+            <svg class="icon">
+                <use xlink:href="#history" />
+            </svg>
+            {{ 'Activity Logs' | trans }}
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ 'Client MFA Status' | trans }}</h3>
+            <div class="card-tools">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="client-search" placeholder="{{ 'Search clients...' | trans }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button">
+                            <svg class="icon">
+                                <use xlink:href="#search" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ 'ID' | trans }}</th>
+                            <th>{{ 'Client' | trans }}</th>
+                            <th>{{ 'Email' | trans }}</th>
+                            <th>{{ 'MFA Status' | trans }}</th>
+                            <th>{{ 'Method' | trans }}</th>
+                            <th>{{ 'Enabled Since' | trans }}</th>
+                            <th>{{ 'Successful Logins' | trans }}</th>
+                            <th>{{ 'Failed Attempts' | trans }}</th>
+                            <th>{{ 'Last Activity' | trans }}</th>
+                            <th>{{ 'Actions' | trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients %}
+                        <tr>
+                            <td>{{ client.id }}</td>
+                            <td>
+                                <a href="{{ 'client/manage'|alink }}/{{ client.id }}">
+                                    {{ client.first_name }} {{ client.last_name }}
+                                </a>
+                            </td>
+                            <td>{{ client.email }}</td>
+                            <td>
+                                {% if client.mfa_enabled %}
+                                    <span class="badge badge-success">{{ 'Enabled' | trans }}</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">{{ 'Disabled' | trans }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if client.mfa_method %}
+                                    <span class="badge badge-info">{{ client.mfa_method|upper }}</span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if client.mfa_enabled_since %}
+                                    {{ client.mfa_enabled_since|bb_date }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="text-success">{{ client.successful_logins|default(0) }}</span>
+                            </td>
+                            <td>
+                                <span class="text-warning">{{ client.failed_attempts|default(0) }}</span>
+                            </td>
+                            <td>
+                                {% if client.last_mfa_activity %}
+                                    {{ client.last_mfa_activity|bb_datetime }}
+                                {% else %}
+                                    {{ 'Never' | trans }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    {% if client.mfa_enabled %}
+                                        <button class="btn btn-info" onclick="viewClientMfaDetails({{ client.id }})" title="{{ 'View Details' | trans }}">
+                                            <svg class="icon">
+                                                <use xlink:href="#eye" />
+                                            </svg>
+                                        </button>
+                                        <button class="btn btn-warning" onclick="resetClientMfa({{ client.id }})" title="{{ 'Reset MFA' | trans }}">
+                                            <svg class="icon">
+                                                <use xlink:href="#refresh" />
+                                            </svg>
+                                        </button>
+                                        <button class="btn btn-danger" onclick="disableClientMfa({{ client.id }})" title="{{ 'Disable MFA' | trans }}">
+                                            <svg class="icon">
+                                                <use xlink:href="#x" />
+                                            </svg>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-primary" onclick="enableClientMfa({{ client.id }})" title="{{ 'Enable MFA' | trans }}">
+                                            <svg class="icon">
+                                                <use xlink:href="#check" />
+                                            </svg>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center">{{ 'No clients found' | trans }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewClientMfaDetails(clientId) {
+    $.get('{{ 'api/admin/mfa/client_details'|link }}', {client_id: clientId}, function(result) {
+        // Show details in a modal
+        console.log('Client MFA details:', result);
+    });
+}
+
+function resetClientMfa(clientId) {
+    if (confirm('{{ 'Are you sure you want to reset MFA for this client? They will need to reconfigure it.' | trans }}')) {
+        $.post('{{ 'api/admin/mfa/reset_client'|link }}', {client_id: clientId, CSRFToken: '{{ CSRFToken }}'}, function(result) {
+            alert(result.message);
+            if (result.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function disableClientMfa(clientId) {
+    if (confirm('{{ 'Are you sure you want to disable MFA for this client?' | trans }}')) {
+        $.post('{{ 'api/admin/mfa/force_disable'|link }}', {client_id: clientId, CSRFToken: '{{ CSRFToken }}'}, function(result) {
+            alert(result.message);
+            if (result.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function enableClientMfa(clientId) {
+    alert('{{ 'Clients must enable MFA themselves from their account settings.' | trans }}');
+}
+
+// Client search functionality
+$(document).ready(function() {
+    $('#client-search').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
+});
+</script>
+{% endblock %}

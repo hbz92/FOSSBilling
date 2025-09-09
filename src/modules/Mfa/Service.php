@@ -382,6 +382,149 @@ class Service implements InjectionAwareInterface
         $db = $this->di['db'];
         return $db->exec('DELETE FROM mfa_sessions WHERE expires_at < NOW()');
     }
+    
+    /**
+     * Get global MFA settings
+     */
+    public function getGlobalSettings(): array
+    {
+        $db = $this->di['db'];
+        
+        // Get settings from extension_meta or config table
+        $settings = $db->getRow("
+            SELECT * FROM extension_meta 
+            WHERE extension = 'mod_mfa' 
+            AND meta_key = 'settings'
+        ");
+        
+        if ($settings && $settings['meta_value']) {
+            $config = json_decode($settings['meta_value'], true);
+        } else {
+            // Default settings
+            $config = [
+                'enabled' => true,
+                'enforcement_policy' => 'optional',
+                'grace_period_days' => 7,
+                'allowed_methods' => ['totp', 'email', 'backup'],
+                'remember_device_days' => 30,
+                'max_failed_attempts' => 5,
+                'lockout_duration_minutes' => 30,
+                'auto_generate_backup_codes' => true,
+                'backup_codes_count' => 10,
+                'ip_whitelist' => '',
+                'email_template' => 'Your verification code is: {code}\n\nThis code will expire in {expiry} minutes.',
+                'sms_provider' => 'none',
+                'code_expiry_minutes' => 10
+            ];
+        }
+        
+        return $config;
+    }
+    
+    /**
+     * Update global MFA settings
+     */
+    public function updateGlobalSettings(array $settings): bool
+    {
+        $db = $this->di['db'];
+        
+        $json = json_encode($settings);
+        
+        // Check if settings exist
+        $existing = $db->getRow("
+            SELECT id FROM extension_meta 
+            WHERE extension = 'mod_mfa' 
+            AND meta_key = 'settings'
+        ");
+        
+        if ($existing) {
+            return $db->exec("
+                UPDATE extension_meta 
+                SET meta_value = :value, updated_at = NOW()
+                WHERE extension = 'mod_mfa' 
+                AND meta_key = 'settings'
+            ", ['value' => $json]) > 0;
+        } else {
+            return $db->exec("
+                INSERT INTO extension_meta (extension, meta_key, meta_value, created_at, updated_at)
+                VALUES ('mod_mfa', 'settings', :value, NOW(), NOW())
+            ", ['value' => $json]) > 0;
+        }
+    }
+    
+    /**
+     * Get all clients with their MFA status
+     */
+    public function getAllClientsWithMfaStatus(): array
+    {
+        $db = $this->di['db'];
+        
+        return $db->getAll("
+            SELECT 
+                c.id,
+                c.first_name,
+                c.last_name,
+                c.email,
+                c.created_at as client_since,
+                ms.enabled as mfa_enabled,
+                ms.method as mfa_method,
+                ms.created_at as mfa_enabled_since,
+                (SELECT COUNT(*) FROM mfa_logs WHERE client_id = c.id AND success = 1) as successful_logins,
+                (SELECT COUNT(*) FROM mfa_logs WHERE client_id = c.id AND success = 0) as failed_attempts,
+                (SELECT MAX(created_at) FROM mfa_logs WHERE client_id = c.id) as last_mfa_activity
+            FROM client c
+            LEFT JOIN mfa_settings ms ON c.id = ms.client_id
+            ORDER BY c.id DESC
+        ");
+    }
+    
+    /**
+     * Get all MFA activity logs
+     */
+    public function getAllMfaLogs(int $limit = 100): array
+    {
+        $db = $this->di['db'];
+        
+        return $db->getAll("
+            SELECT 
+                ml.*,
+                c.first_name,
+                c.last_name,
+                c.email
+            FROM mfa_logs ml
+            JOIN client c ON ml.client_id = c.id
+            ORDER BY ml.created_at DESC
+            LIMIT ?
+        ", [$limit]);
+    }
+    
+    /**
+     * Force reset all MFA settings
+     */
+    public function forceResetAllMfa(): int
+    {
+        $db = $this->di['db'];
+        
+        // Disable all MFA settings
+        $affected = $db->exec("UPDATE mfa_settings SET enabled = 0");
+        
+        // Clear all sessions
+        $db->exec("DELETE FROM mfa_sessions");
+        
+        // Log the action
+        $this->di['logger']->info('MFA force reset for all clients by admin');
+        
+        return $affected;
+    }
+    
+    /**
+     * Clear all MFA sessions
+     */
+    public function clearAllSessions(): int
+    {
+        $db = $this->di['db'];
+        return $db->exec("DELETE FROM mfa_sessions");
+    }
 
     /**
      * Get MFA statistics
@@ -391,23 +534,23 @@ class Service implements InjectionAwareInterface
         $db = $this->di['db'];
         
         // Total clients with MFA enabled
-        $totalEnabled = $db->getOne('SELECT COUNT(*) FROM mfa_settings WHERE enabled = 1');
+        $totalEnabled = $db->getCell('SELECT COUNT(*) FROM mfa_settings WHERE enabled = 1');
         
         // Total clients
-        $totalClients = $db->getOne('SELECT COUNT(*) FROM client');
+        $totalClients = $db->getCell('SELECT COUNT(*) FROM client');
         
         // Recent MFA logins (last 24 hours)
-        $recentLogins = $db->getOne(
+        $recentLogins = $db->getCell(
             'SELECT COUNT(*) FROM mfa_logs WHERE success = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)'
         );
         
         // Failed attempts (last 24 hours)
-        $failedAttempts = $db->getOne(
+        $failedAttempts = $db->getCell(
             'SELECT COUNT(*) FROM mfa_logs WHERE success = 0 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)'
         );
         
         // Active remembered devices
-        $activeDevices = $db->getOne(
+        $activeDevices = $db->getCell(
             'SELECT COUNT(*) FROM mfa_sessions WHERE expires_at > NOW()'
         );
         
