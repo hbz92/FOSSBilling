@@ -75,25 +75,35 @@ class Validate
         $tld = strtolower($tld);
 
         $validTlds = $this->di['cache']->get('validTlds', function (ItemInterface $item): array {
+            // PERFORMANCE: Cache for 24 hours, with shorter fallback on failure
             $item->expiresAfter(86400);
 
-            $client = HttpClient::create(['bindto' => BIND_TO]);
-            $response = $client->request('GET', 'https://publicsuffix.org/list/public_suffix_list.dat');
-            $dbPath = Path::join(PATH_CACHE, 'tlds.txt');
+            try {
+                $client = HttpClient::create(['bindto' => BIND_TO, 'timeout' => 30]);
+                $response = $client->request('GET', 'https://publicsuffix.org/list/public_suffix_list.dat');
+                $dbPath = Path::join(PATH_CACHE, 'tlds.txt');
 
-            if ($response->getStatusCode() === 200) {
-                $this->filesystem->dumpFile($dbPath, $response->getContent());
-            } else {
+                if ($response->getStatusCode() === 200) {
+                    $this->filesystem->dumpFile($dbPath, $response->getContent());
+                } else {
+                    // On HTTP error, cache for shorter time and return empty array
+                    $item->expiresAfter(3600);
+                    error_log("TLD list download failed with status: " . $response->getStatusCode());
+                    return [];
+                }
+
+                $database = file($dbPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                $this->filesystem->remove($dbPath);
+                
+                if (!$database) {
+                    $item->expiresAfter(3600);
+                    error_log("Failed to read TLD database file");
+                    return [];
+                }
+            } catch (\Exception $e) {
+                // On any exception, cache for shorter time and return empty array
                 $item->expiresAfter(3600);
-
-                return [];
-            }
-
-            @$database = file($dbPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            $this->filesystem->remove($dbPath);
-            if (!$database) {
-                $item->expiresAfter(3600);
-
+                error_log("TLD validation failed: " . $e->getMessage());
                 return [];
             }
 

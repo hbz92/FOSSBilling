@@ -53,9 +53,17 @@ class Box_Authorization
 
     public function passwordBackwardCompatibility($user, $plainTextPassword)
     {
+        // SECURITY: SHA1 is deprecated and vulnerable to collision attacks
+        // This backward compatibility should be removed in future versions
         if (sha1($plainTextPassword) == $user->pass) {
+            // Log security migration for audit trail
+            error_log("SECURITY WARNING: SHA1 password migrated to secure hash for user ID: {$user->id}");
+            
             $user->pass = $this->di['password']->hashIt($plainTextPassword);
+            $user->updated_at = date('Y-m-d H:i:s');
             $this->di['db']->store($user);
+            
+            // TODO: Remove SHA1 compatibility in next major version
         }
 
         return $user;

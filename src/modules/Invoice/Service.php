@@ -41,11 +41,23 @@ class Service implements InjectionAwareInterface
 
     public function getSearchQuery($data)
     {
+        // PERFORMANCE: Optimized query with conditional JOINs to reduce unnecessary joins
+        // Only join invoice_item table when order_id filter is used
+        $needsItemJoin = isset($data['order_id']);
+        $needsClientJoin = isset($data['client']) && !empty($data['client']);
+        
         $sql = 'SELECT p.*
-            FROM invoice p
-            LEFT JOIN invoice_item pi ON (p.id = pi.invoice_id)
-            LEFT JOIN client cl ON (cl.id = p.client_id)
-            WHERE 1 ';
+            FROM invoice p';
+        
+        if ($needsItemJoin) {
+            $sql .= ' LEFT JOIN invoice_item pi ON (p.id = pi.invoice_id)';
+        }
+        
+        if ($needsClientJoin) {
+            $sql .= ' LEFT JOIN client cl ON (cl.id = p.client_id)';
+        }
+        
+        $sql .= ' WHERE 1 ';
 
         $params = [];
 
