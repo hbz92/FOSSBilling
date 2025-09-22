@@ -60,10 +60,20 @@ class Admin extends \Api_Abstract
         ];
         $this->di['validator']->checkRequiredParamsForArray($required, $data);
 
+        // SECURITY: Use new InputSanitizer for better validation and XSS protection
+        try {
+            $sanitized = \FOSSBilling\InputSanitizer::validateAndSanitizeArray($data, [
+                'path' => ['type' => 'string', 'required' => true],
+                'target' => ['type' => 'url', 'required' => true]
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            throw new \FOSSBilling\Exception($e->getMessage());
+        }
+
         $bean = $this->di['db']->dispense('extension_meta');
         $bean->extension = 'mod_redirect';
-        $bean->meta_key = trim(htmlspecialchars($data['path'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), '/');
-        $bean->meta_value = trim(htmlspecialchars($data['target'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), '/');
+        $bean->meta_key = trim($sanitized['path'], '/');
+        $bean->meta_value = trim($sanitized['target'], '/');
         $bean->created_at = date('Y-m-d H:i:s');
         $bean->updated_at = date('Y-m-d H:i:s');
         $this->di['db']->store($bean);
