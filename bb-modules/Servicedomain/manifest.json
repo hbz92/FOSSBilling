@@ -1,0 +1,85 @@
+{
+    "id": "servicedomain",
+    "type": "mod",
+    "name": "Domain Management",
+    "description": "Complete domain management module with CentralNic Reseller integration. Includes DNS management, DNSSEC, domain locking, privacy protection, and more.",
+    "homepage_url": "https://fossbilling.org/",
+    "author": "FOSSBilling",
+    "author_url": "https://fossbilling.org/",
+    "license": "Apache-2.0",
+    "version": "1.0.0",
+    "minimum_boxbilling_version": "4.22",
+    "icon_url": "icon.png",
+    "download_url": null,
+    "project_url": "https://github.com/FOSSBilling/FOSSBilling",
+    "nav": {
+        "client": {
+            "Domains": "servicedomain"
+        },
+        "admin": {
+            "system": {
+                "Domain Management": "servicedomain"
+            }
+        }
+    },
+    "permissions": {
+        "client": [
+            "get_list",
+            "get",
+            "register",
+            "transfer",
+            "renew",
+            "dns_get_records",
+            "dns_add_record",
+            "dns_update_record",
+            "dns_delete_record",
+            "dnssec_enable",
+            "dnssec_disable",
+            "dnssec_get_info",
+            "lock",
+            "unlock",
+            "privacy_enable",
+            "privacy_disable",
+            "get_transfer_code",
+            "update_nameservers",
+            "update_contact",
+            "enable_auto_renew",
+            "disable_auto_renew",
+            "check_availability",
+            "get_suggestions",
+            "get_tld_prices"
+        ],
+        "admin": [
+            "get_config",
+            "update_config",
+            "domain_list",
+            "domain_get",
+            "domain_create",
+            "domain_update",
+            "domain_delete",
+            "domain_sync",
+            "sync_all",
+            "domain_transfer",
+            "domain_renew",
+            "dns_list",
+            "dns_add",
+            "dns_update",
+            "dns_delete",
+            "dnssec_enable",
+            "dnssec_disable",
+            "dnssec_info",
+            "domain_lock",
+            "domain_unlock",
+            "privacy_enable",
+            "privacy_disable",
+            "get_transfer_code",
+            "nameservers_update",
+            "contact_update",
+            "check_availability",
+            "get_suggestions",
+            "get_tld_prices",
+            "get_expiring_domains",
+            "process_auto_renewals"
+        ]
+    }
+}

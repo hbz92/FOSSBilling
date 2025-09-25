@@ -1,0 +1,477 @@
+{% extends "layout_default.html.twig" %}
+
+{% block meta_title %}{{ 'Register Domain'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li><a href="{{ '/'|link }}">{{ 'Home'|trans }}</a></li>
+    <li><a href="{{ 'servicedomain'|link }}">{{ 'Domains'|trans }}</a></li>
+    <li class="active">{{ 'Register Domain'|trans }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">
+                    <i class="fa fa-search"></i> {{ 'Domain Search'|trans }}
+                </h3>
+            </div>
+            <div class="box-body">
+                <!-- Domain Search Form -->
+                <form id="domain-search-form" class="form-inline text-center">
+                    <div class="form-group">
+                        <label class="sr-only">{{ 'Domain Name'|trans }}</label>
+                        <input type="text" class="form-control input-lg" id="domain-search" 
+                               placeholder="example" style="width: 300px;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <select class="form-control input-lg" id="tld-select" multiple style="height: 45px;">
+                            <option value="com" selected>.com</option>
+                            <option value="net">.net</option>
+                            <option value="org">.org</option>
+                            <option value="info">.info</option>
+                            <option value="biz">.biz</option>
+                            <option value="co">.co</option>
+                            <option value="io">.io</option>
+                            <option value="me">.me</option>
+                            <option value="tv">.tv</option>
+                            <option value="xyz">.xyz</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fa fa-search"></i> {{ 'Search'|trans }}
+                    </button>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        {{ 'Select multiple TLDs to search multiple extensions at once'|trans }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div id="search-results" style="display:none;">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">{{ 'Search Results'|trans }}</h3>
+                </div>
+                <div class="box-body">
+                    <div id="results-loading" class="text-center" style="display:none;">
+                        <i class="fa fa-spinner fa-spin fa-3x"></i>
+                        <p>{{ 'Checking availability...'|trans }}</p>
+                    </div>
+                    
+                    <div id="results-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Domain Suggestions -->
+        <div id="domain-suggestions" style="display:none;">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">{{ 'Alternative Suggestions'|trans }}</h3>
+                </div>
+                <div class="box-body">
+                    <div id="suggestions-content"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Registration Form -->
+        <div id="registration-form" style="display:none;">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">
+                        <i class="fa fa-shopping-cart"></i> {{ 'Complete Registration'|trans }}
+                    </h3>
+                </div>
+                <div class="box-body">
+                    <form id="register-domain-form">
+                        <input type="hidden" name="sld" value="">
+                        <input type="hidden" name="tld" value="">
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4>{{ 'Domain Details'|trans }}</h4>
+                                
+                                <div class="well">
+                                    <h3 id="selected-domain" class="text-primary"></h3>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>{{ 'Registration Period'|trans }}</label>
+                                                <select class="form-control" name="period" id="period-select">
+                                                    <option value="1">1 {{ 'Year'|trans }}</option>
+                                                    <option value="2">2 {{ 'Years'|trans }}</option>
+                                                    <option value="3">3 {{ 'Years'|trans }}</option>
+                                                    <option value="5">5 {{ 'Years'|trans }}</option>
+                                                    <option value="10">10 {{ 'Years'|trans }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="price-display">
+                                                <h4>{{ 'Total Price'|trans }}: <span id="total-price">$0.00</span></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4>{{ 'Nameservers'|trans }}</h4>
+                                <div class="form-group">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="ns_type" value="default" checked>
+                                            {{ 'Use default nameservers'|trans }}
+                                        </label>
+                                    </div>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="ns_type" value="custom">
+                                            {{ 'Use custom nameservers'|trans }}
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div id="custom-nameservers" style="display:none;">
+                                    <div class="form-group">
+                                        <label>{{ 'Nameserver 1'|trans }} *</label>
+                                        <input type="text" class="form-control" name="ns[]" placeholder="ns1.example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{{ 'Nameserver 2'|trans }} *</label>
+                                        <input type="text" class="form-control" name="ns[]" placeholder="ns2.example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{{ 'Nameserver 3'|trans }}</label>
+                                        <input type="text" class="form-control" name="ns[]" placeholder="ns3.example.com">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>{{ 'Nameserver 4'|trans }}</label>
+                                        <input type="text" class="form-control" name="ns[]" placeholder="ns4.example.com">
+                                    </div>
+                                </div>
+                                
+                                <h4>{{ 'Contact Information'|trans }}</h4>
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i>
+                                    {{ 'We will use your account information as the domain contact. You can update this later.'|trans }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <h4>{{ 'Additional Options'|trans }}</h4>
+                                
+                                <div class="panel panel-default">
+                                    <div class="panel-body">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="privacy" value="1" checked>
+                                                <strong>{{ 'Privacy Protection'|trans }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    {{ 'Hide your personal information from WHOIS'|trans }}
+                                                </small>
+                                            </label>
+                                        </div>
+                                        
+                                        <hr>
+                                        
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="auto_renew" value="1" checked>
+                                                <strong>{{ 'Auto-Renewal'|trans }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    {{ 'Automatically renew before expiration'|trans }}
+                                                </small>
+                                            </label>
+                                        </div>
+                                        
+                                        <hr>
+                                        
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="dnssec" value="1">
+                                                <strong>{{ 'Enable DNSSEC'|trans }}</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    {{ 'Add extra security to your domain'|trans }}
+                                                </small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="panel panel-primary">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">{{ 'Order Summary'|trans }}</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-condensed">
+                                            <tr>
+                                                <td>{{ 'Domain'|trans }}:</td>
+                                                <td class="text-right"><strong id="summary-domain"></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>{{ 'Period'|trans }}:</td>
+                                                <td class="text-right"><span id="summary-period">1</span> {{ 'Year(s)'|trans }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>{{ 'Privacy'|trans }}:</td>
+                                                <td class="text-right"><span id="summary-privacy">{{ 'Included'|trans }}</span></td>
+                                            </tr>
+                                            <tr class="total-row">
+                                                <td><strong>{{ 'Total'|trans }}:</strong></td>
+                                                <td class="text-right"><strong id="summary-total">$0.00</strong></td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <button type="submit" class="btn btn-success btn-block btn-lg">
+                                            <i class="fa fa-shopping-cart"></i> {{ 'Register Domain'|trans }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var domainPrices = {};
+
+// Domain search
+$('#domain-search-form').submit(function(e) {
+    e.preventDefault();
+    
+    var keyword = $('#domain-search').val().trim();
+    if (!keyword) {
+        bb.msg('Please enter a domain name to search', 'error');
+        return;
+    }
+    
+    var tlds = $('#tld-select').val();
+    if (!tlds || tlds.length === 0) {
+        bb.msg('Please select at least one TLD', 'error');
+        return;
+    }
+    
+    $('#search-results').show();
+    $('#results-loading').show();
+    $('#results-content').html('');
+    $('#domain-suggestions').hide();
+    $('#registration-form').hide();
+    
+    var resultsHtml = '<div class="table-responsive"><table class="table table-hover">';
+    resultsHtml += '<thead><tr><th>{{ "Domain"|trans }}</th><th>{{ "Status"|trans }}</th><th>{{ "Price"|trans }}</th><th>{{ "Action"|trans }}</th></tr></thead>';
+    resultsHtml += '<tbody>';
+    
+    var checkCount = 0;
+    var totalChecks = tlds.length;
+    
+    // Check each TLD
+    tlds.forEach(function(tld) {
+        var domain = keyword + '.' + tld;
+        
+        bb.post('client/servicedomain/check_availability', {domain: domain}, function(result) {
+            checkCount++;
+            
+            if (result.available) {
+                resultsHtml += '<tr class="success">';
+                resultsHtml += '<td><strong>' + domain + '</strong></td>';
+                resultsHtml += '<td><span class="label label-success">{{ "Available"|trans }}</span></td>';
+                resultsHtml += '<td>$' + (result.price.register || '15.00') + '/{{ "year"|trans }}</td>';
+                resultsHtml += '<td><button class="btn btn-sm btn-primary" onclick="selectDomain(\'' + keyword + '\', \'' + tld + '\', ' + (result.price.register || 15) + ')">{{ "Select"|trans }}</button></td>';
+                resultsHtml += '</tr>';
+                
+                domainPrices[domain] = result.price.register || 15;
+            } else {
+                resultsHtml += '<tr class="danger">';
+                resultsHtml += '<td><strong>' + domain + '</strong></td>';
+                resultsHtml += '<td><span class="label label-danger">{{ "Taken"|trans }}</span></td>';
+                resultsHtml += '<td>-</td>';
+                resultsHtml += '<td>-</td>';
+                resultsHtml += '</tr>';
+            }
+            
+            if (checkCount === totalChecks) {
+                resultsHtml += '</tbody></table></div>';
+                $('#results-loading').hide();
+                $('#results-content').html(resultsHtml);
+                
+                // Get suggestions
+                getSuggestions(keyword);
+            }
+        });
+    });
+});
+
+// Get domain suggestions
+function getSuggestions(keyword) {
+    bb.post('client/servicedomain/get_suggestions', {keyword: keyword}, function(result) {
+        if (result.suggestions && result.suggestions.length > 0) {
+            $('#domain-suggestions').show();
+            
+            var html = '<div class="row">';
+            result.suggestions.slice(0, 12).forEach(function(suggestion) {
+                html += '<div class="col-md-3 col-sm-6">';
+                html += '<div class="suggestion-item">';
+                html += '<strong>' + suggestion.domain + '</strong><br>';
+                html += '<span class="text-success">$' + (suggestion.price.register || '15.00') + '</span><br>';
+                html += '<button class="btn btn-xs btn-primary" onclick="selectDomainFromSuggestion(\'' + suggestion.domain + '\', ' + (suggestion.price.register || 15) + ')">{{ "Select"|trans }}</button>';
+                html += '</div>';
+                html += '</div>';
+            });
+            html += '</div>';
+            
+            $('#suggestions-content').html(html);
+        }
+    });
+}
+
+// Select domain for registration
+function selectDomain(sld, tld, price) {
+    var domain = sld + '.' + tld;
+    
+    $('#registration-form').show();
+    $('#register-domain-form input[name="sld"]').val(sld);
+    $('#register-domain-form input[name="tld"]').val(tld);
+    $('#selected-domain').text(domain);
+    $('#summary-domain').text(domain);
+    
+    domainPrices[domain] = price;
+    updatePrice();
+    
+    $('html, body').animate({
+        scrollTop: $('#registration-form').offset().top - 50
+    }, 500);
+}
+
+function selectDomainFromSuggestion(domain, price) {
+    var parts = domain.split('.');
+    var tld = parts.pop();
+    var sld = parts.join('.');
+    selectDomain(sld, tld, price);
+}
+
+// Update price display
+function updatePrice() {
+    var domain = $('#register-domain-form input[name="sld"]').val() + '.' + 
+                 $('#register-domain-form input[name="tld"]').val();
+    var period = $('#period-select').val();
+    var price = domainPrices[domain] || 15;
+    var total = price * period;
+    
+    $('#total-price').text('$' + total.toFixed(2));
+    $('#summary-total').text('$' + total.toFixed(2));
+    $('#summary-period').text(period);
+}
+
+$('#period-select').change(updatePrice);
+
+// Toggle custom nameservers
+$('input[name="ns_type"]').change(function() {
+    if ($(this).val() === 'custom') {
+        $('#custom-nameservers').show();
+    } else {
+        $('#custom-nameservers').hide();
+    }
+});
+
+// Update privacy summary
+$('input[name="privacy"]').change(function() {
+    $('#summary-privacy').text($(this).is(':checked') ? '{{ "Included"|trans }}' : '{{ "Not included"|trans }}');
+});
+
+// Register domain
+$('#register-domain-form').submit(function(e) {
+    e.preventDefault();
+    
+    var data = {
+        sld: $(this).find('input[name="sld"]').val(),
+        tld: $(this).find('input[name="tld"]').val(),
+        period: $(this).find('select[name="period"]').val(),
+        privacy: $(this).find('input[name="privacy"]').is(':checked') ? 1 : 0,
+        auto_renew: $(this).find('input[name="auto_renew"]').is(':checked') ? 1 : 0,
+        dnssec: $(this).find('input[name="dnssec"]').is(':checked') ? 1 : 0
+    };
+    
+    // Add custom nameservers if selected
+    if ($('input[name="ns_type"]:checked').val() === 'custom') {
+        data.ns = [];
+        $('#custom-nameservers input[name="ns[]"]').each(function() {
+            if ($(this).val()) {
+                data.ns.push($(this).val());
+            }
+        });
+        
+        if (data.ns.length < 2) {
+            bb.msg('At least 2 nameservers are required', 'error');
+            return;
+        }
+    }
+    
+    // Show loading
+    var btn = $(this).find('button[type="submit"]');
+    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> {{ "Processing..."|trans }}');
+    
+    bb.post('client/servicedomain/register', data, function(result) {
+        if (result.success) {
+            bb.msg(result.message, 'success');
+            setTimeout(function() {
+                window.location.href = '{{ "servicedomain/manage"|link }}/' + result.domain_id;
+            }, 1500);
+        } else {
+            btn.prop('disabled', false).html('<i class="fa fa-shopping-cart"></i> {{ "Register Domain"|trans }}');
+        }
+    });
+});
+</script>
+
+<style>
+.suggestion-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    text-align: center;
+    background: #f9f9f9;
+}
+
+.suggestion-item:hover {
+    background: #f0f0f0;
+}
+
+.total-row {
+    border-top: 2px solid #ddd;
+    font-size: 16px;
+}
+
+.price-display {
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+#tld-select {
+    min-width: 150px;
+}
+
+.form-inline .form-group {
+    margin-right: 10px;
+}
+</style>
+{% endblock %}

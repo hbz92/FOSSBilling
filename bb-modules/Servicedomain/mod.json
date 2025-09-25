@@ -1,0 +1,17 @@
+{
+    "id": "servicedomain",
+    "type": "service",
+    "name": "Domain Management",
+    "description": "Complete domain management module with CentralNic Reseller integration",
+    "version": "1.0.0",
+    "author": "FOSSBilling",
+    "author_url": "https://fossbilling.org",
+    "license": "Apache-2.0",
+    "icon_url": "icon.png",
+    "minimum_boxbilling_version": "4.22",
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    }
+}

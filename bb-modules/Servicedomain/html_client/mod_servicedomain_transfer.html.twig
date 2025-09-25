@@ -1,0 +1,326 @@
+{% extends "layout_default.html.twig" %}
+
+{% block meta_title %}{{ 'Transfer Domain'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li><a href="{{ '/'|link }}">{{ 'Home'|trans }}</a></li>
+    <li><a href="{{ 'servicedomain'|link }}">{{ 'Domains'|trans }}</a></li>
+    <li class="active">{{ 'Transfer Domain'|trans }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">
+                    <i class="fa fa-exchange"></i> {{ 'Transfer Your Domain'|trans }}
+                </h3>
+            </div>
+            <div class="box-body">
+                <!-- Transfer Info -->
+                <div class="alert alert-info">
+                    <h4><i class="fa fa-info-circle"></i> {{ 'Before You Start'|trans }}</h4>
+                    <ul>
+                        <li>{{ 'Make sure your domain is unlocked at your current registrar'|trans }}</li>
+                        <li>{{ 'Obtain the transfer authorization code (EPP/Auth code) from your current registrar'|trans }}</li>
+                        <li>{{ 'Ensure your domain is at least 60 days old'|trans }}</li>
+                        <li>{{ 'Verify your contact email is up to date'|trans }}</li>
+                        <li>{{ 'Domain transfers typically take 5-7 days to complete'|trans }}</li>
+                    </ul>
+                </div>
+                
+                <!-- Transfer Form -->
+                <form id="transfer-form">
+                    <div class="form-group">
+                        <label>{{ 'Domain Name'|trans }} *</label>
+                        <input type="text" class="form-control input-lg" name="domain" 
+                               placeholder="example.com" required>
+                        <small class="text-muted">
+                            {{ 'Enter the full domain name you want to transfer'|trans }}
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ 'Transfer Authorization Code'|trans }} *</label>
+                        <input type="text" class="form-control" name="auth_code" 
+                               placeholder="{{ 'EPP/Auth Code'|trans }}" required>
+                        <small class="text-muted">
+                            {{ 'This code is provided by your current registrar'|trans }}
+                        </small>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h4>{{ 'Transfer Options'|trans }}</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="privacy" value="1" checked>
+                                        <strong>{{ 'Privacy Protection'|trans }}</strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ 'Enable privacy protection after transfer'|trans }}
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" name="auto_renew" value="1" checked>
+                                        <strong>{{ 'Auto-Renewal'|trans }}</strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ 'Enable automatic renewal'|trans }}
+                                        </small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="keep_dns" value="1" checked>
+                                <strong>{{ 'Keep Current DNS Settings'|trans }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {{ 'Maintain your existing DNS records and nameservers during transfer'|trans }}
+                                </small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Transfer Benefits -->
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{{ 'Why Transfer to Us?'|trans }}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check text-success"></i> {{ 'Free 1-year extension'|trans }}</li>
+                                        <li><i class="fa fa-check text-success"></i> {{ 'Free privacy protection'|trans }}</li>
+                                        <li><i class="fa fa-check text-success"></i> {{ 'Advanced DNS management'|trans }}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fa fa-check text-success"></i> {{ 'DNSSEC support'|trans }}</li>
+                                        <li><i class="fa fa-check text-success"></i> {{ 'Domain locking'|trans }}</li>
+                                        <li><i class="fa fa-check text-success"></i> {{ '24/7 support'|trans }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="button" class="btn btn-default btn-lg" onclick="checkDomain()">
+                            <i class="fa fa-search"></i> {{ 'Check Domain'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fa fa-exchange"></i> {{ 'Start Transfer'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Transfer Status (shown after submission) -->
+        <div id="transfer-status" class="box" style="display:none;">
+            <div class="box-header">
+                <h3 class="box-title">{{ 'Transfer Status'|trans }}</h3>
+            </div>
+            <div class="box-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" 
+                         style="width: 25%">
+                        {{ 'Processing'|trans }}
+                    </div>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item active">
+                        <i class="fa fa-check-circle"></i>
+                        <div class="timeline-content">
+                            <h4>{{ 'Transfer Initiated'|trans }}</h4>
+                            <p>{{ 'Your transfer request has been submitted'|trans }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <i class="fa fa-circle-o"></i>
+                        <div class="timeline-content">
+                            <h4>{{ 'Verification Email Sent'|trans }}</h4>
+                            <p>{{ 'Check your email to approve the transfer'|trans }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <i class="fa fa-circle-o"></i>
+                        <div class="timeline-content">
+                            <h4>{{ 'Transfer in Progress'|trans }}</h4>
+                            <p>{{ 'Waiting for current registrar approval'|trans }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <i class="fa fa-circle-o"></i>
+                        <div class="timeline-content">
+                            <h4>{{ 'Transfer Complete'|trans }}</h4>
+                            <p>{{ 'Your domain has been successfully transferred'|trans }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fa fa-clock-o"></i>
+                    {{ 'Estimated completion time: 5-7 days'|trans }}
+                </div>
+                
+                <div class="text-center">
+                    <a href="{{ 'servicedomain'|link }}" class="btn btn-primary">
+                        <i class="fa fa-arrow-left"></i> {{ 'Back to My Domains'|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Check domain before transfer
+function checkDomain() {
+    var domain = $('input[name="domain"]').val();
+    
+    if (!domain) {
+        bb.msg('Please enter a domain name', 'error');
+        return;
+    }
+    
+    bb.post('client/servicedomain/check_availability', {domain: domain}, function(result) {
+        if (result.available) {
+            bb.msg('This domain is available for registration. You don\'t need to transfer it.', 'info');
+            if (confirm('Would you like to register this domain instead?')) {
+                window.location.href = '{{ "servicedomain/register"|link }}?domain=' + domain;
+            }
+        } else {
+            bb.msg('Domain is registered and can be transferred', 'success');
+        }
+    });
+}
+
+// Handle transfer form submission
+$('#transfer-form').submit(function(e) {
+    e.preventDefault();
+    
+    var data = {
+        domain: $(this).find('input[name="domain"]').val(),
+        auth_code: $(this).find('input[name="auth_code"]').val(),
+        privacy: $(this).find('input[name="privacy"]').is(':checked') ? 1 : 0,
+        auto_renew: $(this).find('input[name="auto_renew"]').is(':checked') ? 1 : 0,
+        keep_dns: $(this).find('input[name="keep_dns"]').is(':checked') ? 1 : 0
+    };
+    
+    // Validate domain format
+    if (!data.domain.match(/^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/)) {
+        bb.msg('Please enter a valid domain name', 'error');
+        return;
+    }
+    
+    // Validate auth code
+    if (data.auth_code.length < 6) {
+        bb.msg('Please enter a valid authorization code', 'error');
+        return;
+    }
+    
+    // Show loading
+    var btn = $(this).find('button[type="submit"]');
+    btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> {{ "Processing..."|trans }}');
+    
+    bb.post('client/servicedomain/transfer', data, function(result) {
+        if (result.success) {
+            bb.msg(result.message, 'success');
+            
+            // Show transfer status
+            $('#transfer-form').parent().parent().hide();
+            $('#transfer-status').show();
+            
+            // Animate progress
+            setTimeout(function() {
+                $('.timeline-item:eq(1)').addClass('active');
+                $('.timeline-item:eq(1) i').removeClass('fa-circle-o').addClass('fa-check-circle');
+                $('.progress-bar').css('width', '50%').text('{{ "Pending Approval"|trans }}');
+            }, 2000);
+        } else {
+            btn.prop('disabled', false).html('<i class="fa fa-exchange"></i> {{ "Start Transfer"|trans }}');
+        }
+    });
+});
+</script>
+
+<style>
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 40px;
+    margin-bottom: 20px;
+}
+
+.timeline-item i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    background: #f0f0f0;
+    border-radius: 50%;
+    color: #999;
+}
+
+.timeline-item.active i {
+    background: #5cb85c;
+    color: white;
+}
+
+.timeline-item:not(:last-child):after {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 30px;
+    bottom: -20px;
+    width: 2px;
+    background: #ddd;
+}
+
+.timeline-content h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+.timeline-content p {
+    margin-bottom: 0;
+    color: #666;
+}
+</style>
+{% endblock %}

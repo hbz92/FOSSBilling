@@ -1,0 +1,366 @@
+{% extends "layout_default.html.twig" %}
+
+{% block meta_title %}{{ 'Domain Management Settings'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li><a href="{{ '/'|bb_admin_link }}">{{ 'Home'|trans }}</a></li>
+    <li><a href="{{ 'system'|bb_admin_link }}">{{ 'System'|trans }}</a></li>
+    <li class="active">{{ 'Domain Management Settings'|trans }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="widget simpleTabs">
+    <ul class="tabs">
+        <li><a href="#tab-settings">{{ 'Settings'|trans }}</a></li>
+        <li><a href="#tab-domains">{{ 'Domains'|trans }}</a></li>
+        <li><a href="#tab-sync">{{ 'Synchronization'|trans }}</a></li>
+        <li><a href="#tab-expiring">{{ 'Expiring Domains'|trans }}</a></li>
+    </ul>
+
+    <div class="tabs_container">
+        <!-- Settings Tab -->
+        <div class="fix tab_content" id="tab-settings">
+            <form method="post" action="{{ 'api/admin/servicedomain/update_config'|bb_admin_link }}" class="mainForm">
+                <fieldset>
+                    <div class="rowElem noborder">
+                        <label>{{ 'API Mode'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="radio" name="config[test_mode]" value="0" {% if not config.test_mode %}checked{% endif %}/> 
+                            <label>{{ 'Production'|trans }}</label>
+                            <input type="radio" name="config[test_mode]" value="1" {% if config.test_mode %}checked{% endif %}/> 
+                            <label>{{ 'Test (OT&E)'|trans }}</label>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Production API Username'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="text" name="config[api_user]" value="{{ config.api_user }}" placeholder="username"/>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Production API Password'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="password" name="config[api_password]" value="{{ config.api_password }}" placeholder="password"/>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Test API Username'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="text" name="config[test_api_user]" value="{{ config.test_api_user }}" placeholder="test-username"/>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Test API Password'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="password" name="config[test_api_password]" value="{{ config.test_api_password }}" placeholder="test-password"/>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Auto Sync'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="checkbox" name="config[auto_sync]" value="1" {% if config.auto_sync %}checked{% endif %}/>
+                            <label>{{ 'Enable automatic synchronization with registrar'|trans }}</label>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Sync Interval'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="number" name="config[sync_interval]" value="{{ config.sync_interval|default(3600) }}" min="300"/>
+                            <label>{{ 'seconds'|trans }}</label>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Enable DNSSEC'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="checkbox" name="config[enable_dnssec]" value="1" {% if config.enable_dnssec %}checked{% endif %}/>
+                            <label>{{ 'Allow DNSSEC management'|trans }}</label>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Enable Privacy'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="checkbox" name="config[enable_privacy]" value="1" {% if config.enable_privacy %}checked{% endif %}/>
+                            <label>{{ 'Allow privacy protection'|trans }}</label>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Enable Transfer Lock'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="checkbox" name="config[enable_transfer_lock]" value="1" {% if config.enable_transfer_lock %}checked{% endif %}/>
+                            <label>{{ 'Allow domain locking'|trans }}</label>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Default Nameservers'|trans }}:</label>
+                        <div class="formRight">
+                            <input type="text" name="config[default_nameservers][0]" value="{{ config.default_nameservers.0 }}" placeholder="ns1.example.com"/>
+                            <input type="text" name="config[default_nameservers][1]" value="{{ config.default_nameservers.1 }}" placeholder="ns2.example.com"/>
+                            <input type="text" name="config[default_nameservers][2]" value="{{ config.default_nameservers.2 }}" placeholder="ns3.example.com"/>
+                            <input type="text" name="config[default_nameservers][3]" value="{{ config.default_nameservers.3 }}" placeholder="ns4.example.com"/>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Available TLDs'|trans }}:</label>
+                        <div class="formRight">
+                            <textarea name="config[available_tlds]" rows="5" placeholder="com&#10;net&#10;org&#10;info">{{ config.available_tlds|join("\n") }}</textarea>
+                            <span class="desc">{{ 'One TLD per line'|trans }}</span>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <input type="submit" value="{{ 'Save Settings'|trans }}" class="greyishBtn submitForm"/>
+                </fieldset>
+            </form>
+        </div>
+
+        <!-- Domains Tab -->
+        <div class="fix tab_content" id="tab-domains">
+            <div class="widget">
+                <div class="head">
+                    <h5>{{ 'Domain List'|trans }}</h5>
+                    <div class="actions">
+                        <a href="#" class="btn btn-primary" onclick="syncAllDomains()">
+                            <i class="icon-refresh"></i> {{ 'Sync All'|trans }}
+                        </a>
+                    </div>
+                </div>
+
+                <table class="tableStatic wide">
+                    <thead>
+                        <tr>
+                            <td>{{ 'Domain'|trans }}</td>
+                            <td>{{ 'Client'|trans }}</td>
+                            <td>{{ 'Status'|trans }}</td>
+                            <td>{{ 'Expires'|trans }}</td>
+                            <td>{{ 'Auto Renew'|trans }}</td>
+                            <td width="100">{{ 'Actions'|trans }}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set domains = admin.servicedomain_domain_list({'per_page': 100}) %}
+                        {% for domain in domains.list %}
+                        <tr>
+                            <td>{{ domain.sld }}.{{ domain.tld }}</td>
+                            <td>
+                                <a href="{{ ('client/manage/'~domain.client_id)|bb_admin_link }}">
+                                    {{ domain.client.first_name }} {{ domain.client.last_name }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if domain.status == 'active' %}
+                                    <span class="label label-success">{{ 'Active'|trans }}</span>
+                                {% else %}
+                                    <span class="label label-warning">{{ domain.status|trans }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ domain.expires_at|date('Y-m-d') }}</td>
+                            <td>
+                                {% if domain.auto_renew %}
+                                    <i class="icon-ok"></i>
+                                {% else %}
+                                    <i class="icon-remove"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a class="btn14" href="#" onclick="syncDomain({{ domain.id }})">
+                                    <img src="images/icons/dark/refresh.png" alt="" class="icon">
+                                    <span>{{ 'Sync'|trans }}</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6">{{ 'No domains found'|trans }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Synchronization Tab -->
+        <div class="fix tab_content" id="tab-sync">
+            <div class="widget">
+                <div class="head">
+                    <h5>{{ 'Synchronization Status'|trans }}</h5>
+                </div>
+                
+                <div class="body">
+                    <div class="rowElem">
+                        <label>{{ 'Last Sync'|trans }}:</label>
+                        <div class="formRight">
+                            <span id="last-sync">{{ 'Never'|trans }}</span>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Sync Status'|trans }}:</label>
+                        <div class="formRight">
+                            <span id="sync-status">{{ 'Idle'|trans }}</span>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{{ 'Actions'|trans }}:</label>
+                        <div class="formRight">
+                            <button class="btn btn-primary" onclick="startSync()">
+                                {{ 'Start Manual Sync'|trans }}
+                            </button>
+                            <button class="btn btn-warning" onclick="stopSync()">
+                                {{ 'Stop Sync'|trans }}
+                            </button>
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="sync-log">
+                        <h6>{{ 'Sync Log'|trans }}</h6>
+                        <div id="sync-log-content" style="height: 300px; overflow-y: auto; background: #f5f5f5; padding: 10px; font-family: monospace;">
+                            {{ 'No sync activity'|trans }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expiring Domains Tab -->
+        <div class="fix tab_content" id="tab-expiring">
+            <div class="widget">
+                <div class="head">
+                    <h5>{{ 'Expiring Domains'|trans }}</h5>
+                    <div class="actions">
+                        <a href="#" class="btn btn-success" onclick="processAutoRenewals()">
+                            <i class="icon-refresh"></i> {{ 'Process Auto-Renewals'|trans }}
+                        </a>
+                    </div>
+                </div>
+
+                <table class="tableStatic wide">
+                    <thead>
+                        <tr>
+                            <td>{{ 'Domain'|trans }}</td>
+                            <td>{{ 'Client'|trans }}</td>
+                            <td>{{ 'Expires In'|trans }}</td>
+                            <td>{{ 'Auto Renew'|trans }}</td>
+                            <td width="100">{{ 'Actions'|trans }}</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set expiring = admin.servicedomain_get_expiring_domains({'days': 60}) %}
+                        {% for domain in expiring %}
+                        <tr {% if domain.days_until_expiry < 30 %}class="warning"{% endif %}>
+                            <td>{{ domain.domain }}</td>
+                            <td>{{ domain.client }}</td>
+                            <td>
+                                {% if domain.days_until_expiry < 7 %}
+                                    <span class="label label-danger">{{ domain.days_until_expiry }} {{ 'days'|trans }}</span>
+                                {% elseif domain.days_until_expiry < 30 %}
+                                    <span class="label label-warning">{{ domain.days_until_expiry }} {{ 'days'|trans }}</span>
+                                {% else %}
+                                    {{ domain.days_until_expiry }} {{ 'days'|trans }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if domain.auto_renew %}
+                                    <i class="icon-ok text-success"></i>
+                                {% else %}
+                                    <i class="icon-remove text-danger"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a class="btn14" href="#" onclick="renewDomain({{ domain.id }})">
+                                    <img src="images/icons/dark/refresh.png" alt="" class="icon">
+                                    <span>{{ 'Renew'|trans }}</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5">{{ 'No expiring domains'|trans }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function syncDomain(domainId) {
+    bb.post('admin/servicedomain/domain_sync', {id: domainId}, function(result) {
+        bb.msg('Domain synchronized successfully');
+    });
+}
+
+function syncAllDomains() {
+    if (confirm('Sync all domains with registrar? This may take a while.')) {
+        bb.post('admin/servicedomain/sync_all', {}, function(result) {
+            bb.msg('Synchronized ' + result.synced + ' domains. Failed: ' + result.failed);
+        });
+    }
+}
+
+function renewDomain(domainId) {
+    var period = prompt('Enter renewal period in years (1-10):', '1');
+    if (period && period > 0 && period <= 10) {
+        bb.post('admin/servicedomain/domain_renew', {id: domainId, period: period}, function(result) {
+            bb.msg('Domain renewed successfully');
+            location.reload();
+        });
+    }
+}
+
+function processAutoRenewals() {
+    if (confirm('Process all auto-renewals now?')) {
+        bb.post('admin/servicedomain/process_auto_renewals', {}, function(result) {
+            bb.msg('Renewed: ' + result.renewed + ', Failed: ' + result.failed);
+            location.reload();
+        });
+    }
+}
+
+function startSync() {
+    $('#sync-status').text('Running...');
+    bb.post('admin/servicedomain/sync_all', {}, function(result) {
+        $('#sync-status').text('Completed');
+        $('#last-sync').text(new Date().toLocaleString());
+        var log = 'Sync completed at ' + new Date().toLocaleString() + '\n';
+        log += 'Synced: ' + result.synced + '\n';
+        log += 'Failed: ' + result.failed + '\n';
+        log += 'Total: ' + result.total + '\n';
+        $('#sync-log-content').prepend(log + '\n---\n');
+    });
+}
+
+function stopSync() {
+    $('#sync-status').text('Stopped');
+}
+</script>
+{% endblock %}
