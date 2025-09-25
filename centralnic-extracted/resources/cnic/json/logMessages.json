@@ -1,0 +1,90 @@
+{
+	"resendtransferapproval": {
+		"success": "Resent transfer approval email successfully.",
+		"fail": "Failed to resend transfer approval email."
+	},
+	"canceldomaintransfer": {
+		"success": "Cancelled domain transfer successfully.",
+		"fail": "Failed to cancel domain transfer."
+	},
+	"rejecttransferout": {
+		"success": "Rejected domain transfer successfully.",
+		"fail": "Failed to reject domain transfer."
+	},
+	"approvetransferout": {
+		"success": "Approved domain transfer successfully.",
+		"fail": "Failed to approve domain transfer."
+	},
+	"resendirtpverificationemail": {
+		"success": "Sent IRTP verification email successfully.",
+		"fail": "Failed to send IRTP verification email."
+	},
+	"geteppcode": {
+		"success": "Loaded EPP code successfully.",
+		"fail": "Failed to load EPP code."
+	},
+	"savecontactdetails": {
+		"success": "Updated contact details successfully.",
+		"fail": "Failed to update contact details."
+	},
+	"saveregistrarlock": {
+		"success": "Updated domain registrar lock successfully.",
+		"fail": "Failed to update domain registrar lock."
+	},
+	"savenameservers": {
+		"success": "Updated nameservers successfully.",
+		"fail": "Failed to update nameservers."
+	},
+	"savedns": {
+		"success": "Updated DNS zone successfully.",
+		"fail": "Failed to update DNS zone."
+	},
+	"saveemailforwarding": {
+		"success": "Updated email forwarding successfully.",
+		"fail": "Failed to update email forwarding."
+	},
+	"registernameserver": {
+		"success": "Registered private nameserver successfully.",
+		"fail": "Failed to register private nameserver."
+	},
+	"modifynameserver": {
+		"success": "Updated private nameserver successfully.",
+		"fail": "Failed to update private nameserver."
+	},
+	"deletenameserver": {
+		"success": "Deleted private nameserver successfully.",
+		"fail": "Failed to delete private nameserver."
+	},
+	"idprotecttoggle": {
+		"success": "Updated ID protect status successfully.",
+		"fail": "Failed to update ID protect status."
+	},
+	"registerdomain": {
+		"success": "Registered domain successfully.",
+		"fail": "Failed to register domain."
+	},
+	"transferdomain": {
+		"success": "Transferred domain successfully.",
+		"fail": "Failed to transfer domain."
+	},
+	"renewdomain": {
+		"success": "Renewed domain successfully.",
+		"fail": "Failed to renew domain."
+	},
+	"releasedomain": {
+		"success": "Released domain successfully.",
+		"fail": "Failed to release domain."
+	},
+	"requestdelete": {
+		"success": "Deleted domain successfully.",
+		"fail": "Failed to delete domain."
+	},
+	"suspend": {
+		"success": "Suspended domain successfully.",
+		"fail": "Failed to suspend domain."
+	},
+	"unsuspend": {
+		"success": "Unsuspended domain successfully.",
+		"fail": "Failed to unsuspend domain."
+	}
+}

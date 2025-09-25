@@ -1,0 +1,34 @@
+<h3 class="spotlight-section-title">${getMessage("spotlight_tlds_heading")}</h3>
+<div class="spotlight-featured-tlds">
+    <div class="spotlight-tld-list">
+        ${bindings.spotlight.map((item) => {
+        return html`<div class="spotlight-tld"
+            style="--spotlight-tld-box-size: ${bindings.tldBoxWidth};${item?.tldGroupBadge}">
+            ${
+            item?.tldImage ? html`<div class="spotlight-tld-bg"
+                style="background-image: url(${item.tldImage}); background-repeat: no-repeat;"></div>` :
+            html`<div class="spotlight-tld-bg">
+                <h4 class="spotlight-tld-name" style="color: ${item.color};font-size: ${item.fontSize}">${item.tldName}</h4>
+            </div>`
+            }
+            <div class="spotlight-tld-details">
+                <p class="spotlight-tld-description">
+                    <span>${getMessage("spotlight_register_descr", item?.tldRegisterPrice)}</span>
+                    <span>${getMessage("spotlight_renew_descr", item?.tldRenewPrice)}</span>
+                    <span>${getMessage("spotlight_transfer_descr", item?.tldTransferPrice)}</span>
+                </p>
+            </div>
+            ${
+            item?.tldGroup ? html`<div class="spotlight-tld-descri spotlight-tld-descri-${item.tldGroup}">
+                ${getMessage("label_descr_group" + item.tldGroup)}</div>` : ''
+            }
+        </div>`;
+        })}
+    </div>
+</div>
+<div class="Button-block_2jTHc">
+    <a href="${bindings.webRootPath}/index.php?rp=/domain/pricing" target="_blank" class="InputGroup-button wrapper-centered"
+        style="border-radius:1em; height:30px;">
+        ${getMessage("label_permalink_tlds_pricing")}
+    </a>
+</div>

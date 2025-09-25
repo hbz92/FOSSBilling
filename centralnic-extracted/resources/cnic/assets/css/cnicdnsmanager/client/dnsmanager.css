@@ -1,0 +1,150 @@
+.cnic-table {
+    width: 100%;
+}
+
+.cnic-thead {
+    background-color: #f8f9fa;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.cnic-th,
+.cnic-td {
+    text-align: left;
+    border: none;
+}
+
+.cnic-td {
+    vertical-align: middle;
+}
+
+.cnic-tr {
+    cursor: text;
+}
+
+.cnic-tr input[readonly] {
+    display: inline-block !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    text-indent: 0 !important;
+    border: 0 none !important;
+    background: none !important;
+    line-height: inherit !important;
+    -webkit-user-select: auto !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.address-priority-wrapper, .address-priority-wrapper textarea {
+    width: 100%;
+}
+
+.address-priority-wrapper .d-flex {
+    flex-grow: 1;
+}
+
+td .record-type {
+    width: 100px;
+}
+
+.record-type .selectize-input {
+    padding: 8.5px;
+    vertical-align: top;
+}
+
+
+.priority-input {
+    display: inline-block;
+}
+
+td .priority-input {
+    margin-left: 5px;
+    width: 110px;
+}
+
+.input::placeholder,
+.priority-input::placeholder {
+    font-size: 0.8em;
+}
+
+.single {
+    font-size: 0.8em !important;
+}
+
+.cnicDeleteBtn {
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.cnicAddRecordButton {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    height: calc(22px + 1rem);
+}
+
+.selectize-input:after {
+    right: 5px !important;
+}
+
+/* Custom CSS for smaller modal */
+#cnicModal .modal-dialog {
+    max-width: 400px;
+}
+
+#cnicModal .modal-title {
+    font-size: 1.2em;
+}
+
+#cnicModal .modal-body {
+    font-size: 0.9em;
+}
+
+.cnicEllipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cnicMultiline {
+    white-space: pre-wrap; /* CSS3 */
+    white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+    white-space: -pre-wrap; /* Opera 4-6 */
+    white-space: -o-pre-wrap; /* Opera 7 */
+    word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 768px) {
+    .cnic-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .cnic-tr {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .cnic-th,
+    .cnic-td {
+        display: block;
+        text-align: left;
+        white-space: normal;
+    }
+
+    td .record-type {
+        width: auto;
+    }
+
+    .cnic-th {
+        background-color: #f9f9f9;
+        font-weight: bold;
+    }
+}
+
+#dnsSecForm button {
+    text-transform: uppercase;
+}

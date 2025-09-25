@@ -1,0 +1,1 @@
+<div class="alert alert-warning" role="alert" id="pendingSave" style="display:none">{$lang.pendingChanges}</div>

@@ -1,0 +1,44 @@
+${bindings.data.addToCartMsg}
+<li class="List-default_17u-t">
+	<div class="qa-domain-row SuggestionRow-notBundled__E57lq">
+		<div
+			class="${ bindings.data.isExactSearchDomain ? `Box-separatorBottom_2MYZH Flex-flex_uh_R2 Flex-flexNoWrap_3vhRl ListRow-root_u_diZ` : `Flex-flex_uh_R2 Flex-flexNoWrap_3vhRl ListRow-root_u_diZ`}"
+			id="${ bindings.data.idnDomainName }"
+		>
+			<div
+				class="Box-backgroundColor-white_3LQ-e ListItem-root_26lzk SuggestionRow-flexColumn__GpHLe SuggestionRow-row__UluAL"
+			>
+				<div class="Flex-flex_uh_R2 Flex-flexNoWrap_3vhRl ListRow-root_u_diZ">
+					${ bindings.data.domainStatusIcon }
+					<div class="Box-backgroundColor-white_3LQ-e ListItem-root_26lzk">
+						<span class="Box-marginTop-xxsmall_12WTE ListCellGroup-root_29bXw">
+							<span
+								class="Box-paddingLeft-small_1mVBq Flex-flex_uh_R2 Flex-flexAlignItemsCenter_3oJ12 Flex-flexGrow1_2dKRn WidgetCmp-fluidHeight_1OTOU Cell-root_1ruFk FqdnCell-cell__psPix"
+							>
+								<span
+									class="Flex-flex_uh_R2 Flex-flexAlignItemsCenter_3oJ12 FqdnCell-fqdnContainer__g4vZR"
+								>
+									<span
+										class="${bindings.data.isExactSearchDomain ? `Text-weight-semibold_gjQ4f`: ''}"
+									>
+										<span
+											class="FqdnCell-textBreak__elahz Box-paddingRight-xxsmall_2n_QQ"
+											title="${ bindings.data.availabilityReason || bindings.data.domainName }"
+											data-toggle="tooltip"
+											data-placement="bottom"
+											>${ bindings.data.trimmedDomainName }
+										</span>
+									</span>
+									${ bindings.data.domainBadges }
+								</span>
+								${ bindings.data.domainAdditionalInfo }
+							</span>
+							${ bindings.data.domainPricing }
+						</span>
+					</div>
+					${ bindings.data.addToCartBtn }
+				</div>
+			</div>
+		</div>
+	</div>
+</li>

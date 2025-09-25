@@ -1,0 +1,52 @@
+{
+	"schema": "1.0",
+	"type": "whmcs-registrars",
+	"name": "ispapi",
+	"license": "MIT",
+	"category": "domains",
+	"description": {
+		"name": "\u0000 ISPAPI Registrar Module",
+		"tagline": "A leading reseller wholesale domain registration provider.",
+		"long": "## No Account yet? Signup for our [LIVE System](https://www.hexonet.net/sign-up) or [OT&E / Demo System](https://www.hexonet.net/de/signup-ote) for free!",
+		"features": [
+			"Automated Domain Registrations, Transfers, Renewals & Deletions",
+			"Ability to View/Change Nameservers & WHOIS Info",
+			"Domain Locking, ID Protection, EPP Code Retrieval",
+			"DNS Host Record Management, Email Forwarding, URL Forwarding & Private Nameservers",
+			"Reliable, Rock solid, incredible fast API",
+			"IRTP",
+			"IDNs (Internationalized Domain Names)",
+			"TLD & Pricing Import/Sync",
+			"Additional Domain Fields & Auto-Prefilling of fields with Customer Data",
+			"Allows specifying a Proxy Server to use",
+			"Support for all bulk update operations",
+			"Domain & Transfer Sync",
+			"DNSSec Management",
+			".SWISS Registrations"
+		]
+	},
+	"logo": {
+		"filename": "logo.png"
+	},
+	"support": {
+		"homepage": "https://www.hexonet.net",
+		"docs_url": "https://www.hexonet.support/hc/en-gb/categories/13647935000861-3rd-party-Software-Integrations",
+		"support_url": "https://www.hexonet.support/hc/en-gb/requests/new"
+	},
+	"authors": [
+		{
+			"name": "Kai Schwarz, Team Internet",
+			"homepage": "https://github.com/kaischwarz-cnic"
+		}
+	],
+	"_priv": {
+		"description": "<a target=\"_blank\" style=\"text-decoration:underline\" href=\"https://www.hexonet.net/resellers/integration#whmcs\">HEXONET</a>'s official and maintained white-label Registrar Module. No Account yet? Signup <a href=\"https://www.hexonet.net/sign-up\" style=\"text-decoration:underline\" target=\"_blank\">here</a> for free!",
+		"bttn_migrate": "<br /><a href=\"configregistrars.php?migrate=true&amp;saved=true\" class=\"btn btn-sm btn-default\" title=\"Click here to automatically migrate domains and TLD pricings related to Hexonet to this module!\">Migrate from HEXONET module</a>",
+		"fields": {
+			"IRTP": "General info about IRTP can be found <a target=\"_blank\" href=\"https://wiki.hexonet.net/wiki/IRTP\" style=\"text-decoration:underline\">here</a>. Read about the below Options in Detail <a target=\"_blank\" href=\"https://www.hexonet.support/hc/en-gb/articles/13653725853213-WHMCS-Available-Module-Features-Addons#h_01HA9YGBTNVNJSKPX82ZVG8WPY\" style=\"text-decoration:underline\">here</a>.",
+			"WebApps": "Enable Offering Web Apps in Domain Details View. Read <a href=\"https://www.hexonet.net/de/products/webapps\" target=\"_blank\" style=\"text-decoration:underline\">here</a>."
+		},
+		"UrlFaqAuthError": "https://www.hexonet.support/hc/en-gb/articles/13834070620573-WHMCS-Connectivity-Issues",
+		"UrlSignup": "https://www.hexonet.net/sign-up"
+	}
+}

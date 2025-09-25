@@ -1,0 +1,7 @@
+name: "CentralNic-Six"
+description: "CentralNic Theme based on WHMCS Six"
+author: "CentralNic"
+config:
+  parent: six
+properties:
+  serverSidePagination: false # Required for WHMCS < 8.1.1

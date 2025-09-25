@@ -1,0 +1,14 @@
+    <label class="Box-marginRight-xsmall_3Te9A Box-marginBottom-xsmall_3T43M Text-weight-semibold_gjQ4f Text-transform-uppercase_1NM52" for="priceRange">${getMessage("search_filter_label")}</label>
+    <fieldset class="ToggleGroup-root_MqYEk" id="priceRangeToggle">
+      <label class="${bindings.filterType?.show ? bindings.checkedClass : bindings.unCheckedClass}">
+        <input type="radio" name="filterType" autocomplete="off" value="registerPrice" ?checked="${bindings.filterType?.show}" class="TogglePill-input_aq6FH">${getMessage("search_filter_label_register")}
+      </label>
+      <label class="${!bindings.filterType?.show ? bindings.checkedClass : bindings.unCheckedClass}">
+        <input type="radio" name="filterType" autocomplete="off" value="renewPrice" ?checked="${!bindings.filterType?.show}" class="TogglePill-input_aq6FH">${getMessage("search_filter_label_renew")}
+      </label>
+      <div class="range-container Box-marginBottom-xsmall_3T43M">
+        <label class="Text-transform-uppercase_1NM52 Text-size-small_wppb0 Box-margin-none_1M7R9">${getMessage("search_filter_label_current_value")} ${bindings.currentPriceRangeLabel}</label>
+        <input type="range" class="cnic_slider" id="priceRangeInput" min="1" max="${bindings.maxRange}" step="10" .value="${bindings.currentPriceRange}" ?disabled="${bindings.resultsAvailable}">
+        <datalist id="priceScale">${bindings.rangeLabels}</datalist>
+      </div>
+    </fieldset>

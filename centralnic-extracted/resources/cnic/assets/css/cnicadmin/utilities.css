@@ -1,0 +1,54 @@
+/* utilities.css - Pure utility classes and helper functions for CNIC Admin */
+
+/* 
+ * Most utility classes are provided by Bootstrap
+ * We define only custom utilities or overrides here
+ * Ensuring compatibility with Bootstrap 3.4.1
+ */
+
+/* --- SPACING UTILITIES --- */
+
+/* Bootstrap 3 compatible spacing utilities - Used in templates */
+.margin-top-1 { margin-top: 0.25rem !important; }
+.margin-top-2 { margin-top: 0.5rem !important; }
+.margin-top-3 { margin-top: 1rem !important; }
+.margin-top-4 { margin-top: 1.5rem !important; }
+.margin-top-5 { margin-top: 3rem !important; }
+
+.margin-bottom-1 { margin-bottom: 0.25rem !important; }
+.margin-bottom-2 { margin-bottom: 0.5rem !important; }
+.margin-bottom-3 { margin-bottom: 1rem !important; }
+.margin-bottom-4 { margin-bottom: 1.5rem !important; }
+.margin-bottom-5 { margin-bottom: 3rem !important; }
+
+/* --- TRANSITION UTILITIES --- */
+
+/* Transitions for interactive elements */
+.form-control, .btn, .field-row, .fields-container, .recent-tld-btn {
+    transition: var(--transition-all);
+}
+
+/* --- ACCESSIBILITY UTILITIES --- */
+
+/* Hide visually but keep accessible */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* --- NAVIGATION UTILITIES --- */
+
+/* CNIC Admin navigation active states */
+div.sidebar ul.cnic-nav li.cnic-nav-item.active,
+.sidebar ul.cnic-nav li.cnic-nav-item.active {
+    font-weight: bold !important;
+    color: var(--primary) !important;
+    background-color: var(--blue-50) !important;
+    border-radius: var(--radius-sm);
+}

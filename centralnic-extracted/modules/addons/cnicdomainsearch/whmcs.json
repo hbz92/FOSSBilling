@@ -1,0 +1,33 @@
+{
+    "schema": "1.0",
+    "type": "whmcs-addons",
+    "name": "cnicdomainsearch-addon",
+    "license": "MIT",
+    "category": "digitalservices",
+    "description": {
+        "name": "\u0000 Domain Search",
+        "tagline": "Enhance your domain search experience with the CNIC Domain Search Addon",
+        "long": "This addon integrates advanced domain search capabilities into your WHMCS platform, providing a seamless and efficient way to search for and register domains. It supports multiple TLDs and offers a user-friendly interface for both administrators and customers.",
+        "features": [
+            "Advanced domain search functionality",
+            "Supports multiple TLDs",
+            "User-friendly interface for administrators and customers",
+            "Seamless integration with WHMCS"
+        ]
+    },
+    "logo": {
+        "filename": "../../registrars/cnic/logo.png"
+    },
+    "support": {
+        "homepage": "https://www.centralnicreseller.com/",
+        "learn_more": "https:\/\/github.com\/centralnicgroup-opensource\/rtldev-middleware-whmcs\/blob\/main\/README.md",
+        "support_url": "https://www.centralnicreseller.com/",
+        "docs_url": "https://support.centralnicreseller.com/hc/en-gb/articles/13508150601373-WHMCS-Domain-Search-Addon"
+    },
+    "authors": [
+        {
+            "name": "CentralNic Reseller",
+            "homepage": "https://www.centralnicreseller.com/"
+        }
+    ]
+}

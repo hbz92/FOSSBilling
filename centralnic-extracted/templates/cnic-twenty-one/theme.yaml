@@ -1,0 +1,7 @@
+name: "CentralNic-Twenty-One"
+description: "CentralNic Theme based on WHMCS Twenty-One"
+author: "CentralNic"
+config:
+  parent: twenty-one
+properties:
+  serverSidePagination: false # Required for WHMCS < 8.1.1

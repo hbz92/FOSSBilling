@@ -1,0 +1,12 @@
+<span class="Text-color-light_15Jq_ Text-transform-uppercase_1NM52 sortBy-select">Sort <i
+    class="fas fa-filter Heading-fontSize-xs_2oNUB "></i>
+  <select title="Sort Domains" name="sortBy"
+    class="Text-transform-uppercase_1NM52 Select-root_1tCgo Select-small_3Poor selectSortList">
+    ${bindings.orderList}
+  </select>
+  <label>
+    <input type="radio" name="sortByDir" class="selectSortListDir" value="${bindings.sortDirection}">
+    <i class="${bindings.sortDirection === "ASC" ? "fas fa-sort-alpha-down selectSortListDir"
+      : "fas fa-sort-alpha-up-alt selectSortListDir" }"></i>
+  </label>
+</span>

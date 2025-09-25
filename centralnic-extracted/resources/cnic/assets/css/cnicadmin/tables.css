@@ -1,0 +1,529 @@
+/* tables.css - DataTable components and table styling for CNIC Admin */
+
+/* --- DATATABLE CORE STRUCTURE --- */
+
+/* DataTable wrapper and container - Enhanced with Components.css integration */
+.cnic-dt-wrapper {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-400);
+    position: relative;
+}
+
+/* When table wrapper follows a section header, remove top border radius */
+.cnic-section-header + .cnic-dt-wrapper {
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    border-top: none;
+}
+
+.cnic-dt-container {
+    position: relative;
+    width: 100%;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* DataTable header controls */
+.cnic-dt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-300);
+}
+
+.cnic-dt-header-left,
+.cnic-dt-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+/* Length selector */
+.cnic-dt-length {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--gray-700);
+}
+
+.cnic-dt-length select {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--gray-400);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    font-size: var(--font-size-sm);
+    min-width: 60px;
+}
+
+/* Search input */
+.cnic-dt-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.cnic-dt-search label {
+    font-size: var(--font-size-sm);
+    color: var(--gray-700);
+    margin: 0;
+}
+
+.cnic-dt-search input {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 1px solid var(--gray-400);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    min-width: 200px;
+    transition: var(--transition-all);
+}
+
+.cnic-dt-search input:focus {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-focus);
+    outline: none;
+}
+
+/* --- TABLE STYLING --- */
+
+.cnic-dt-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    font-size: var(--font-size-sm);
+}
+
+.cnic-dt-table thead th {
+    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
+    padding: var(--spacing-md) var(--spacing-lg);
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    color: var(--white);
+    border-bottom: 2px solid var(--gray-300);
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition-all);
+}
+
+.cnic-dt-table thead th:hover {
+    background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-700) 100%);
+}
+
+.cnic-dt-table tbody td {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--gray-300);
+    color: var(--gray-700);
+    vertical-align: middle;
+    transition: var(--transition-all);
+}
+
+.cnic-dt-table tbody tr:hover {
+    background: var(--blue-50);
+    transform: scale(1.002);
+    box-shadow: inset 0 0 0 1px var(--blue-200);
+}
+
+.cnic-dt-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* DataTable column type styling */
+.cnic-dt-column-number {
+    text-align: right !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.cnic-dt-column-date {
+    white-space: nowrap;
+    color: #495057 !important;
+    font-size: var(--font-size-sm);
+}
+
+.cnic-dt-column-status {
+    text-align: center !important;
+}
+
+.cnic-dt-column-actions {
+    text-align: center !important;
+    white-space: nowrap;
+}
+
+.cnic-dt-column-code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    background: var(--gray-100);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-xs);
+    font-size: var(--font-size-sm);
+}
+
+/* --- PAGINATION --- */
+
+/* DataTable pagination */
+.cnic-dt-pagination {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cnic-dt-pagination li {
+    display: inline-block;
+}
+
+/* DataTable pagination - Enhanced with Components.css button styling */
+.cnic-dt-pagination a {
+    display: block;
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--gray-700);
+    text-decoration: none;
+    border: 1px solid var(--gray-400);
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    line-height: 1;
+    min-width: 42px;
+    text-align: center;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.cnic-dt-pagination a:hover:not(.disabled) {
+    background: var(--blue-50);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-primary-light);
+}
+
+.cnic-dt-pagination .current a {
+    background: var(--gradient-primary);
+    border-color: var(--primary);
+    color: var(--white);
+    font-weight: 600;
+    box-shadow: var(--shadow-primary-light);
+}
+
+.cnic-dt-pagination .disabled a {
+    color: var(--gray-500);
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.cnic-dt-pagination .previous a::before {
+    content: '\f053';
+    font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free', 'FontAwesome';
+    font-weight: 900;
+    margin-right: var(--spacing-xs);
+}
+
+.cnic-dt-pagination .next a::after {
+    content: '\f054';
+    font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free', 'FontAwesome';
+    font-weight: 900;
+    margin-left: var(--spacing-xs);
+}
+
+/* --- STATUS BADGES --- */
+
+/* DataTable status badges */
+.cnic-dt-badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: var(--radius-pill);
+    line-height: 1;
+}
+
+.cnic-dt-badge-success {
+    background: var(--green-100);
+    color: var(--green-800);
+    border: 1px solid var(--green-200);
+}
+
+.cnic-dt-badge-warning {
+    background: var(--yellow-100);
+    color: var(--yellow-800);
+    border: 1px solid var(--yellow-200);
+}
+
+.cnic-dt-badge-danger {
+    background: var(--red-100);
+    color: var(--red-800);
+    border: 1px solid var(--red-200);
+}
+
+.cnic-dt-badge-info {
+    background: var(--blue-100);
+    color: var(--blue-800);
+    border: 1px solid var(--blue-200);
+}
+
+.cnic-dt-badge-secondary {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+}
+
+/* --- LOADING STATES --- */
+
+/* DataTable loading indicator - PRIMARY LOADER */
+.cnic-dt-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    border-radius: var(--radius-md);
+}
+
+.cnic-dt-loading-content {
+    text-align: center;
+    color: var(--gray-700);
+    font-size: var(--font-size-base);
+}
+
+.cnic-dt-loading-content i {
+    color: var(--purple-500);
+    margin-bottom: var(--spacing-md);
+    display: block;
+}
+
+.cnic-dt-loading-content p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--gray-600);
+}
+
+/* --- RESPONSIVE DESIGN --- */
+
+/* DataTable responsive utilities */
+@media (max-width: 768px) {
+    .cnic-dt-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .cnic-dt-header-left,
+    .cnic-dt-header-right {
+        justify-content: center;
+    }
+    
+    .cnic-dt-search input {
+        min-width: 200px;
+    }
+    
+    .cnic-dt-footer {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .cnic-dt-table {
+        font-size: var(--font-size-sm);
+    }
+    
+    .cnic-dt-table thead th,
+    .cnic-dt-table tbody td {
+        padding: var(--spacing-sm) var(--spacing-xs);
+    }
+}
+
+/* --- ICON FIXES --- */
+
+/* Fix date column color */
+.cnic-dt-table tbody .cnic-dt-column-date {
+    color: var(--gray-700) !important;
+    font-size: var(--font-size-sm);
+}
+
+/* Fix icons in column headers */
+.cnic-dt-table thead th i {
+    margin-right: var(--spacing-xs);
+    opacity: 1;
+    color: var(--white);
+    font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free', 'FontAwesome';
+    font-weight: 900;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    width: auto;
+    height: auto;
+    min-width: 14px;
+}
+
+/* Force FontAwesome to display */
+.cnic-dt-table thead th i.fas,
+.cnic-dt-table thead th i.far,
+.cnic-dt-table thead th i.fal,
+.cnic-dt-table tbody i.fas,
+.cnic-dt-table tbody i.far,
+.cnic-dt-table tbody i.fal {
+    font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free', 'FontAwesome' !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+}
+
+/* Hide conflicting global loading overlays when using CNIC DataTable */
+.cnic-dt-container ~ #loadingOverlay,
+.cnic-dt-wrapper #loadingOverlay {
+    display: none !important;
+}
+
+/* Ensure FontAwesome icons display properly */
+.fas, .far, .fal, .fad, .fab {
+    font-family: 'Font Awesome 5 Pro', 'Font Awesome 5 Free', 'FontAwesome';
+    font-weight: 900;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+}
+
+/* FontAwesome Pro specific weights */
+.fas { font-weight: 900; } /* Solid */
+.far { font-weight: 400; } /* Regular */
+.fal { font-weight: 300; } /* Light */
+
+/* Fallback for missing icons */
+.cnic-dt-table thead th i:empty::before {
+    content: '\f111'; /* Default circle icon */
+    opacity: 0.5;
+}
+
+/* Debug: highlight missing icons */
+.cnic-dt-table thead th i:not([class*="fa-"]) {
+    color: white;
+    padding: var(--spacing-xs);
+}
+
+/* ============================================
+   MODERN TABLE HEADERS & EVENTS TABLE
+   ============================================ */
+
+/* Modern results table header styling - replaces default gray with gradients */
+#eventsTable.cnic-dt-table thead.results-table-header,
+#dnsZonesTable.cnic-dt-table thead.results-table-header,
+#domainTable.cnic-dt-table thead.results-table-header {
+    background: var(--gradient-panel) !important;
+}
+
+#eventsTable.cnic-dt-table thead.results-table-header th,
+#dnsZonesTable.cnic-dt-table thead.results-table-header th,
+#domainTable.cnic-dt-table thead.results-table-header th {
+    background: transparent !important;
+    color: white !important;
+    padding: 18px var(--spacing-lg);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+}
+
+#eventsTable.cnic-dt-table thead.results-table-header th i,
+#dnsZonesTable.cnic-dt-table thead.results-table-header th i,
+#domainTable.cnic-dt-table thead.results-table-header th i {
+    margin-right: 8px;
+    opacity: 0.9;
+    color: white !important;
+}
+
+/* Event list table column widths */
+.event-date-column {
+    width: 20%;
+    min-width: 160px;
+}
+
+.event-class-column {
+    width: 18%;
+    min-width: 140px;
+}
+
+.event-subclass-column {
+    width: 18%;
+    min-width: 140px;
+}
+
+/* --- MODERN TABLE ENHANCEMENTS --- */
+
+/* Enhanced table styling for all DataTables */
+.cnic-dt-table tbody tr {
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.cnic-dt-table tbody tr:hover {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-left-color: var(--primary);
+    transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Modern badge styling for status indicators */
+.cnic-dt-table .badge,
+.cnic-dt-table .label {
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Status-specific badge colors */
+.cnic-dt-table .badge-success,
+.cnic-dt-table .label-success {
+    background: var(--gradient-success);
+    color: white;
+}
+
+.cnic-dt-table .badge-danger,
+.cnic-dt-table .label-danger {
+    background: var(--gradient-error);
+    color: white;
+}
+
+.cnic-dt-table .badge-warning,
+.cnic-dt-table .label-warning {
+    background: var(--gradient-warning);
+    color: white;
+}
+
+.cnic-dt-table .badge-info,
+.cnic-dt-table .label-info {
+    background: var(--gradient-processing);
+    color: white;
+}
+
+/* Action button styling within tables */
+.cnic-dt-table .btn-xs {
+    padding: 4px 12px;
+    font-size: 11px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
