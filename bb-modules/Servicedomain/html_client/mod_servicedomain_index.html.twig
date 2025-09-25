@@ -1,0 +1,158 @@
+{% extends "layout_default.html.twig" %}
+
+{% block meta_title %}{{ 'Domain Management'|trans }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li><a href="{{ '/'|link }}">{{ 'Home'|trans }}</a></li>
+    <li class="active">{{ 'Domain Management'|trans }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">{{ 'My Domains'|trans }}</h3>
+                <div class="box-tools">
+                    <a href="{{ 'servicedomain/register'|link }}" class="btn btn-primary">
+                        <i class="fa fa-plus"></i> {{ 'Register New Domain'|trans }}
+                    </a>
+                    <a href="{{ 'servicedomain/transfer'|link }}" class="btn btn-success">
+                        <i class="fa fa-exchange"></i> {{ 'Transfer Domain'|trans }}
+                    </a>
+                </div>
+            </div>
+            
+            <div class="box-body">
+                <!-- Search and Filter -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <form method="get" action="">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" 
+                                       placeholder="{{ 'Search domains...'|trans }}" 
+                                       value="{{ request.search }}">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="btn-group">
+                            <a href="?status=all" class="btn btn-default {% if request.status == 'all' or not request.status %}active{% endif %}">
+                                {{ 'All'|trans }}
+                            </a>
+                            <a href="?status=active" class="btn btn-default {% if request.status == 'active' %}active{% endif %}">
+                                {{ 'Active'|trans }}
+                            </a>
+                            <a href="?status=pending" class="btn btn-default {% if request.status == 'pending' %}active{% endif %}">
+                                {{ 'Pending'|trans }}
+                            </a>
+                            <a href="?status=expired" class="btn btn-default {% if request.status == 'expired' %}active{% endif %}">
+                                {{ 'Expired'|trans }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Domains Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>{{ 'Domain'|trans }}</th>
+                                <th>{{ 'Status'|trans }}</th>
+                                <th>{{ 'Registered'|trans }}</th>
+                                <th>{{ 'Expires'|trans }}</th>
+                                <th>{{ 'Auto Renew'|trans }}</th>
+                                <th>{{ 'Privacy'|trans }}</th>
+                                <th>{{ 'Locked'|trans }}</th>
+                                <th width="150">{{ 'Actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set domains = client.servicedomain_get_list({'per_page': 30, 'page': request.page|default(1), 'status': request.status, 'search': request.search}) %}
+                            {% for domain in domains.list %}
+                            <tr>
+                                <td>
+                                    <strong>{{ domain.sld }}.{{ domain.tld }}</strong>
+                                </td>
+                                <td>
+                                    {% if domain.status == 'active' %}
+                                        <span class="label label-success">{{ 'Active'|trans }}</span>
+                                    {% elseif domain.status == 'pending' %}
+                                        <span class="label label-warning">{{ 'Pending'|trans }}</span>
+                                    {% elseif domain.status == 'expired' %}
+                                        <span class="label label-danger">{{ 'Expired'|trans }}</span>
+                                    {% else %}
+                                        <span class="label label-default">{{ domain.status|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ domain.registered_at|date('Y-m-d') }}</td>
+                                <td>
+                                    {{ domain.expires_at|date('Y-m-d') }}
+                                    {% set days_until = ((domain.expires_at|date('U') - "now"|date('U')) / 86400)|round %}
+                                    {% if days_until < 30 %}
+                                        <span class="label label-danger">{{ days_until }} {{ 'days'|trans }}</span>
+                                    {% elseif days_until < 90 %}
+                                        <span class="label label-warning">{{ days_until }} {{ 'days'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if domain.auto_renew %}
+                                        <i class="fa fa-check text-success"></i>
+                                    {% else %}
+                                        <i class="fa fa-times text-muted"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if domain.privacy %}
+                                        <i class="fa fa-shield text-success"></i>
+                                    {% else %}
+                                        <i class="fa fa-times text-muted"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if domain.locked %}
+                                        <i class="fa fa-lock text-success"></i>
+                                    {% else %}
+                                        <i class="fa fa-unlock text-muted"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ ('servicedomain/manage/' ~ domain.id)|link }}" 
+                                       class="btn btn-sm btn-primary" title="{{ 'Manage'|trans }}">
+                                        <i class="fa fa-cog"></i> {{ 'Manage'|trans }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center">
+                                    <p class="text-muted">{{ 'No domains found'|trans }}</p>
+                                    <a href="{{ 'servicedomain/register'|link }}" class="btn btn-primary">
+                                        <i class="fa fa-plus"></i> {{ 'Register Your First Domain'|trans }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if domains.pages > 1 %}
+                <div class="text-center">
+                    {% include "partial_pagination.html.twig" with { 'list': domains } %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

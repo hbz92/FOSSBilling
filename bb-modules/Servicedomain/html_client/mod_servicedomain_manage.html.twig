@@ -1,0 +1,928 @@
+{% extends "layout_default.html.twig" %}
+
+{% block meta_title %}{{ 'Manage Domain'|trans }} - {{ domain.sld }}.{{ domain.tld }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li><a href="{{ '/'|link }}">{{ 'Home'|trans }}</a></li>
+    <li><a href="{{ 'servicedomain'|link }}">{{ 'Domains'|trans }}</a></li>
+    <li class="active">{{ domain.sld }}.{{ domain.tld }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+{% set domain = client.servicedomain_get({'id': request.id}) %}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>
+            <i class="fa fa-globe"></i> {{ domain.sld }}.{{ domain.tld }}
+            {% if domain.status == 'active' %}
+                <span class="label label-success">{{ 'Active'|trans }}</span>
+            {% elseif domain.status == 'pending' %}
+                <span class="label label-warning">{{ 'Pending'|trans }}</span>
+            {% else %}
+                <span class="label label-danger">{{ domain.status|trans }}</span>
+            {% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <!-- Domain Information -->
+    <div class="col-md-4">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">{{ 'Domain Information'|trans }}</h3>
+            </div>
+            <div class="box-body">
+                <table class="table table-condensed">
+                    <tr>
+                        <td><strong>{{ 'Domain'|trans }}:</strong></td>
+                        <td>{{ domain.sld }}.{{ domain.tld }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ 'Status'|trans }}:</strong></td>
+                        <td>
+                            {% if domain.status == 'active' %}
+                                <span class="label label-success">{{ 'Active'|trans }}</span>
+                            {% else %}
+                                <span class="label label-warning">{{ domain.status|trans }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ 'Registered'|trans }}:</strong></td>
+                        <td>{{ domain.registered_at|date('Y-m-d') }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ 'Expires'|trans }}:</strong></td>
+                        <td>
+                            {{ domain.expires_at|date('Y-m-d') }}
+                            {% set days_until = ((domain.expires_at|date('U') - "now"|date('U')) / 86400)|round %}
+                            {% if days_until < 30 %}
+                                <br><span class="label label-danger">{{ days_until }} {{ 'days remaining'|trans }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>{{ 'Auto Renew'|trans }}:</strong></td>
+                        <td>
+                            <div class="switch-container">
+                                <input type="checkbox" class="switch-input" id="auto_renew" 
+                                       {% if domain.auto_renew %}checked{% endif %}
+                                       onchange="toggleAutoRenew(this)">
+                                <label for="auto_renew" class="switch-label">
+                                    <span class="switch-text">{{ domain.auto_renew ? 'Enabled'|trans : 'Disabled'|trans }}</span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                
+                <div class="mt-3">
+                    {% if domain.status == 'active' %}
+                        <button class="btn btn-success btn-block" onclick="renewDomain()">
+                            <i class="fa fa-refresh"></i> {{ 'Renew Domain'|trans }}
+                        </button>
+                    {% endif %}
+                    
+                    <button class="btn btn-warning btn-block" onclick="getTransferCode()">
+                        <i class="fa fa-key"></i> {{ 'Get Transfer Code'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security Settings -->
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">{{ 'Security Settings'|trans }}</h3>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label>{{ 'Domain Lock'|trans }}</label>
+                    <div class="switch-container">
+                        <input type="checkbox" class="switch-input" id="domain_lock" 
+                               {% if domain.locked %}checked{% endif %}
+                               onchange="toggleDomainLock(this)">
+                        <label for="domain_lock" class="switch-label">
+                            <span class="switch-text">{{ domain.locked ? 'Locked'|trans : 'Unlocked'|trans }}</span>
+                        </label>
+                    </div>
+                    <small class="text-muted">{{ 'Prevent unauthorized transfers'|trans }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ 'Privacy Protection'|trans }}</label>
+                    <div class="switch-container">
+                        <input type="checkbox" class="switch-input" id="privacy" 
+                               {% if domain.privacy %}checked{% endif %}
+                               onchange="togglePrivacy(this)">
+                        <label for="privacy" class="switch-label">
+                            <span class="switch-text">{{ domain.privacy ? 'Enabled'|trans : 'Disabled'|trans }}</span>
+                        </label>
+                    </div>
+                    <small class="text-muted">{{ 'Hide your contact information from WHOIS'|trans }}</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>{{ 'DNSSEC'|trans }}</label>
+                    <div class="switch-container">
+                        <input type="checkbox" class="switch-input" id="dnssec" 
+                               {% if domain.dnssec.enabled %}checked{% endif %}
+                               onchange="toggleDnssec(this)">
+                        <label for="dnssec" class="switch-label">
+                            <span class="switch-text">{{ domain.dnssec.enabled ? 'Enabled'|trans : 'Disabled'|trans }}</span>
+                        </label>
+                    </div>
+                    <small class="text-muted">{{ 'Secure your DNS with DNSSEC'|trans }}</small>
+                    
+                    {% if domain.dnssec.enabled and domain.dnssec.keys %}
+                    <div class="mt-2">
+                        <button class="btn btn-xs btn-info" onclick="showDnssecKeys()">
+                            {{ 'View DNSSEC Keys'|trans }}
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content Area -->
+    <div class="col-md-8">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#dns" data-toggle="tab">
+                        <i class="fa fa-server"></i> {{ 'DNS Management'|trans }}
+                    </a>
+                </li>
+                <li>
+                    <a href="#nameservers" data-toggle="tab">
+                        <i class="fa fa-exchange"></i> {{ 'Nameservers'|trans }}
+                    </a>
+                </li>
+                <li>
+                    <a href="#contact" data-toggle="tab">
+                        <i class="fa fa-user"></i> {{ 'Contact Information'|trans }}
+                    </a>
+                </li>
+                <li>
+                    <a href="#forwarding" data-toggle="tab">
+                        <i class="fa fa-arrow-right"></i> {{ 'Email/URL Forwarding'|trans }}
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="tab-content">
+                <!-- DNS Management Tab -->
+                <div class="tab-pane active" id="dns">
+                    <div class="mb-3">
+                        <button class="btn btn-primary" onclick="showAddDnsRecord()">
+                            <i class="fa fa-plus"></i> {{ 'Add DNS Record'|trans }}
+                        </button>
+                        <button class="btn btn-default pull-right" onclick="refreshDnsRecords()">
+                            <i class="fa fa-refresh"></i> {{ 'Refresh'|trans }}
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="dns-records-table">
+                            <thead>
+                                <tr>
+                                    <th>{{ 'Type'|trans }}</th>
+                                    <th>{{ 'Name'|trans }}</th>
+                                    <th>{{ 'Value'|trans }}</th>
+                                    <th>{{ 'TTL'|trans }}</th>
+                                    <th>{{ 'Priority'|trans }}</th>
+                                    <th width="100">{{ 'Actions'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in domain.dns_records %}
+                                <tr data-record-id="{{ record.id }}">
+                                    <td><span class="label label-primary">{{ record.type }}</span></td>
+                                    <td>{{ record.name }}</td>
+                                    <td class="dns-value">{{ record.value|slice(0, 50) }}{% if record.value|length > 50 %}...{% endif %}</td>
+                                    <td>{{ record.ttl }}</td>
+                                    <td>{{ record.priority|default('-') }}</td>
+                                    <td>
+                                        <button class="btn btn-xs btn-info" onclick="editDnsRecord({{ record.id }})">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-danger" onclick="deleteDnsRecord({{ record.id }})">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">
+                                        {{ 'No DNS records found'|trans }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Quick DNS Templates -->
+                    <div class="mt-3">
+                        <h4>{{ 'Quick Templates'|trans }}</h4>
+                        <div class="btn-group">
+                            <button class="btn btn-default" onclick="applyDnsTemplate('email')">
+                                <i class="fa fa-envelope"></i> {{ 'Email (MX)'|trans }}
+                            </button>
+                            <button class="btn btn-default" onclick="applyDnsTemplate('website')">
+                                <i class="fa fa-globe"></i> {{ 'Website'|trans }}
+                            </button>
+                            <button class="btn btn-default" onclick="applyDnsTemplate('parking')">
+                                <i class="fa fa-car"></i> {{ 'Parking'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nameservers Tab -->
+                <div class="tab-pane" id="nameservers">
+                    <form id="nameservers-form">
+                        <div class="form-group">
+                            <label>{{ 'Primary Nameserver'|trans }} *</label>
+                            <input type="text" class="form-control" name="ns1" value="{{ domain.ns1 }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Secondary Nameserver'|trans }} *</label>
+                            <input type="text" class="form-control" name="ns2" value="{{ domain.ns2 }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Tertiary Nameserver'|trans }}</label>
+                            <input type="text" class="form-control" name="ns3" value="{{ domain.ns3 }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Quaternary Nameserver'|trans }}</label>
+                            <input type="text" class="form-control" name="ns4" value="{{ domain.ns4 }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> {{ 'Update Nameservers'|trans }}
+                            </button>
+                            <button type="button" class="btn btn-default" onclick="resetNameservers()">
+                                {{ 'Reset to Default'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Contact Information Tab -->
+                <div class="tab-pane" id="contact">
+                    <form id="contact-form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ 'First Name'|trans }} *</label>
+                                    <input type="text" class="form-control" name="first_name" 
+                                           value="{{ domain.contact_first_name }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ 'Last Name'|trans }} *</label>
+                                    <input type="text" class="form-control" name="last_name" 
+                                           value="{{ domain.contact_last_name }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Email'|trans }} *</label>
+                            <input type="email" class="form-control" name="email" 
+                                   value="{{ domain.contact_email }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Company'|trans }}</label>
+                            <input type="text" class="form-control" name="company" 
+                                   value="{{ domain.contact_company }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Address'|trans }} *</label>
+                            <input type="text" class="form-control" name="address1" 
+                                   value="{{ domain.contact_address1 }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Address 2'|trans }}</label>
+                            <input type="text" class="form-control" name="address2" 
+                                   value="{{ domain.contact_address2 }}">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>{{ 'City'|trans }} *</label>
+                                    <input type="text" class="form-control" name="city" 
+                                           value="{{ domain.contact_city }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>{{ 'State/Province'|trans }}</label>
+                                    <input type="text" class="form-control" name="state" 
+                                           value="{{ domain.contact_state }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>{{ 'Postal Code'|trans }}</label>
+                                    <input type="text" class="form-control" name="postcode" 
+                                           value="{{ domain.contact_postcode }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ 'Country'|trans }} *</label>
+                                    <select class="form-control" name="country" required>
+                                        {% for code, name in countries %}
+                                        <option value="{{ code }}" {% if domain.contact_country == code %}selected{% endif %}>
+                                            {{ name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ 'Phone'|trans }} *</label>
+                                    <input type="tel" class="form-control" name="phone" 
+                                           value="{{ domain.contact_phone }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> {{ 'Update Contact Information'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Email/URL Forwarding Tab -->
+                <div class="tab-pane" id="forwarding">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        {{ 'Configure email and URL forwarding for your domain'|trans }}
+                    </div>
+                    
+                    <h4>{{ 'Email Forwarding'|trans }}</h4>
+                    <p class="text-muted">{{ 'Forward emails from your domain to another email address'|trans }}</p>
+                    
+                    <div class="mb-3">
+                        <button class="btn btn-primary" onclick="addEmailForward()">
+                            <i class="fa fa-plus"></i> {{ 'Add Email Forward'|trans }}
+                        </button>
+                    </div>
+                    
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>{{ 'From'|trans }}</th>
+                                <th>{{ 'To'|trans }}</th>
+                                <th>{{ 'Actions'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="email-forwards">
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">
+                                    {{ 'No email forwards configured'|trans }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <hr>
+                    
+                    <h4>{{ 'URL Forwarding'|trans }}</h4>
+                    <p class="text-muted">{{ 'Redirect your domain to another website'|trans }}</p>
+                    
+                    <form id="url-forward-form">
+                        <div class="form-group">
+                            <label>{{ 'Forward To URL'|trans }}</label>
+                            <input type="url" class="form-control" name="forward_url" 
+                                   placeholder="https://example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ 'Forwarding Type'|trans }}</label>
+                            <select class="form-control" name="forward_type">
+                                <option value="301">{{ 'Permanent (301)'|trans }}</option>
+                                <option value="302">{{ 'Temporary (302)'|trans }}</option>
+                                <option value="frame">{{ 'Frame/Masking'|trans }}</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save"></i> {{ 'Save URL Forwarding'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DNS Record Modal -->
+<div class="modal fade" id="dnsRecordModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">{{ 'DNS Record'|trans }}</h4>
+            </div>
+            <div class="modal-body">
+                <form id="dns-record-form">
+                    <input type="hidden" name="record_id" value="">
+                    
+                    <div class="form-group">
+                        <label>{{ 'Record Type'|trans }} *</label>
+                        <select class="form-control" name="type" required>
+                            <option value="A">A - IPv4 Address</option>
+                            <option value="AAAA">AAAA - IPv6 Address</option>
+                            <option value="CNAME">CNAME - Canonical Name</option>
+                            <option value="MX">MX - Mail Exchange</option>
+                            <option value="TXT">TXT - Text Record</option>
+                            <option value="NS">NS - Name Server</option>
+                            <option value="SRV">SRV - Service Record</option>
+                            <option value="CAA">CAA - Certificate Authority</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ 'Name'|trans }} *</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="name" required>
+                            <span class="input-group-addon">.{{ domain.sld }}.{{ domain.tld }}</span>
+                        </div>
+                        <small class="text-muted">{{ 'Use @ for root domain'|trans }}</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ 'Value'|trans }} *</label>
+                        <input type="text" class="form-control" name="value" required>
+                        <small class="text-muted dns-help"></small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{ 'TTL'|trans }}</label>
+                                <select class="form-control" name="ttl">
+                                    <option value="300">5 minutes</option>
+                                    <option value="600">10 minutes</option>
+                                    <option value="1800">30 minutes</option>
+                                    <option value="3600" selected>1 hour</option>
+                                    <option value="7200">2 hours</option>
+                                    <option value="14400">4 hours</option>
+                                    <option value="28800">8 hours</option>
+                                    <option value="86400">1 day</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 priority-field" style="display:none;">
+                            <div class="form-group">
+                                <label>{{ 'Priority'|trans }}</label>
+                                <input type="number" class="form-control" name="priority" min="0" max="65535">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SRV specific fields -->
+                    <div class="srv-fields" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ 'Weight'|trans }}</label>
+                                    <input type="number" class="form-control" name="weight" min="0" max="65535">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ 'Port'|trans }}</label>
+                                    <input type="number" class="form-control" name="port" min="0" max="65535">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    {{ 'Cancel'|trans }}
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveDnsRecord()">
+                    <i class="fa fa-save"></i> {{ 'Save'|trans }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DNSSEC Keys Modal -->
+<div class="modal fade" id="dnssecModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title">{{ 'DNSSEC Keys'|trans }}</h4>
+            </div>
+            <div class="modal-body">
+                {% if domain.dnssec.keys %}
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>{{ 'Key Tag'|trans }}</th>
+                                <th>{{ 'Algorithm'|trans }}</th>
+                                <th>{{ 'Digest Type'|trans }}</th>
+                                <th>{{ 'Digest'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key in domain.dnssec.keys %}
+                            <tr>
+                                <td>{{ key.key_tag }}</td>
+                                <td>{{ key.algorithm }}</td>
+                                <td>{{ key.digest_type }}</td>
+                                <td class="text-monospace small">{{ key.digest }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    {{ 'Close'|trans }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var domainId = {{ request.id }};
+
+// DNS Record Management
+function showAddDnsRecord() {
+    $('#dnsRecordModal').find('input[name="record_id"]').val('');
+    $('#dnsRecordModal').find('form')[0].reset();
+    $('#dnsRecordModal').modal('show');
+}
+
+function editDnsRecord(recordId) {
+    // Load record data and show modal
+    bb.get('client/servicedomain/dns_get_record', {record_id: recordId}, function(result) {
+        var form = $('#dns-record-form');
+        form.find('input[name="record_id"]').val(recordId);
+        form.find('select[name="type"]').val(result.type);
+        form.find('input[name="name"]').val(result.name);
+        form.find('input[name="value"]').val(result.value);
+        form.find('select[name="ttl"]').val(result.ttl);
+        form.find('input[name="priority"]').val(result.priority);
+        
+        updateDnsHelp();
+        $('#dnsRecordModal').modal('show');
+    });
+}
+
+function saveDnsRecord() {
+    var form = $('#dns-record-form');
+    var recordId = form.find('input[name="record_id"]').val();
+    var data = {
+        domain_id: domainId,
+        type: form.find('select[name="type"]').val(),
+        name: form.find('input[name="name"]').val(),
+        value: form.find('input[name="value"]').val(),
+        ttl: form.find('select[name="ttl"]').val(),
+        priority: form.find('input[name="priority"]').val(),
+        weight: form.find('input[name="weight"]').val(),
+        port: form.find('input[name="port"]').val()
+    };
+    
+    var endpoint = recordId ? 'client/servicedomain/dns_update_record' : 'client/servicedomain/dns_add_record';
+    if (recordId) {
+        data.id = recordId;
+    }
+    
+    bb.post(endpoint, data, function(result) {
+        $('#dnsRecordModal').modal('hide');
+        bb.msg('DNS record saved successfully');
+        refreshDnsRecords();
+    });
+}
+
+function deleteDnsRecord(recordId) {
+    if (confirm('Are you sure you want to delete this DNS record?')) {
+        bb.post('client/servicedomain/dns_delete_record', {id: recordId}, function(result) {
+            bb.msg('DNS record deleted successfully');
+            refreshDnsRecords();
+        });
+    }
+}
+
+function refreshDnsRecords() {
+    location.reload();
+}
+
+// Update DNS help text based on record type
+$('select[name="type"]').change(function() {
+    updateDnsHelp();
+});
+
+function updateDnsHelp() {
+    var type = $('select[name="type"]').val();
+    var helpText = '';
+    $('.priority-field, .srv-fields').hide();
+    
+    switch(type) {
+        case 'A':
+            helpText = 'Enter an IPv4 address (e.g., 192.168.1.1)';
+            break;
+        case 'AAAA':
+            helpText = 'Enter an IPv6 address (e.g., 2001:db8::1)';
+            break;
+        case 'CNAME':
+            helpText = 'Enter a domain name (e.g., example.com)';
+            break;
+        case 'MX':
+            helpText = 'Enter mail server hostname (e.g., mail.example.com)';
+            $('.priority-field').show();
+            break;
+        case 'TXT':
+            helpText = 'Enter text value (e.g., SPF record, DKIM key)';
+            break;
+        case 'NS':
+            helpText = 'Enter nameserver hostname (e.g., ns1.example.com)';
+            break;
+        case 'SRV':
+            helpText = 'Enter target hostname';
+            $('.priority-field, .srv-fields').show();
+            break;
+        case 'CAA':
+            helpText = 'Enter CAA record value (e.g., 0 issue "ca.example.com")';
+            break;
+    }
+    
+    $('.dns-help').text(helpText);
+}
+
+// Security Settings
+function toggleAutoRenew(checkbox) {
+    var endpoint = checkbox.checked ? 'client/servicedomain/enable_auto_renew' : 'client/servicedomain/disable_auto_renew';
+    bb.post(endpoint, {domain_id: domainId}, function(result) {
+        bb.msg(result.message);
+    });
+}
+
+function toggleDomainLock(checkbox) {
+    var endpoint = checkbox.checked ? 'client/servicedomain/lock' : 'client/servicedomain/unlock';
+    bb.post(endpoint, {domain_id: domainId}, function(result) {
+        bb.msg(result.message);
+    });
+}
+
+function togglePrivacy(checkbox) {
+    var endpoint = checkbox.checked ? 'client/servicedomain/privacy_enable' : 'client/servicedomain/privacy_disable';
+    bb.post(endpoint, {domain_id: domainId}, function(result) {
+        bb.msg(result.message);
+    });
+}
+
+function toggleDnssec(checkbox) {
+    var endpoint = checkbox.checked ? 'client/servicedomain/dnssec_enable' : 'client/servicedomain/dnssec_disable';
+    if (!checkbox.checked && !confirm('Are you sure you want to disable DNSSEC?')) {
+        checkbox.checked = true;
+        return;
+    }
+    
+    bb.post(endpoint, {domain_id: domainId}, function(result) {
+        bb.msg(result.message);
+        if (checkbox.checked) {
+            location.reload();
+        }
+    });
+}
+
+function showDnssecKeys() {
+    $('#dnssecModal').modal('show');
+}
+
+// Domain Actions
+function renewDomain() {
+    var period = prompt('Enter renewal period in years (1-10):', '1');
+    if (period && period > 0 && period <= 10) {
+        bb.post('client/servicedomain/renew', {id: domainId, period: period}, function(result) {
+            bb.msg(result.message);
+            location.reload();
+        });
+    }
+}
+
+function getTransferCode() {
+    bb.post('client/servicedomain/get_transfer_code', {domain_id: domainId}, function(result) {
+        alert('Transfer Code: ' + result.transfer_code + '\n\nPlease save this code securely.');
+    });
+}
+
+// Nameservers
+$('#nameservers-form').submit(function(e) {
+    e.preventDefault();
+    var nameservers = [];
+    $(this).find('input[type="text"]').each(function() {
+        if ($(this).val()) {
+            nameservers.push($(this).val());
+        }
+    });
+    
+    bb.post('client/servicedomain/update_nameservers', {
+        domain_id: domainId,
+        nameservers: nameservers
+    }, function(result) {
+        bb.msg(result.message);
+    });
+});
+
+function resetNameservers() {
+    if (confirm('Reset nameservers to default?')) {
+        var defaults = [
+            'ns1.centralnic-dns.com',
+            'ns2.centralnic-dns.com',
+            'ns3.centralnic-dns.com',
+            'ns4.centralnic-dns.com'
+        ];
+        
+        $('#nameservers-form').find('input[name="ns1"]').val(defaults[0]);
+        $('#nameservers-form').find('input[name="ns2"]').val(defaults[1]);
+        $('#nameservers-form').find('input[name="ns3"]').val(defaults[2]);
+        $('#nameservers-form').find('input[name="ns4"]').val(defaults[3]);
+    }
+}
+
+// Contact Information
+$('#contact-form').submit(function(e) {
+    e.preventDefault();
+    var data = $(this).serialize();
+    data += '&domain_id=' + domainId;
+    
+    bb.post('client/servicedomain/update_contact', data, function(result) {
+        bb.msg(result.message);
+    });
+});
+
+// DNS Templates
+function applyDnsTemplate(template) {
+    if (!confirm('This will add predefined DNS records. Continue?')) {
+        return;
+    }
+    
+    var records = [];
+    
+    switch(template) {
+        case 'email':
+            records = [
+                {type: 'MX', name: '@', value: 'mail.' + '{{ domain.sld }}.{{ domain.tld }}', priority: 10},
+                {type: 'A', name: 'mail', value: 'YOUR_MAIL_SERVER_IP'},
+                {type: 'TXT', name: '@', value: 'v=spf1 mx ~all'}
+            ];
+            break;
+        case 'website':
+            records = [
+                {type: 'A', name: '@', value: 'YOUR_SERVER_IP'},
+                {type: 'A', name: 'www', value: 'YOUR_SERVER_IP'}
+            ];
+            break;
+        case 'parking':
+            records = [
+                {type: 'A', name: '@', value: '185.230.63.107'},
+                {type: 'A', name: 'www', value: '185.230.63.107'}
+            ];
+            break;
+    }
+    
+    // Add records
+    records.forEach(function(record) {
+        record.domain_id = domainId;
+        record.ttl = 3600;
+        bb.post('client/servicedomain/dns_add_record', record, function(result) {
+            console.log('Added record:', record);
+        });
+    });
+    
+    setTimeout(function() {
+        bb.msg('DNS template applied successfully');
+        refreshDnsRecords();
+    }, 1000);
+}
+</script>
+
+<style>
+.switch-container {
+    display: inline-block;
+}
+
+.switch-input {
+    display: none;
+}
+
+.switch-label {
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    background: #ccc;
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.switch-label:after {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    transition: left 0.3s;
+}
+
+.switch-input:checked + .switch-label {
+    background: #4CAF50;
+}
+
+.switch-input:checked + .switch-label:after {
+    left: 32px;
+}
+
+.switch-text {
+    display: none;
+}
+
+.dns-value {
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.text-monospace {
+    font-family: monospace;
+}
+
+.nav-tabs-custom {
+    margin-bottom: 20px;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+.nav-tabs-custom > .nav-tabs {
+    margin: 0;
+    border-bottom-color: #f4f4f4;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.nav-tabs-custom > .nav-tabs > li {
+    border-top: 3px solid transparent;
+    margin-bottom: -2px;
+    margin-right: 5px;
+}
+
+.nav-tabs-custom > .nav-tabs > li.active {
+    border-top-color: #3c8dbc;
+}
+
+.nav-tabs-custom > .tab-content {
+    background: #fff;
+    padding: 10px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+</style>
+{% endblock %}
