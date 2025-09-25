@@ -1,0 +1,21 @@
+# Configuration Terraform pour HestiaCP sur OpenStack
+# Copiez ce fichier vers terraform.tfvars et remplissez les valeurs
+
+# Configuration OpenStack
+openstack_auth_url    = "https://your-openstack-auth-url:5000/v3"
+openstack_username    = "your-username"
+openstack_password    = "your-password"
+openstack_tenant_name = "your-tenant"
+openstack_domain_name = "default"
+openstack_region      = "RegionOne"
+
+# Configuration HestiaCP
+hestiacp_flavor       = "m1.medium"
+hestiacp_image        = "ubuntu-20.04"
+hestiacp_keypair      = "your-ssh-keypair"
+hestiacp_network      = "your-network"
+hestiacp_subnet       = "your-subnet"
+hestiacp_domain       = "your-domain.com"
+
+# Configuration FOSSBilling
+fossbilling_ip        = "192.168.1.100"

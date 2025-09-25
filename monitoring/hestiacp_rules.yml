@@ -1,0 +1,58 @@
+# Règles d'alerte pour HestiaCP
+groups:
+  - name: hestiacp.rules
+    rules:
+      # Alerte CPU élevé
+      - alert: HestiaCPHighCPU
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HestiaCP CPU usage is high"
+          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+      # Alerte mémoire élevée
+      - alert: HestiaCPHighMemory
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HestiaCP Memory usage is high"
+          description: "Memory usage is above 90% for more than 5 minutes on {{ $labels.instance }}"
+
+      # Alerte disque plein
+      - alert: HestiaCPDiskSpace
+        expr: (node_filesystem_size_bytes - node_filesystem_avail_bytes) / node_filesystem_size_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HestiaCP Disk space is running out"
+          description: "Disk usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+      # Alerte nombre d'utilisateurs
+      - alert: HestiaCPUserLimit
+        expr: hestiacp_users_count > 90
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HestiaCP approaching user limit"
+          description: "User count is {{ $value }} on {{ $labels.instance }}"
+
+      # Alerte critique - déclenchement nouveau serveur
+      - alert: HestiaCPCriticalLoad
+        expr: |
+          (
+            (100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85) or
+            ((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 95) or
+            (hestiacp_users_count > 95)
+          )
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HestiaCP critical load - trigger new server deployment"
+          description: "Critical load detected on {{ $labels.instance }} - deploying new HestiaCP server"

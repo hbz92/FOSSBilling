@@ -1,0 +1,28 @@
+{
+  "fossbilling": {
+    "api_url": "https://your-fossbilling-domain.com/api",
+    "api_key": "your-fossbilling-api-key",
+    "ip": "192.168.1.100"
+  },
+  "hestiacp": {
+    "domain": "your-domain.com"
+  },
+  "terraform": {
+    "path": "/path/to/terraform/config"
+  },
+  "openstack": {
+    "auth_url": "https://your-openstack-auth-url:5000/v3",
+    "username": "your-username",
+    "password": "your-password",
+    "tenant_name": "your-tenant",
+    "domain_name": "default",
+    "region": "RegionOne"
+  },
+  "monitoring": {
+    "prometheus_url": "http://prometheus:9090",
+    "alertmanager_url": "http://alertmanager:9093"
+  },
+  "logging": {
+    "file": "/var/log/hestiacp-automation.log"
+  }
+}
