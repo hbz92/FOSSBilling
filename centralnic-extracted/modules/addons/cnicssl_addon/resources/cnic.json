@@ -1,0 +1,82 @@
+{
+  "securesiteflexov": {
+    "provider": "DigiCert",
+    "name": "Secure Site Flex OV"
+  },
+  "securesiteflexev": {
+    "provider": "DigiCert",
+    "name": "Secure Site Flex EV"
+  },
+  "securesiteproov": {
+    "provider": "DigiCert",
+    "name": "Secure Site Pro OV"
+  },
+  "securesiteproev": {
+    "provider": "DigiCert",
+    "name": "Secure Site Pro EV"
+  },
+  "geotrustflexdv": {
+    "provider": "GeoTrust",
+    "name": "QuickSSL Flex DV"
+  },
+  "geotrusttruebizidov": {
+    "provider": "GeoTrust",
+    "name": "True Business ID OV"
+  },
+  "geotrusttruebizidev": {
+    "provider": "GeoTrust",
+    "name": "True Business ID EV"
+  },
+  "rapidssldv": {
+    "provider": "RapidSSL",
+    "name": "Certificate"
+  },
+  "singledomainev": {
+    "provider": "Sectigo",
+    "name": "SSL EV"
+  },
+  "instantsslov": {
+    "provider": "Sectigo",
+    "name": "Instant SSL"
+  },
+  "multidomaindv": {
+    "provider": "Sectigo",
+    "name": "Multi-Domain SSL DV"
+  },
+  "multidomainev": {
+    "provider": "Sectigo",
+    "name": "Multi-Domain SSL EV"
+  },
+  "multidomainov": {
+    "provider": "Sectigo",
+    "name": "Multi-Domain SSL OV"
+  },
+  "positivessldv": {
+    "provider": "Sectigo",
+    "name": "Positive SSL"
+  },
+  "premiumov": {
+    "provider": "Sectigo",
+    "name": "Premium SSL"
+  },
+  "unifiedcommunicationsdv": {
+    "provider": "Sectigo",
+    "name": "DV SSL Unified Communications"
+  },
+  "unifiedcommunicationsov": {
+    "provider": "Sectigo",
+    "name": "OV SSL Unified Communications"
+  },
+  "ssl123dv": {
+    "provider": "thawte",
+    "name": "SSL 123"
+  },
+  "webserverev": {
+    "provider": "thawte",
+    "name": "SSL Webserver EV"
+  },
+  "webserverov": {
+    "provider": "thawte",
+    "name": "SSL Webserver OV"
+  }
+}

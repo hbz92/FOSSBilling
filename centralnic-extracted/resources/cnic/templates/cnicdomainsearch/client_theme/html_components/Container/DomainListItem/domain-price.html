@@ -1,0 +1,15 @@
+<div class="PhaseCollapsible-fullwidth__r0z2q AvailabilityCell-cellGrid__OpOeh">
+    <div class="PriceText-root__lJT6S Box-gridInline_force">
+        <span>
+            <span data-toggle="tooltip" data-placement="bottom" data-title="${ bindings.data.isAftermarket ? getMessage("domain_item_aftermaret_transfer_price") : ''}">
+                ${ bindings.data.registerPrice }
+            </span> &nbsp;
+            <select class="Select-root_small" id="changeDomainPeriod">
+                ${ bindings.data.domainRegisterPeriods }
+            </select>
+        </span>
+        <span class="Text-size-small_wppb0 Text-align-end_3rH75">
+            ${getMessage("domain_item_renew_price_label_a", bindings.data.renewPrice)}
+            ${getMessage("domain_item_renew_price_label_b", bindings.data.periodSuffix)}
+    </div>
+</div>

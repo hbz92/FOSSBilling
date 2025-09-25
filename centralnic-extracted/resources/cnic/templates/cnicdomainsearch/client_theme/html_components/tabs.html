@@ -1,0 +1,41 @@
+<!-- Desktop Menu -->
+<div class="Flex-flex_uh_R2 Flex-flexShrink0_2EfJF DomainPageTitle-root__h3nad">
+  <div
+    class="Checkout-mobileHidden__nIiWn Box-boxSizing-border__V1q3 Flex-flexAlignItemsCenter_3oJ12 Box-position-relative_2ZIyf Box-gap-xxsmall_1MrMP Box-padding-xxsmall_eQHyM Box-backgroundColor-white_3LQ-e Flex-flexInline_PeciM Flex-fleAlignItemsCenter_3oJ12 PillSwitch-root_EXVeB">
+    <!-- Radio buttons for each tab -->
+    ${bindings.tabs.map(tab => html`
+    <input type="radio" id="${tab.id}" name="domain-process-nav-switch" value="${tab.tab}"
+      class="PillSwitch-input_1B_yv SrOnly-all_3sYcg">
+    <label
+      class="Box-boxSizing-border__V1q3 Flex-flex_uh_R2 Flex-flexAlignItemsCenter_3oJ12 Text-weight-regular_Flodb PillSwitch-pill_2fl_U"
+      for="${tab.id}">
+      ${tab.label}
+    </label>
+    `)}
+    <!-- Indicator for the selected tab -->
+    <div class="PillSwitch-indicator_3wvRW" id="tabsSwitchIndicator"></div>
+  </div>
+
+  <!-- Mobile Menu -->
+<div class="cnic-mobile-menu ${searchConfig.showStickyMobileMenu ? 'cnic-sticky-mobile-menu' : ''}">
+  <!-- Mobile-specific menu content here -->
+  ${bindings.tabs.map(tab => html`
+  <label class="cnic-mobile-menu-item" for="${tab.id}-mobile">
+    <input type="radio" id="${tab.id}-mobile" name="domain-process-nav-switch" value="${tab.tab}"
+      class="PillSwitch-input_1B_yv SrOnly-all_3sYcg">
+    <div class="cnic-mobile-menu-content">
+      <i class="fas cnic-icon-${tab.id}"></i> <!-- Dynamic icon class based on tab ID -->
+      <span class="cnic-mobile-menu-label">${tab.label}</span>
+    </div>
+  </label>
+  `)}
+</div>
+
+  <!-- Content sections for each tab -->
+  ${bindings.tabs.map(tab => html`
+  <h1 class="Flex-flexGrow1_2dKRn Flex-flexShrink0_2EfJF" id="${tab.headingId}" hidden>
+    <!-- Content heading (adjust as needed) -->
+    <label for="search">${tab.headingLabel}</label>
+  </h1>
+  `)}
+</div>

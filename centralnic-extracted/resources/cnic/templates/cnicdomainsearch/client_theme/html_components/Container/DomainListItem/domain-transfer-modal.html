@@ -1,0 +1,8 @@
+<form>
+    <div class="form-group">
+        <label for="transfer-epp-code" class="control-label">${getMessage("modal_epp_code_label")}</label>
+        <input placeholder="${getMessage("modal_epp_code_label")}" type="text" value="${bindings.domainEppCode}" class="form-control" name="transfer-epp-code"
+            id="transfer-epp-code" required />
+    </div>
+</form>
+<span class="modal-info">${bindings.transferMsgError}</span>

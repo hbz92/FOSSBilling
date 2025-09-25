@@ -1,0 +1,88 @@
+<div class="Filters-container__pd4zh">
+	<div
+		class="Box-padding-xsmall_1rmUp Box-backgroundColor-grey-lighter_1VcXS Flex-flex_uh_R2 Flex-flexWrap_2RRPG Flex-flexJustifyBetween_1JGpd"
+	>
+		<div
+			class="Box-padding-xsmall_1rmUp Filters-filter__g_Ide"
+			?hidden="${!bindings.showPremiums}"
+		>
+			<label
+				class="Box-marginRight-xsmall_3Te9A Box-marginBottom-xsmall_3T43M Text-weight-semibold_gjQ4f Text-transform-uppercase_1NM52"
+				for="premiums"
+				>${getMessage("filter_premium")}</label
+			>
+			<fieldset class="ToggleGroup-root_MqYEk" id="premiumsToggle">
+				<label
+					class="${bindings.showPremiums?.show ? bindings.checkedClass : bindings.unCheckedClass }"
+				>
+					<input
+						type="radio"
+						name="premiums"
+						autocomplete="off"
+						value="show"
+						?checked="${bindings.showPremiums?.show}"
+						class="TogglePill-input_aq6FH"
+					/>${getMessage("filter_include")}
+				</label>
+				<label
+					class="${!bindings.showPremiums?.show ? bindings.checkedClass : bindings.unCheckedClass }"
+				>
+					<input
+						type="radio"
+						name="premiums"
+						autocomplete="off"
+						value="hide"
+						?checked="${!bindings.showPremiums?.show}"
+						class="TogglePill-input_aq6FH"
+					/>${getMessage("filter_exclude")}
+				</label>
+			</fieldset>
+		</div>
+		<div
+			class="Box-padding-xsmall_1rmUp Filters-filter__g_Ide"
+			?hidden="${!bindings.showUnavailable}"
+		>
+			<label
+				class="Box-marginRight-xsmall_3Te9A Box-marginBottom-xsmall_3T43M Text-weight-semibold_gjQ4f Text-transform-uppercase_1NM52"
+				for="unavailable"
+				>${getMessage("filter_unavailable")}
+				<span class="Text-color-light_15Jq_"
+					>${bindings.totalUnavailableDomains}</span
+				></label
+			>
+			<fieldset class="ToggleGroup-root_MqYEk" id="unavailableToggle">
+				<label
+					class="${bindings.showUnavailable?.show ? bindings.checkedClass : bindings.unCheckedClass }"
+				>
+					<input
+						type="radio"
+						name="unavailable"
+						autocomplete="off"
+						value="show"
+						?checked="${bindings.showUnavailable?.show}"
+						class="TogglePill-input_aq6FH"
+					/>${getMessage("filter_show")}
+				</label>
+				<label
+					class="${!bindings.showUnavailable?.show ? bindings.checkedClass : bindings.unCheckedClass }"
+				>
+					<input
+						type="radio"
+						name="unavailable"
+						autocomplete="off"
+						value="hide"
+						?checked="${!bindings.showUnavailable?.show}"
+						class="TogglePill-input_aq6FH"
+					/>${getMessage("filter_hide")}
+				</label>
+			</fieldset>
+		</div>
+		<div
+			class="Box-padding-xsmall_1rmUp Filters-filter__g_Ide"
+			style="text-align: left"
+		>
+			${bindings.priceRangeFilterTemplate} ${bindings.additionalConfigTemplate}
+		</div>
+	</div>
+	${bindings.categoriesTemplate}
+</div>

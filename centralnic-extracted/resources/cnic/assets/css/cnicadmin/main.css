@@ -1,0 +1,41 @@
+/* main.css - Master import file for CNIC Admin CSS architecture */
+
+/*
+ * CNIC Admin CSS Architecture (Phase 3 - Unified Modern System)
+ * ================================================
+ * 
+ * This file imports all CSS components in the correct order:
+ * 1. Design tokens and base styles
+ * 2. Layout and grid systems  
+ * 3. Component-specific styles
+ * 4. Modern unified components with Bootstrap compatibility
+ * 5. Utility classes
+ * 
+ * Each file has a clear, single responsibility:
+ * - base.css: Design tokens, variables, animations
+ * - layout.css: Grid systems, containers, responsive layouts
+ * - forms.css: Form fields, inputs, validation states
+ * - buttons.css: Button components and variations
+ * - tables.css: DataTable components and table styling
+ * - alerts.css: Alert and notification components
+ * - cnic-components.css: Modern unified components (Bootstrap compatibility + CNIC-specific)
+ * - utilities.css: Pure utility classes and helpers
+ */
+
+/* 1. Design Tokens & Base Styles */
+@import url('./base.css');
+
+/* 2. Layout & Grid Systems */
+@import url('./layout.css');
+
+/* 3. Component-Specific Styles */
+@import url('./forms.css');
+@import url('./buttons.css');
+@import url('./tables.css');
+@import url('./alerts.css');
+
+/* 4. Modern Unified Components (Bootstrap compatibility + CNIC-specific) */
+@import url('./cnic-components.css');
+
+/* 5. Utility Classes */
+@import url('./utilities.css');

@@ -1,0 +1,33 @@
+{
+    "ATTENTION": "Touching this file is of your own risk. Use our CNIC Config Addon to set custom defaults or report changes of this file back to CentralNic Reseller Customer Support!",
+    "values": {
+        "X-CA-LEGAL-TYPE": "CCO"
+    },
+    "vatid": {
+        "owner": "/(VAT-?(ID|NUMBER)|^X-IT-PIN|^X-PT-OWNER-IDENTIFICATION)$/",
+        "tech": "/^X-PT-TECH-IDENTIFICATION$/"
+    },
+    "individual": {
+        "X-CN-OWNER-TYPE": "I",
+        "X-DK-USER-TYPE": "PERSON",
+        "X-FI-CONTACT-TYPE": "0",
+        "X-FR-RESTRICT-PUB": "1",
+        "X-IE-CONTACT-TYPE": "OTH",
+        "X-IT-CONSENTFORPUBLISHING": "0",
+        "X-SK-CONTACT-LEGAL-FORM": "PERS",
+        "X-SWISS-OWNER-TYPE": "P"
+    },
+    "company": {
+        "X-CN-OWNER-TYPE": "E",
+        "X-IT-CONSENTFORPUBLISHING": "1",
+        "X-SK-CONTACT-LEGAL-FORM": "CORP",
+        "X-SWISS-OWNER-TYPE": "O"
+    },
+    "lang": {
+        "X-IE-LANGUAGE": "EN",
+        "X-EU-REGISTRANT-LANG": "en"
+    },
+    "country": {
+        "X-IT-NATIONALITY": 1
+    }
+}

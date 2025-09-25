@@ -1,0 +1,31 @@
+{
+  "schema": "1.0",
+  "type": "whmcs-addons",
+  "name": "cnicmigration",
+  "license": "MIT",
+  "category": "digitalservices",
+  "description": {
+    "name": "\u0000 Migration Tool",
+    "tagline": "Migrate your domains from any Registrar with ease using our addon CNIC Migrator Addon.",
+    "long": "",
+    "features": [
+      "Migrate Domain's from any Registrar in the world to a chosen Brand of the Team Internet Group PLC.",
+      "Consolidate your portfolio."
+    ]
+  },
+  "logo": {
+		"filename": "../../registrars/cnic/logo.png"
+  },
+  "support": {
+    "homepage": "https:\/\/www.centralnicreseller.com\/",
+    "learn_more": "https:\/\/github.com\/centralnicgroup-opensource\/rtldev-middleware-whmcs\/blob\/main\/README.md",
+    "support_url": "https:\/\/hexonet.support\/en\/new-ticket.php",
+    "docs_url": "https://support.centralnicreseller.com/hc/en-gb/articles/13508245341981-WHMCS-Domain-Migrator-Addon"
+  },
+  "authors": [
+    {
+      "name": "CentralNic Reseller",
+      "homepage": "https:\/\/www.centralnicreseller.com\/"
+    }
+  ]
+}

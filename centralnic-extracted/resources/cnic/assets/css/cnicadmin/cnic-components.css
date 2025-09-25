@@ -1,0 +1,2624 @@
+/**
+ * CNIC Admin - Modern Unified Components
+ * 
+ * This file contains all modern CNIC styling including Bootstrap compatibility,
+ * generic reusable components, and CNIC-specific styling. This is the single
+ * source of truth for CNIC admin interface styling.
+ * 
+ * Architecture:
+ * 1. Bootstrap Compatibility & Core Fixes
+ * 2. Generic Reusable Components (cnic-step, cnic-container, etc.)
+ * 3. Modern Panel System
+ * 4. CNIC-Specific Components
+ * 5. Utility Classes
+ */
+
+/* ===============================================
+   BOOTSTRAP COMPATIBILITY & CORE FIXES
+   =============================================== */
+
+/* Bootstrap 3.4.1 compatibility */
+.form-control {
+    height: auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    border: 1px solid var(--gray-400);
+    transition: var(--transition-all);
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-focus);
+}
+
+.btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-all);
+}
+
+/* ===============================================
+   GENERIC REUSABLE COMPONENTS
+   =============================================== */
+
+/* Generic Step Container - replaces sync-container, event-container, etc. */
+.cnic-step-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+/* Generic Step - replaces sync-step, wizard-step, etc. */
+.cnic-step {
+    display: none;
+    padding: var(--spacing-lg);
+    background: var(--white);
+}
+
+.cnic-step.active {
+    display: block;
+}
+
+.cnic-step h3 {
+    margin-bottom: 0;
+    color: var(--primary);
+    font-size: var(--font-size-lg);
+}
+
+/* Generic Progress Bar - replaces sync-progress, process-progress, etc. */
+.cnic-progress {
+    margin-bottom: var(--spacing-lg);
+}
+
+.cnic-progress-bar {
+    width: 100%;
+    height: var(--spacing-sm);
+    background: var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.cnic-progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: width 0.3s ease;
+}
+
+/* Generic Choice Cards - inherits from sync-choice-card structure */
+.cnic-choice-card {
+    background: white;
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: var(--spacing-lg);
+    height: 180px;
+    /* Match existing sync-choice-card height */
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.cnic-choice-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.cnic-choice-card.active {
+    border-color: var(--primary);
+    background: var(--gradient-choice);
+    box-shadow: var(--shadow-elevated);
+    transform: translateY(-2px);
+}
+
+.cnic-choice-card.selected {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+/* Ensure choice content fills the card properly */
+.cnic-choice-card .choice-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.cnic-choice-card .choice-recommendation {
+    margin-top: auto;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+}
+
+/* Generic Section Container - replaces additional-fields-section, refresh-section, etc. */
+.cnic-section {
+    background-color: #f9fbfe;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    transition: all 0.3s ease;
+}
+
+.cnic-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+/* Generic Documentation Link */
+.cnic-docs-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-all);
+}
+
+.cnic-docs-button:hover {
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+
+.cnic-docs-button i {
+    font-size: var(--font-size-xs);
+}
+
+/* Generic Badges & Status Indicators */
+.cnic-badge {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    border-radius: var(--radius-pill);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.cnic-badge-primary {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.cnic-badge-success {
+    background: var(--green-500);
+    color: var(--white);
+}
+
+.cnic-badge-warning {
+    background: var(--yellow-500);
+    color: var(--white);
+}
+
+.cnic-badge-danger {
+    background: var(--red-500);
+    color: var(--white);
+}
+
+/* Generic Empty State */
+.cnic-empty-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    color: var(--gray-600);
+}
+
+.cnic-empty-state i {
+    font-size: var(--font-size-3xl);
+    color: var(--gray-400);
+    margin-bottom: var(--spacing-lg);
+    display: block;
+}
+
+/* ===============================================
+   MODERN PANEL SYSTEM - CONSOLIDATED
+   =============================================== */
+
+/* Base panel styling for both panel-default and panel-modern */
+.panel-default,
+.panel-modern {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+    overflow: hidden;
+    background: #fff;
+    margin-bottom: 30px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.panel-default:hover,
+.panel-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Container spacing */
+.container.cnicadmin-main {
+    padding: 20px 15px;
+}
+
+.cnicadmin-main .row {
+    margin-left: -15px;
+    margin-right: -15px;
+}
+
+.cnicadmin-main .col-md-12 {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Common panel heading styles with light text by default */
+.panel-heading {
+    border-bottom: none;
+    padding: 25px 30px;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    /* Default to light text for dark backgrounds */
+    display: flex;
+    align-items: center;
+}
+
+/* Panel headings - dark gradient for default, light for modern */
+.panel-default .panel-heading {
+    background: var(--gradient-panel) !important;
+    color: white;
+}
+
+.panel-modern .panel-heading {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-bottom: 1px solid #cbd5e1;
+}
+
+/* Ensure proper text color inheritance */
+.panel-heading,
+.panel-heading *,
+.panel-heading .panel-title,
+.panel-heading h1,
+.panel-heading h2,
+.panel-heading h3,
+.panel-heading h4,
+.panel-heading h5,
+.panel-heading h6 {
+    color: inherit;
+}
+
+/* Panel body */
+.panel-body {
+    padding: 30px 25px;
+    background: #fafbfc;
+}
+
+/* Row alignment within headers */
+.panel-heading .row.cnic-align-items-center {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.panel-heading .row.cnic-align-items-center>[class*="col-"] {
+    padding: 0 15px;
+}
+
+/* Panel title common styles - extends Bootstrap's panel-title */
+.panel-title {
+    margin: 0;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* Align to left by default */
+    width: 100%;
+    /* Take full width */
+    color: inherit;
+    /* Inherit color from parent panel heading */
+}
+
+/* When panel-badge is present, push it to the right */
+.panel-title .panel-badge {
+    margin-left: auto;
+}
+
+.panel-title>*:not(.panel-badge) {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.panel-description {
+    margin: 8px 0 0 0;
+    opacity: 0.9;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Step-specific styling for sync progress */
+.step-title {
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    font-size: 14px;
+}
+
+.step-subtitle {
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+/* Text color utilities for steps */
+.text-purple {
+    color: #8b5cf6;
+}
+
+.text-warning {
+    color: var(--warning);
+}
+
+/* Choice card improvements */
+.choice-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ===============================================
+   ICON WRAPPER & BADGE SYSTEM - CONSOLIDATED
+   =============================================== */
+
+/* Base icon wrapper - used by both .icon-wrapper and .cnic-icon-wrapper */
+.icon-wrapper,
+.cnic-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.icon-wrapper i,
+.cnic-icon-wrapper i {
+    color: white;
+    font-size: 16px;
+}
+
+/* Default gradient for icon-wrapper */
+.icon-wrapper {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+/* Variant gradients for cnic-icon-wrapper */
+.cnic-icon-wrapper.blue {
+    background: var(--gradient-blue-icon);
+}
+
+.cnic-icon-wrapper.green {
+    background: var(--gradient-green-icon);
+}
+
+.cnic-icon-wrapper.orange {
+    background: var(--gradient-orange-icon);
+}
+
+.cnic-icon-wrapper.purple {
+    background: var(--gradient-purple-icon);
+}
+
+/* Badge system - consolidated */
+.panel-badge,
+.cnic-badge {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.panel-badge {
+    margin-left: auto;
+    /* Push badge to the right when inside panel-title */
+}
+
+/* ===============================================
+   CNIC COMPONENT SYSTEM
+   All custom CNIC-prefixed components
+   =============================================== */
+
+/* --- DOCUMENTATION BUTTON --- */
+.cnic-documentation-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.cnic-documentation-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+/* --- PANEL HEADERS & TITLES --- */
+.cnic-panel-header {
+    background: var(--gradient-header);
+    padding: var(--padding-header);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* Remove duplicate cnic-panel-title - use .panel-title instead */
+
+/* --- CARDS & PANELS --- */
+/* panel-modern now includes all modern card styling */
+.panel-modern {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.panel-modern .panel-body,
+.cnic-card-body,
+.cnic-section-body,
+.panel-body {
+    padding: var(--spacing-xl) var(--spacing-5xl) var(--spacing-xl) var(--spacing-5xl) !important;
+    /* 20px top/bottom, 35px left/right */
+    background: white;
+}
+
+/* --- FIELD ITEMS & LABELS --- */
+.cnic-field-item {
+    margin-bottom: var(--spacing-lg);
+}
+
+.cnic-field-label {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-medium);
+    font-size: var(--font-size-sm);
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* --- CODE BLOCKS & TEXT AREAS --- */
+.cnic-code-block {
+    background: var(--bg-muted);
+    color: var(--text-dark);
+    padding: var(--padding-small);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    font-size: var(--font-size-sm);
+    display: block;
+    font-family: monospace;
+}
+
+.cnic-text-area {
+    background: var(--bg-muted);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    color: var(--text-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    min-height: 120px;
+    word-break: break-all;
+}
+
+.cnic-mono-display {
+    color: var(--text-dark);
+    font-size: var(--font-size-base);
+    font-family: monospace;
+    background: var(--bg-muted);
+    padding: var(--padding-small);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+}
+
+/* --- BADGES & STATUS INDICATORS --- */
+.cnic-badge {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.cnic-status-item {
+    border: none;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--gray-200);
+    background: transparent;
+    display: flex;
+    align-items: flex-start;
+}
+
+.cnic-status-number {
+    background: var(--blue-500);
+    color: white;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    margin-right: var(--spacing-md);
+    min-width: 35px;
+    text-align: center;
+}
+
+.cnic-status-text {
+    color: var(--text-dark);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* --- EMPTY STATES & PLACEHOLDERS --- */
+.cnic-empty-state {
+    text-align: center;
+    padding: var(--spacing-4xl);
+    color: var(--text-disabled);
+}
+
+.cnic-empty-state i {
+    font-size: 36px;
+    margin-bottom: var(--spacing-lg);
+    display: block;
+}
+
+.cnic-empty-state p {
+    margin: 0;
+    font-size: var(--font-size-base);
+    color: var(--text-muted-light);
+}
+
+/* --- CONTAINERS & BACKGROUNDS --- */
+.cnic-light-container {
+    background: var(--bg-muted);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-lg);
+}
+
+/* --- MARGIN & PADDING UTILITIES --- */
+.cnic-mb-15 {
+    margin-bottom: var(--spacing-lg);
+}
+
+.cnic-mb-20 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.cnic-p-20 {
+    padding: var(--spacing-xl);
+}
+
+.cnic-p-15 {
+    padding: var(--spacing-lg);
+}
+
+.cnic-pt-15 {
+    padding-top: var(--spacing-lg);
+}
+
+.cnic-pb-15 {
+    padding-bottom: var(--spacing-lg);
+}
+
+.cnic-pl-20 {
+    padding-left: var(--spacing-xl);
+}
+
+.cnic-pr-20 {
+    padding-right: var(--spacing-xl);
+}
+
+/* --- LIST & GROUP UTILITIES --- */
+.cnic-list-group {
+    margin: 0;
+}
+
+.cnic-field-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- MODAL ENHANCEMENTS --- */
+.cnic-modal-header {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+}
+
+.cnic-modal-title {
+    color: white;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+}
+
+.cnic-modal-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--spacing-md);
+}
+
+.cnic-modal-icon i {
+    color: white !important;
+    font-size: var(--font-size-lg);
+}
+
+.cnic-modal-close {
+    color: white;
+    opacity: 0.8;
+    text-shadow: none;
+    font-size: var(--font-size-2xl);
+}
+
+.cnic-modal-body {
+    background: var(--bg-card);
+    padding: var(--spacing-4xl);
+}
+
+.cnic-modal-footer {
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    padding: var(--spacing-xl) var(--spacing-4xl);
+}
+
+.cnic-modal-close-btn {
+    padding: 10px var(--spacing-2xl);
+    font-weight: var(--font-weight-medium);
+}
+
+/* --- MODAL SIZE ENHANCEMENTS --- */
+.modal-xl {
+    width: 90%;
+    max-width: 1140px;
+}
+
+.modal-xl .modal-content {
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 1200px) {
+    .modal-xl {
+        width: 95%;
+        margin: 15px auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .modal-xl {
+        width: 98%;
+        margin: 10px auto;
+    }
+
+    .modal-xl .modal-body {
+        padding: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 1200px) {
+    .modal-xl {
+        width: 95%;
+        margin: 15px auto;
+    }
+}
+
+
+
+/* --- SECTION HEADERS - CONSOLIDATED --- */
+
+/* Section container for standalone sections */
+.cnic-section-container {
+    margin-bottom: var(--spacing-xl);
+}
+
+/* Section header styling */
+.cnic-section-header {
+    background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border-bottom: 2px solid var(--gray-300);
+    margin-bottom: 0;
+}
+
+.cnic-section-title {
+    font-weight: var(--font-weight-normal);
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    color: white;
+    /* Ensure title is white on dark backgrounds */
+}
+
+.cnic-section-title i {
+    margin-right: var(--spacing-md);
+    font-size: var(--font-size-xl);
+    transition: transform 0.3s ease;
+    color: white;
+    /* Ensure icon is white */
+}
+
+/* Subsection titles for content within panels */
+.cnic-subsection-title {
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: var(--font-size-lg);
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+}
+
+.cnic-subsection-title i {
+    margin-right: var(--spacing-sm);
+    color: var(--primary);
+    font-size: var(--font-size-base);
+}
+
+.cnic-section-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    margin: var(--spacing-sm) 0 0 32px;
+    font-size: var(--font-size-base);
+}
+
+/* Ensure subtitle content (including HTML tags) inherits white color */
+.cnic-section-subtitle,
+.cnic-section-subtitle * {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.cnic-header-stats,
+.header-stats {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: var(--font-size-sm);
+}
+
+.cnic-header-stats i {
+    margin-right: var(--spacing-sm);
+}
+
+.cnic-header-decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    transform: skewX(-15deg);
+    transform-origin: top right;
+}
+
+.cnic-section-body {
+    padding: 0;
+}
+
+.cnic-alert-container {
+    /*padding: var(--spacing-xl) var(--spacing-4xl);*/
+    margin: 0;
+}
+
+/* --- UTILITY CLASSES --- */
+.cnic-hidden {
+    display: none !important;
+}
+
+.cnic-flex {
+    display: flex;
+}
+
+.cnic-flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cnic-flex-center {
+    display: flex;
+    align-items: center;
+}
+
+.cnic-text-center {
+    text-align: center;
+}
+
+.cnic-p-20-center {
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.cnic-p-30 {
+    padding: var(--spacing-4xl);
+}
+
+.cnic-modern-label {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-lg);
+    margin-bottom: 10px;
+}
+
+.cnic-text-muted {
+    color: #555;
+}
+
+/* Sync section header styling */
+.sync-section-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.sync-section-header .control-label {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-lg);
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.sync-section-header .control-label i {
+    margin-right: var(--spacing-sm);
+    color: var(--primary);
+    font-size: var(--font-size-base);
+}
+
+.sync-section-header .help-block {
+    color: var(--gray-600);
+    font-size: var(--font-size-sm);
+    margin: 0;
+}
+
+/* Domain search input styling */
+.domain-search-wrapper .input-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.domain-search-wrapper .input-group-addon {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-400);
+    border-right: none;
+    color: var(--gray-600);
+}
+
+.domain-search-wrapper .form-control {
+    border-left: none;
+    height: auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.domain-dropdown-wrapper .form-control {
+    min-height: 120px;
+    font-family: monospace;
+    font-size: var(--font-size-sm);
+}
+
+/* Enhanced domain selection styling */
+.domain-selection-section {
+    background: var(--bg-muted);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+}
+
+.input-group-modern {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: var(--transition-all);
+}
+
+.input-group-modern:focus-within {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.input-group-modern .input-group-addon {
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+    font-size: var(--font-size-sm);
+}
+
+.form-control-modern {
+    border: 1px solid var(--gray-300);
+    border-left: none;
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-md);
+    transition: var(--transition-all);
+}
+
+.form-control-modern:focus {
+    border-color: var(--primary);
+    box-shadow: none;
+}
+
+.cnic-select-modern {
+    background: white;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-md);
+    min-height: 140px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: var(--transition-all);
+}
+
+.cnic-select-modern:focus {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.cnic-select-modern option {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-dark);
+}
+
+.cnic-select-modern option:hover,
+.cnic-select-modern option:selected {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.domain-info-alert {
+    margin-top: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid #d1ecf1;
+    background: #d4edda;
+    border-color: #bee5eb;
+}
+
+/* Filter form layout improvements */
+.panel-body .row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.panel-body .row>[class*="col-"] {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Filter form responsive improvements */
+.panel-body .form-group {
+    margin-bottom: 20px;
+}
+
+/* Enhanced selectize styling for TLD lookup with modern purple theme */
+.tld-lookup-container .selectize-input {
+    border: 2px solid #e5e7eb !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    background: linear-gradient(135deg, #fafbff 0%, #ffffff 100%) !important;
+    min-height: 54px !important;
+    box-shadow: 0 2px 8px rgba(147, 51, 234, 0.08) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+}
+
+.tld-lookup-container .selectize-input.focus {
+    border-color: #9333ea !important;
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.12), 0 4px 20px rgba(147, 51, 234, 0.18) !important;
+    background: linear-gradient(135deg, #faf7ff 0%, #ffffff 100%) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Enhanced placeholder and input styling */
+.tld-lookup-container .selectize-input input {
+    font-size: 16px !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+    padding: 0 !important;
+}
+
+.tld-lookup-container .selectize-input.has-focus input {
+    color: #1f2937 !important;
+}
+
+.tld-lookup-container .selectize-dropdown {
+    border: 2px solid #9333ea !important;
+    border-top: none !important;
+    border-radius: 0 0 12px 12px !important;
+    box-shadow: 0 8px 25px rgba(147, 51, 234, 0.2) !important;
+    background: white !important;
+    z-index: 1050 !important;
+    position: absolute !important;
+}
+
+.tld-lookup-container .selectize-dropdown .option {
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+    border-bottom: 1px solid #f3f4f6 !important;
+    transition: all 0.2s ease !important;
+    font-weight: 500 !important;
+}
+
+.tld-lookup-container .selectize-dropdown .option:hover {
+    background: linear-gradient(135deg, #f3f0ff 0%, #faf7ff 100%) !important;
+    color: #7c3aed !important;
+    font-weight: 600 !important;
+}
+
+.tld-lookup-container .selectize-dropdown .option.active {
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+/* Enhanced input group styling for better visual hierarchy */
+.tld-lookup-container .input-group {
+    max-width: 700px !important;
+    margin: 0 auto !important;
+    box-shadow: 0 8px 32px rgba(147, 51, 234, 0.12) !important;
+    border-radius: 16px !important;
+    overflow: visible !important;
+    background: white !important;
+    display: flex !important;
+    align-items: stretch !important;
+}
+
+/* Fix for selectize between elements */
+.tld-lookup-container .input-group .selectize-control {
+    flex: 1 !important;
+    display: flex !important;
+    position: relative !important;
+}
+
+.tld-lookup-container .input-group .selectize-control .selectize-input {
+    border-radius: 0 !important;
+    height: auto !important;
+    min-height: 58px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.tld-lookup-container .input-group-addon {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #334155 100%) !important;
+    border: 2px solid var(--primary-dark) !important;
+    border-right: none !important;
+    color: white !important;
+    padding: 5px 26px 5px 15px;
+    font-size: 18px !important;
+    min-width: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+}
+
+.tld-lookup-container .input-group-btn {
+    display: flex !important;
+    flex: 0 0 auto !important;
+}
+
+.tld-lookup-container .input-group-btn .btn {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #1e40af 100%) !important;
+    border: 2px solid var(--primary-dark) !important;
+    border-left: none !important;
+    color: white !important;
+    padding: 14px 24px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    white-space: nowrap !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.tld-lookup-container .input-group-btn .btn:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(22, 90, 141, 0.3) !important;
+}
+
+/* Disabled button state - ensure it's still visible */
+.tld-lookup-container .input-group-btn .btn.disabled,
+.tld-lookup-container .input-group-btn .btn:disabled {
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%) !important;
+    border-color: #9ca3af !important;
+    color: #d1d5db !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    /* Ensure it's visible */
+    display: flex !important;
+    /* Ensure it's displayed */
+}
+
+/* Enhanced Recent TLDs panel with blueish theme */
+#recentTldsSection .panel-heading.cnic-panel-header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #334155 100%) !important;
+    color: white !important;
+    padding: 22px 28px !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+#recentTldsSection .panel-title {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+
+#recentTldsSection .cnic-icon-wrapper.orange {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+}
+
+#recentTldsSection .panel-body {
+    background: #f8fafc !important;
+    padding: 25px 28px !important;
+}
+
+#recentTldsSection .cnic-text-muted {
+    color: #64748b !important;
+    font-size: 15px !important;
+    margin-bottom: 20px !important;
+    text-align: center !important;
+}
+
+/* Enhanced recent TLD buttons with blueish theme */
+.recent-tlds-container .recent-tld-btn {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    border: 2px solid #cbd5e1 !important;
+    color: #475569 !important;
+    border-radius: 10px !important;
+    padding: 12px 18px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: inline-block !important;
+    margin: 4px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+.recent-tlds-container .recent-tld-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #1e40af 100%) !important;
+    border-color: var(--primary-dark) !important;
+    color: white !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(22, 90, 141, 0.25) !important;
+    text-decoration: none !important;
+}
+
+.recent-tlds-container .recent-tld-btn:active {
+    transform: translateY(-1px) !important;
+}
+
+/* TLD Lookup panel header styling - ensure blueish theme */
+.tld-lookup-container .panel-heading.cnic-panel-header,
+.panel-modern .panel-heading.cnic-panel-header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #334155 100%) !important;
+    color: white !important;
+}
+
+.tld-lookup-container .cnic-icon-wrapper.blue {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+}
+
+/* Keep normal blue gradient for sync choice cards */
+.panel-modern .cnic-icon-wrapper.blue {
+    background: var(--gradient-blue-icon) !important;
+    color: white !important;
+}
+
+/* Button group styling for filter actions */
+.panel-body .btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.panel-body .btn-group .btn {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+/* Responsive form adjustments */
+@media (max-width: 768px) {
+    .panel-body .btn-group {
+        flex-direction: column;
+    }
+
+    .panel-body .btn-group .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .panel-body .btn-group .btn:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* --- MODERN MICRO-INTERACTIONS & TRANSITIONS --- */
+
+/* Page transitions */
+.cnicadmin-main {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Icon hover animations */
+.panel-heading:hover .cnic-section-title i {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Form field focus animations */
+.form-control,
+.modern-select,
+.selectize-input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.form-control:focus,
+.modern-select:focus,
+.selectize-input.focus {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(26, 91, 152, 0.15);
+    border-color: #3b82f6;
+    outline: none;
+}
+
+/* Enhanced dropdown styling for filter sections */
+.panel-body .form-control,
+.panel-body .selectize-input {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.panel-body .form-control:focus,
+.panel-body .selectize-input.focus {
+    background: white;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: none;
+    /* Remove the translateY for filter forms */
+}
+
+/* Select dropdown styling */
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px 12px;
+    padding-right: 40px;
+}
+
+/* Form group spacing in filter panels */
+.panel-body .form-group {
+    margin-bottom: 20px;
+}
+
+.panel-body .form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Label styling for filter forms */
+.panel-body label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 13px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Input group styling for filter forms */
+.panel-body .input-group,
+.tld-lookup-container .input-group {
+    display: flex;
+    align-items: stretch;
+    max-width: 600px;
+    margin: 0 auto;
+    overflow: visible;
+    /* Prevent button cropping */
+}
+
+.panel-body .input-group .form-control,
+.tld-lookup-container .form-control {
+    border: 1px solid #e2e8f0;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    padding: 12px 16px;
+    font-size: 16px;
+    background: white;
+    box-shadow: none;
+    transform: none !important;
+    flex: 1;
+}
+
+.tld-lookup-container .form-control {
+    padding: 0 !important;
+}
+
+.panel-body .input-group .form-control:focus,
+.tld-lookup-container .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: none;
+    transform: none !important;
+    background: white;
+}
+
+.panel-body .input-group-addon,
+.tld-lookup-container .input-group-addon {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 5px 26px 5px 15px;
+    color: #64748b;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.panel-body .input-group-btn,
+.tld-lookup-container .input-group-btn {
+    display: flex;
+    align-items: stretch;
+}
+
+.tld-lookup-container .btn {
+    border-radius: 0 8px 8px 0;
+    border: 1px solid #3b82f6;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    min-height: 58px;
+    /* Match input height */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+}
+
+.tld-lookup-container .btn:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    transform: none !important;
+}
+
+/* Button interactions */
+.btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* Enhanced button styling for filter sections */
+.panel-body .btn-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.panel-body .btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
+}
+
+.panel-body .btn-default,
+.panel-body .btn-secondary {
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.panel-body .btn-default:hover,
+.panel-body .btn-secondary:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #475569;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading states */
+.loading-indicator {
+    animation: pulse 2s infinite;
+}
+
+/* ===============================================
+   CNIC MODERN FIELD COMPONENTS
+   =============================================== */
+
+/* Modern field row styling - Compact responsive design */
+.cnic-field-row {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+/* Responsive grid layout for fields - Enhanced */
+@media (min-width: 992px) {
+    .fields-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-bottom: 0;
+    }
+    
+    .cnic-field-row {
+        margin-bottom: 0;
+    }
+    
+    /* Full width for certain field types */
+    .cnic-field-row.field-full,
+    .cnic-field-row[data-field-type="textarea"],
+    .cnic-field-row[data-field-type="select-multiple"] {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 1200px) {
+    .fields-grid.three-columns {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .fields-grid.three-columns .cnic-field-row.field-full,
+    .fields-grid.three-columns .cnic-field-row[data-field-type="textarea"],
+    .fields-grid.three-columns .cnic-field-row[data-field-type="select-multiple"] {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 991px) {
+    .fields-grid {
+        display: block;
+    }
+    
+    .cnic-field-row {
+        margin-bottom: 12px;
+    }
+}
+
+.cnic-field-row:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Field header with label and visibility toggle - Compact */
+.cnic-field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 12px;
+}
+
+.cnic-field-label-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.cnic-field-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.4;
+}
+
+/* Required badge - More compact */
+.cnic-required-badge {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+
+/* Visibility toggle section - Compact */
+.cnic-field-visibility {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.cnic-visibility-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Modern toggle switch - Slightly smaller */
+.cnic-toggle-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+.cnic-toggle {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.cnic-toggle-label {
+    display: block;
+    width: 38px;
+    height: 20px;
+    background: #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.cnic-toggle-label::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.cnic-toggle:checked+.cnic-toggle-label {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.cnic-toggle:checked+.cnic-toggle-label::after {
+    transform: translateX(18px);
+}
+
+/* Toggle focus states for accessibility */
+.cnic-toggle:focus+.cnic-toggle-label {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Toggle disabled state */
+.cnic-toggle:disabled+.cnic-toggle-label {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Bootstrap switch compatibility */
+.bootstrap-switch-wrapper .bootstrap-switch {
+    display: inline-block;
+}
+
+.bootstrap-switch-wrapper .bootstrap-switch.bootstrap-switch-mini {
+    min-width: 44px;
+}
+
+.bootstrap-switch-wrapper .bootstrap-switch .bootstrap-switch-handle-on,
+.bootstrap-switch-wrapper .bootstrap-switch .bootstrap-switch-handle-off {
+    font-size: 12px;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 8px;
+}
+
+.bootstrap-switch-wrapper .bootstrap-switch .bootstrap-switch-label {
+    height: 24px;
+    width: 20px;
+}
+
+/* Enhanced toggle visual states */
+.cnic-toggle-wrapper.toggle-on .cnic-toggle-label {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.cnic-toggle-wrapper.toggle-off .cnic-toggle-label {
+    background: #cbd5e1;
+}
+
+.cnic-toggle-wrapper.initialized {
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.cnic-toggle-wrapper.toggle-animate {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+/* Visibility controls styling */
+.cnic-field-visibility {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Enhanced field states */
+.cnic-field-row.field-focused {
+    background: #f8fafc;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.cnic-field-row.field-valid {
+    border-left: 4px solid #10b981;
+}
+
+.cnic-field-row.field-invalid {
+    border-left: 4px solid #ef4444;
+}
+
+.cnic-field-row.field-invalid .cnic-field-label {
+    color: #ef4444;
+}
+
+/* Field input container - Compact */
+.cnic-field-input {
+    margin-bottom: 8px;
+}
+
+.cnic-field-input .cnic-input {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+    width: 100%;
+    min-height: 36px;
+}
+
+.cnic-field-input .cnic-input:focus {
+    border-color: #3b82f6;
+    background: white;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+/* Special styling for different input types */
+.cnic-field-input textarea.cnic-input {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.cnic-field-input select.cnic-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 8px center;
+    background-repeat: no-repeat;
+    background-size: 16px 12px;
+    padding-right: 32px;
+}
+
+.cnic-field-input select[multiple].cnic-input {
+    background-image: none;
+    padding-right: 12px;
+    min-height: 100px;
+}
+
+/* Field help text - Compact */
+.cnic-field-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #3b82f6;
+    margin-top: 4px;
+}
+
+.cnic-field-help i {
+    color: #3b82f6;
+    margin-top: 1px;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.cnic-field-help span {
+    font-size: 12px;
+    color: #475569;
+    line-height: 1.4;
+}
+
+/* Form sections - Enhanced with better structure */
+.cnic-form-section {
+    margin-bottom: 32px;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.cnic-form-section:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #e2e8f0;
+}
+
+.cnic-form-section .field-group-header {
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.cnic-form-section .field-group-body {
+    padding: 20px;
+}
+
+.cnic-form-section .fields-grid {
+    margin-bottom: 0;
+}
+
+/* Responsive form section adjustments */
+@media (max-width: 768px) {
+    .cnic-form-section {
+        margin-bottom: 24px;
+        border-radius: 8px;
+    }
+    
+    .cnic-form-section .field-group-header {
+        border-radius: 8px 8px 0 0;
+        padding: 12px 16px;
+    }
+    
+    .cnic-form-section .field-group-body {
+        padding: 16px;
+    }
+}
+
+/* Form actions - Compact */
+.additional-fields-form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-start;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 24px;
+}
+
+/* Panel footer for card-style layout */
+.panel-footer.additional-fields-form-actions {
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 0 0 12px 12px;
+    padding: 20px 24px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+@media (max-width: 576px) {
+    .additional-fields-form-actions {
+        flex-direction: column;
+    }
+    
+    .additional-fields-form-actions .btn {
+        width: 100%;
+    }
+}
+
+.cnic-form-section:last-child {
+    margin-bottom: 0;
+}
+
+/* Fields container */
+.cnic-fields-container {
+    margin-top: 24px;
+}
+
+/* Form actions */
+.cnic-form-actions {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 32px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+}
+
+.cnic-form-actions .btn {
+    margin: 0 8px;
+}
+
+/* Help info in form actions */
+.cnic-help-info {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.cnic-help-info i {
+    color: #3b82f6;
+}
+
+/* Info list styling */
+.cnic-info-list {
+    margin: 12px 0 0 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.cnic-info-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cnic-info-list li:last-child {
+    border-bottom: none;
+}
+
+.cnic-info-list strong {
+    color: inherit;
+}
+
+/* Alert content styling */
+.alert-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.alert-content i {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.alert-content div {
+    flex: 1;
+}
+
+/* Animation keyframes */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Dashboard Layout */
+.cnic-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 24px;
+    /* Add horizontal padding for spacing from container edges */
+}
+
+/* Dashboard Cards */
+.cnic-dashboard-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.cnic-dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.cnic-card-header {
+    padding: 20px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cnic-card-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.cnic-card-description {
+    color: #64748b;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.cnic-card-features {
+    margin-bottom: 20px;
+}
+
+.cnic-feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cnic-feature-list li {
+    padding: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.cnic-card-actions .btn {
+    font-weight: 500;
+    padding: 12px 20px;
+}
+
+/* Info Cards */
+.cnic-info-card {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 20px;
+    height: 100%;
+    border: 1px solid #e2e8f0;
+}
+
+.cnic-info-card h5 {
+    margin-bottom: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cnic-info-card p {
+    color: #64748b;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+/* Additional gradient button variants */
+.btn-gradient-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    color: white;
+}
+
+.btn-gradient-purple {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    border: none;
+    color: white;
+}
+
+.btn-gradient-orange {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border: none;
+    color: white;
+}
+
+.btn-gradient-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    border: none;
+    color: white;
+}
+
+.btn-gradient-info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    border: none;
+    color: white;
+}
+
+/* Icon wrapper color variants */
+.cnic-icon-wrapper.teal {
+    background: linear-gradient(135deg, #14b8a6, #0f766e);
+}
+
+.cnic-icon-wrapper.red {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.cnic-icon-wrapper.gray {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .cnic-dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0 16px;
+        /* Smaller padding on mobile devices */
+    }
+
+    .cnic-card-header,
+    .cnic-card-body,
+    .cnic-section-body,
+    .panel-body {
+        padding: var(--spacing-lg) var(--spacing-2xl) var(--spacing-lg) var(--spacing-2xl) !important;
+        /* 16px top/bottom, 24px left/right */
+    }
+
+    /* Generic responsive adjustments */
+    .cnic-step-container {
+        padding: var(--spacing-lg);
+    }
+
+    .cnic-choice-card {
+        padding: var(--spacing-lg);
+    }
+
+    .field-row {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .field-label {
+        flex: none;
+        margin-bottom: var(--spacing-xs);
+    }
+
+    .form-actions {
+        text-align: center;
+        padding: var(--spacing-lg);
+    }
+
+    .form-actions .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: var(--spacing-sm);
+    }
+}
+
+/* ===============================================
+   PRINT MEDIA SUPPORT
+   =============================================== */
+
+@media print {
+    .field-row {
+        border: none !important;
+        box-shadow: none !important;
+        margin-bottom: var(--spacing-md) !important;
+        padding: var(--spacing-sm) !important;
+        background: transparent !important;
+    }
+
+    .form-actions,
+    .btn,
+    .alert .close,
+    .cnic-docs-button {
+        display: none !important;
+    }
+
+    .cnic-step-container,
+    .cnic-section {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+}
+
+/* ===============================================
+   UTILITY CLASSES
+   =============================================== */
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.text-muted {
+    color: var(--gray-600) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-success {
+    color: var(--green-600) !important;
+}
+
+.text-warning {
+    color: var(--yellow-600) !important;
+}
+
+.text-danger {
+    color: var(--red-600) !important;
+}
+
+.pull-left {
+    float: left !important;
+}
+
+.pull-right {
+    float: right !important;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Legacy class aliases for backward compatibility (temporary) */
+.sync-container,
+.event-container,
+.domain-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: var(--spacing-xl);
+}
+
+.sync-step,
+.wizard-step,
+.process-step {
+    display: none;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-300);
+}
+
+.sync-step.active,
+.wizard-step.active,
+.process-step.active {
+    display: block;
+}
+
+.sync-progress,
+.process-progress,
+.wizard-progress {
+    margin-bottom: var(--spacing-lg);
+}
+
+.sync-progress-bar,
+.process-progress-bar,
+.wizard-progress-bar {
+    width: 100%;
+    height: var(--spacing-sm);
+    background: var(--gray-200);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.sync-progress-fill,
+.process-progress-fill,
+.wizard-progress-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    transition: width 0.3s ease;
+}
+
+/* Cancelled progress state */
+.sync-progress-fill.bg-warning,
+.process-progress-fill.bg-warning,
+.wizard-progress-fill.bg-warning {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.progress-bar.bg-warning {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+}
+
+.additional-fields-section,
+.refresh-section,
+.event-section {
+    background-color: #f9fbfe;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    transition: all 0.3s ease;
+}
+
+.docs-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-all);
+}
+
+/* === TLD-SPECIFIC UI ENHANCEMENTS === */
+
+/* TLD Selection Section */
+.tld-selection-section {
+    padding: 24px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.tld-selection-section .selectize-control {
+    padding: 0 !important;
+}
+
+.tld-lookup-form .row {
+    align-items: end;
+}
+
+.btn-purple {
+    background: linear-gradient(135deg, #9333ea, #7c3aed);
+    border-color: #9333ea;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-purple:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    border-color: #7c3aed;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
+}
+
+.text-purple {
+    color: #9333ea !important;
+}
+
+/* TLD Summary Card */
+.tld-summary-card {
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.tld-summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.tld-summary-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.tld-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.tld-summary-details .tld-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.tld-summary-details .tld-description {
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+/* TLD Count Badge */
+.tld-count-badge {
+    text-align: center;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #9333ea, #7c3aed);
+    border-radius: 12px;
+    color: white;
+    min-width: 80px;
+}
+
+.tld-count-badge .count-number {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.tld-count-badge .count-label {
+    font-size: 12px;
+    opacity: 0.9;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Enhanced Domain List - Interactive and Modern */
+.domain-list-enhanced {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 14px;
+    background: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 200px;
+    box-shadow: 0 2px 8px rgba(147, 51, 234, 0.08);
+    cursor: pointer;
+    user-select: none;
+}
+
+.domain-list-enhanced:not([disabled]):hover {
+    border-color: #c7d2fe;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.12);
+    transform: translateY(-1px);
+}
+
+.domain-list-enhanced:focus {
+    border-color: #9333ea;
+    box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.12), 0 4px 16px rgba(147, 51, 234, 0.15);
+    outline: none;
+}
+
+.domain-list-enhanced option {
+    padding: 10px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    transition: all 0.2s ease;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.domain-list-enhanced option:hover {
+    background: linear-gradient(135deg, #f3f0ff 0%, #faf7ff 100%);
+    color: #7c3aed;
+    font-weight: 600;
+}
+
+.domain-list-enhanced option:selected {
+    background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border-color: #9333ea !important;
+}
+
+/* Domain List Actions */
+.domain-list-actions {
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+}
+
+/* Enhanced Alert Styles */
+.alert-modern {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.alert-modern.alert-info {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-color: #bfdbfe;
+}
+
+.alert-modern .alert-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.alert-modern .alert-content {
+    flex: 1;
+}
+
+.alert-modern .alert-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e40af;
+    margin-bottom: 4px;
+    line-height: 1.2;
+}
+
+.alert-modern .alert-description {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+/* Loading States */
+.tld-domains-wrapper.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.tld-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    z-index: 10;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tld-summary-main {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .tld-count-badge {
+        margin-top: 12px;
+    }
+    
+    .tld-lookup-form .col-md-4 {
+        margin-top: 12px;
+    }
+    
+    .domain-list-actions .row {
+        text-align: center;
+    }
+    
+    .domain-list-actions .col-sm-6:last-child {
+        text-align: center;
+        margin-top: 8px;
+    }
+}
+
+/* ===============================================
+   TLD ALERT & POSITIONING FIXES
+   =============================================== */
+
+/* TLD Info Alert Positioning - Moved to bottom to avoid dropdown overlap */
+.tld-info-alert {
+    margin-top: 32px !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Ensure dropdown has higher z-index than alert */
+.selectize-dropdown {
+    z-index: 1000 !important;
+}
+
+.tld-lookup-container .selectize-dropdown {
+    z-index: 1001 !important;
+}
+
+/* Enhanced Domain List Disabled/Enabled States - Single Source of Truth */
+.domain-list-enhanced.interactive {
+    cursor: pointer !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: #ffffff !important;
+    border-color: #e5e7eb !important;
+}
+
+.domain-list-enhanced.interactive:hover {
+    border-color: #c7d2fe !important;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.12) !important;
+    transform: translateY(-1px) !important;
+}
+
+.domain-list-enhanced.disabled,
+.domain-list-enhanced[disabled] {
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+    background: #f9fafb !important;
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+    transform: none !important;
+    pointer-events: none !important;
+}
+
+.domain-list-enhanced.disabled option,
+.domain-list-enhanced[disabled] option {
+    cursor: not-allowed !important;
+    color: #9ca3af !important;
+    pointer-events: none !important;
+}
+
+/* Legacy support for :not([disabled]) selector */
+.domain-list-enhanced:not([disabled]):not(.disabled) {
+    cursor: pointer !important;
+    opacity: 1 !important;
+}
+
+/* Margin utility class for better spacing */
+.margin-top-4 {
+    margin-top: 32px !important;
+}

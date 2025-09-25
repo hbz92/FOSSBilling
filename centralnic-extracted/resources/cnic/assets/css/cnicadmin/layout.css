@@ -1,0 +1,269 @@
+/* layout.css: Containers, grid, responsive, and panel structure */
+
+/* --- MAIN CONTAINER --- */
+/* Use Bootstrap's container-fluid with a custom max-width for better responsiveness */
+.container.cnicadmin-main {
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-4xl);
+}
+
+/* --- PANEL & CONTAINER LAYOUT --- */
+.panel {
+    margin-bottom: var(--spacing-5xl);
+    border: none;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-white);
+}
+
+.panel-heading {
+    background: var(--gradient-primary);
+    padding: 22px 28px 18px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border: none;
+}
+
+.panel-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    margin: 0;
+    color: var(--bg-white);
+}
+
+.panel-body {
+    padding: var(--spacing-5xl);
+}
+
+/* TLD lookup container */
+.tld-lookup-container {
+    max-width: 600px;
+    margin: var(--spacing-lg) auto var(--spacing-5xl);
+    padding: 0 var(--spacing-lg);
+}
+
+.fields-container {
+    background-color: #f9fbfe;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-5xl);
+    margin: 0 -5px var(--spacing-xl);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2xl);
+}
+
+/* Make a single field-row span full width in fields-container */
+.fields-container .field-row:only-child {
+    grid-column: 1 / -1;
+}
+
+/* Responsive grid adjustments */
+@media (min-width: 992px) {
+    .fields-container {
+        grid-template-columns: repeat(2, 1fr);
+        padding: var(--spacing-4xl);
+        gap: var(--spacing-4xl);
+    }
+    .field-row.field-full, 
+    .field-group-header {
+        grid-column: 1 / -1;
+    }
+    .container.cnicadmin-main {
+        padding: 0 var(--spacing-4xl);
+    }
+}
+
+/* Removed custom container width in favor of Bootstrap's container-fluid */
+
+/* Loading indicator positioning */
+.fields-wrapper {
+    position: relative;
+    min-height: 200px;
+    width: 100%;
+}
+
+#loadingIndicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    background: rgba(255,255,255,0.9);
+    padding: var(--spacing-4xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Additional fields section styling */
+.additional-fields-section {
+    background-color: var(--bg-white);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4xl);
+    margin-top: var(--spacing-5xl);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light-gray);
+}
+
+#tldFields {
+  margin-bottom: var(--spacing-4xl); /* Add bottom margin */
+}
+
+ /* Enhanced styling for recent TLDs panel */
+    #recentTldsSection .panel {
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-light-gray);
+    }
+
+    #recentTldsSection .panel-heading {
+        background: var(--gradient-primary);
+        border-bottom: 0;
+    }
+    
+    /* Container for recent TLD buttons */
+    .recent-tlds-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-sm) 0;
+    }
+    
+    /* Staggered animation for recent TLD buttons */
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.92);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    /* Apply animation with different delays */
+    .recent-tld-btn {
+        animation: fadeInScale 0.4s ease forwards;
+        animation-delay: calc(var(--btn-index, 0) * 0.1s);
+        opacity: 0; /* Start with opacity 0 for animation */
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Hover effect with subtle color indication */
+    .recent-tld-btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, rgba(41, 128, 185, 0.1), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 0;
+    }
+    
+    .recent-tld-btn:hover:before {
+        transform: translateX(0);
+    }
+    
+    .recent-tld-btn .tld-text {
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Panel title enhancements */
+    #recentTldsSection .panel-title {
+        color: white;
+        font-weight: var(--font-weight-medium);
+        font-size: var(--font-size-lg);
+    }
+    
+    #recentTldsSection .panel-title i {
+        margin-right: 5px;
+    }
+    
+    /* --- SYNC LAYOUT STYLES --- */
+    /* Sync container spacing */
+    .sync-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    /* Sync results table container */
+    .table-responsive {
+        margin-top: 1rem;
+        max-height: 600px;
+        overflow-y: auto;
+        border: 1px solid var(--gray-200);
+        border-radius: var(--radius-lg);
+    }
+    
+    /* Media queries for mobile */
+    @media (max-width: 767px) {
+        .recent-tlds-container {
+            gap: var(--spacing-sm);
+        }
+        
+        #recentTldsSection .panel-body {
+            padding: var(--spacing-md);
+        }
+        
+        /* Sync mobile adjustments */
+        .form-buttons {
+            flex-direction: column;
+        }
+        
+        .form-buttons .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sync-container .panel-body {
+            padding: var(--spacing-lg);
+        }
+        
+        .table-responsive {
+            font-size: var(--font-size-base);
+        }
+        
+        #domainTable th,
+        #domainTable td {
+            padding: var(--spacing-sm) var(--spacing-xs);
+            font-size: var(--font-size-sm);
+        }
+    }
+
+/* --- MODERN CONTAINER ENHANCEMENTS --- */
+
+/* Enhanced main container - clean background */
+.container.cnicadmin-main {
+    padding: 25px 20px;
+    margin: 15px auto;
+}
+
+/* Clean panel styling without backdrop effects */
+.cnicadmin-main .panel-default {
+    background: white;
+}
+
+/* Better responsive behavior */
+@media (max-width: 768px) {
+    .container.cnicadmin-main {
+        margin: 10px;
+        padding: 20px 15px;
+        border-radius: var(--radius-md);
+    }
+    
+    .panel-heading {
+        padding: 20px 25px !important;
+    }
+    
+    .panel-heading .row.cnic-align-items-center {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .panel-heading .col-md-4 {
+        margin-top: var(--spacing-lg);
+    }
+}

@@ -1,0 +1,28 @@
+{
+	"schema": "1.0",
+	"type": "whmcs-addons",
+	"name": "cnicdnsmanager-addon",
+	"license": "MIT",
+	"category": "digitalservices",
+	"description": {
+		"name": "\u0000 DNS Manager",
+		"tagline": "Manage DNS records for your domains with ease using cnic DNS Manager addon",
+		"long": "This addon allows you to manage DNS records for your domains directly from the WHMCS interface. You can create, edit, and delete DNS records with ease, providing a seamless experience for managing your domain's DNS settings.",
+		"features": ["Create, edit, and delete DNS records for your domains"]
+	},
+	"logo": {
+		"filename": "../../registrars/cnic/logo.png"
+	},
+	"support": {
+		"homepage": "https://www.centralnicreseller.com/",
+		"learn_more": "https://github.com/centralnicgroup-opensource/rtldev-middleware-whmcs/blob/main/README.md",
+		"support_url": "https://www.centralnicreseller.com/",
+		"docs_url": "https://support.centralnicreseller.com/hc/en-gb/articles/24922228026781-WHMCS-DNS-Manager-Addon"
+	},
+	"authors": [
+		{
+			"name": "CentralNic Reseller",
+			"homepage": "https://www.centralnicreseller.com/"
+		}
+	]
+}

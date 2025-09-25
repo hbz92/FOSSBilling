@@ -1,0 +1,53 @@
+{
+	"schema": "1.0",
+	"type": "whmcs-registrars",
+	"name": "cnic",
+	"license": "MIT",
+	"category": "domains",
+	"description": {
+		"name": "\u0000 CNIC Registrar Module",
+		"tagline": "CentralNic Reseller: the trusted worldwide solution for your domain reselling needs.",
+		"long": "## Don't have an CentralNic Reseller account yet? Contact us here: [www.centralnicreseller.com](https://www.centralnicreseller.com)!",
+		"features": [
+			"Automated Domain Registrations, Transfers, Renewals & Deletions",
+			"Ability to View/Change Nameservers & WHOIS Info",
+			"Domain Locking, ID Protection, EPP Code Retrieval",
+			"DNS Host Record Management, Email Forwarding, URL Forwarding & Private Nameservers",
+			"Reliable, Rock solid, incredible fast API",
+			"IRTP",
+			"IDNs (Internationalized Domain Names)",
+			"TLD & Pricing Import/Sync",
+			"Additional Domain Fields & Auto-Prefilling of fields with Customer Data",
+			"Allows specifying a Proxy Server to use",
+			"Support for all bulk update operations",
+			"Domain & Transfer Sync",
+			"DNSSec Management",
+			".SWISS Registrations"
+		]
+	},
+	"logo": {
+		"filename": "logo.png"
+	},
+	"support": {
+		"homepage": "https://www.centralnicreseller.com/",
+		"learn_more": "https://github.com/centralnicgroup-opensource/rtldev-middleware-whmcs/blob/main/README.md",
+		"support_url": "https://www.centralnicreseller.com/",
+		"docs_url": "https://support.centralnicreseller.com/hc/en-gb/articles/13626404649885-WHMCS-Registrar-Module"
+	},
+	"authors": [
+		{
+			"name": "Sebastian Vassiliou, Team Internet",
+			"email": "https://github.com/SebastianVassiliou-cnic"
+		},
+		{
+			"name": "Kai Schwarz, Team Internet",
+			"homepage": "https://github.com/kaischwarz-cnic"
+		}
+	],
+	"_priv": {
+		"brand": "CentralNic Reseller",
+		"description": "The trusted worldwide solution for your domain reselling needs. Don't have an CentralNic Reseller account yet? Contact us at <a href=\"https://www.centralnicreseller.com\" style=\"text-decoration:underline\" target=\"_blank\">www.centralnicreseller.com</a>]!",
+		"bttn_migrate": "<br /><a href=\"configregistrars.php?migrate=true&amp;saved=true#cnic\" class=\"btn btn-sm btn-primary\" title=\"Click here to automatically migrate domains and TLD prices over from deprecated/built-in modules!\">Migrate from legacy module</a>",
+		"UrlSignup": "https://www.centralnicreseller.com/sign-up"
+	}
+}

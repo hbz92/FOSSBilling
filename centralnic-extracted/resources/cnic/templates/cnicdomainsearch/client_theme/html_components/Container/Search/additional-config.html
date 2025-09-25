@@ -1,0 +1,41 @@
+<label
+    class="Box-marginRight-xsmall_3Te9A Box-marginBottom-xsmall_3T43M Text-weight-semibold_gjQ4f Text-transform-uppercase_1NM52"
+    for="phases">${getMessage("filter_additional_config")}</label>
+<div class="Box-padding-none_3tJVQ Flex-flex_uh_R2 Flex-flexCol_1WYpw Flex-flexJustifyBetween_1JGpd">
+    <div
+        class="Box-gap-spacing-2x_2hvKl Box-position-relative_2ZIyf Flex-flex_uh_R2 CheckBox-root_27OrW Filters-checkbox__i_yKD">
+        <input type="checkbox" id="noWeightedDomains" name="advancedOption" value="noWeightedDomains"
+            ?checked=${bindings.requestNoWeightedDomains} class="CheckBox-trigger_35ueK"><label
+            class="Text-weight-regular_Flodb CheckBox-label_3L9DF"
+            for="noWeightedDomains">${getMessage("filter_additional_config_suppress")}</label>
+        <div
+            class="Flex-flex_uh_R2 Flex-flexJustifyCenter_-VSdM Flex-flexAlignItemsCenter_3oJ12 CheckBox-iconWrapper_23LQn">
+            <svg height="39.69" width="50" viewBox="0 0 50 39.69"
+                class="Svg Svg-miniCheckmark Svg-root_3izI7 CheckBox-iconCheckmark_MWJZv CheckBox-icon_mNABM"
+                aria-hidden="true">
+                <path d="M43.68 0L16.74 27.051 6.319 16.63l-6.32 6.32 16.742 16.74L50 6.32z"></path>
+            </svg><svg viewBox="0 0 50 8.6" height="8.6" width="50"
+                class="Svg Svg-miniDash Svg-root_3izI7 CheckBox-iconDash_1-qAa CheckBox-icon_mNABM" aria-hidden="true">
+                <path d="M50 0L0 .1v8.5l50-.1z"></path>
+            </svg>
+        </div>
+    </div>
+    <div
+        class="Box-gap-spacing-2x_2hvKl Box-position-relative_2ZIyf Flex-flex_uh_R2 CheckBox-root_27OrW Filters-checkbox__i_yKD">
+        <input type="checkbox" id="locationBasedResults" name="advancedOption" value="locationBasedResults"
+            ?checked=${bindings.requestLocationBasedResults} class="CheckBox-trigger_35ueK"><label
+            class="Text-weight-regular_Flodb CheckBox-label_3L9DF"
+            for="locationBasedResults">${getMessage("filter_additional_config_location")}</label>
+        <div
+            class="Flex-flex_uh_R2 Flex-flexJustifyCenter_-VSdM Flex-flexAlignItemsCenter_3oJ12 CheckBox-iconWrapper_23LQn">
+            <svg height="39.69" width="50" viewBox="0 0 50 39.69"
+                class="Svg Svg-miniCheckmark Svg-root_3izI7 CheckBox-iconCheckmark_MWJZv CheckBox-icon_mNABM"
+                aria-hidden="true">
+                <path d="M43.68 0L16.74 27.051 6.319 16.63l-6.32 6.32 16.742 16.74L50 6.32z"></path>
+            </svg><svg viewBox="0 0 50 8.6" height="8.6" width="50"
+                class="Svg Svg-miniDash Svg-root_3izI7 CheckBox-iconDash_1-qAa CheckBox-icon_mNABM" aria-hidden="true">
+                <path d="M50 0L0 .1v8.5l50-.1z"></path>
+            </svg>
+        </div>
+    </div>
+</div>

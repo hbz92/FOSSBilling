@@ -1,0 +1,13 @@
+<div class="IncludedWithDomain-root__AFc7L">
+    <p class="Box-margin-none_1M7R9 Text-transform-uppercase_1NM52">${bindings.tagLine}</p>
+    <ol class="IncludedWithDomain-list__CR2II">
+        ${bindings.promos.map((item) => {
+            return html`<li>
+            <svg height="39.69" width="50" viewBox="0 0 50 39.69" class="Svg Svg-miniCheckmark Svg-root_3izI7 SVG-fill-success_2sUEP IncludedWithDomain-checkmark__ZeZYU" aria-hidden="true">
+                <path d="M43.68 0L16.74 27.051 6.319 16.63l-6.32 6.32 16.742 16.74L50 6.32z"></path>
+            </svg>
+            <span>${item.msg}</span>
+        </li>`
+        })}
+    </ol>
+</div>

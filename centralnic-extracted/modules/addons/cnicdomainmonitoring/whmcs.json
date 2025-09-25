@@ -1,0 +1,28 @@
+{
+	"schema": "1.0",
+	"type": "whmcs-addons",
+	"name": "cnicdomainmonitoring-addon",
+	"license": "MIT",
+	"category": "digitalservices",
+	"description": {
+		"name": "\u0000 Domain Monitoring",
+		"tagline": "Sync status and apply pricing updates to domains with ease using CNIC Domain Monitoring addon",
+		"long": "This addon allows you to sync premium status and apply pricing updates to domains directly from the WHMCS interface. You can manage domain monitoring settings with ease, providing a seamless experience for managing your domain's premium status and pricing.",
+		"features": ["Sync premium status and apply pricing updates to domains"]
+	},
+	"logo": {
+		"filename": "../../registrars/cnic/logo.png"
+	},
+	"support": {
+		"homepage": "https://www.centralnicreseller.com/",
+		"learn_more": "https://github.com/centralnicgroup-opensource/rtldev-middleware-whmcs/blob/main/README.md",
+		"support_url": "https://www.centralnicreseller.com/",
+		"docs_url": "https://support.centralnicreseller.com/hc/en-gb/articles/13852540209693-WHMCS-Domain-Monitoring-Addon"
+	},
+	"authors": [
+		{
+			"name": "CentralNic Reseller",
+			"homepage": "https://www.centralnicreseller.com/"
+		}
+	]
+}

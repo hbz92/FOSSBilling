@@ -1,0 +1,30 @@
+{
+  "schema": "1.0",
+  "type": "whmcs-addons",
+  "name": "cnicdns-addon",
+  "license": "MIT",
+  "category": "digitalservices",
+  "description": {
+    "name": "\u0000 Reseller DNS",
+    "tagline": "Manage DNS zones for your domains with ease using CNIC Reseller DNS addon.",
+    "long": "Manage DNS zones for your domains with ease using CNIC Reseller DNS addon.",
+    "features": [
+      "Manage DNS zones for your domains at CentralNic Reseller"
+    ]
+  },
+  "logo": {
+		"filename": "../../registrars/cnic/logo.png"
+  },
+  "support": {
+    "homepage": "https:\/\/www.centralnicreseller.com\/",
+    "learn_more": "https:\/\/github.com\/centralnicgroup-opensource\/rtldev-middleware-whmcs\/blob\/main\/README.md",
+    "support_url": "https:\/\/www.centralnicreseller.com\/",
+    "docs_url": "https:\/\/centralnic-reseller.github.io\/centralnic-reseller\/"
+  },
+  "authors": [
+    {
+      "name": "CentralNic Reseller",
+      "homepage": "https:\/\/www.centralnicreseller.com\/"
+    }
+  ]
+}
