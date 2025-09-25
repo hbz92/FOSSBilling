@@ -1,96 +1,221 @@
-<h1 align="center">
-  <br>
-  <a href="https://fossbilling.org/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/FOSSBilling/fossbilling.org/main/public/img/wordmark-white.png">
-      <img alt="FOSSBilling logo" src="https://raw.githubusercontent.com/FOSSBilling/fossbilling.org/main/public/img/wordmark-black.png" height="100">
-    </picture>
-  </a>
-  <br>
-</h1>
+# 🚀 Automatisation HestiaCP + FOSSBilling
 
-<div align="center">
+## Vue d'ensemble
 
-<a href="https://fossbilling.org/downloads/"><img src="https://raw.githubusercontent.com/FOSSBilling/fossbilling.org/main/public/img/gh-download-button.png" alt="Download button" width="400"/></a>
+Ce projet automatise le déploiement de nouveaux serveurs HestiaCP sur OpenStack lorsque la capacité du serveur existant est atteinte, avec intégration automatique dans FOSSBilling.
 
-[![CI](https://github.com/FOSSBilling/FOSSBilling/actions/workflows/ci.yml/badge.svg)](https://github.com/FOSSBilling/FOSSBilling/actions/workflows/ci.yml)
-[![Download Latest](https://img.shields.io/github/downloads/FOSSBilling/FOSSBilling/total)](https://github.com/FOSSBilling/FOSSBilling/releases/latest)
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
-[![Discord](https://img.shields.io/discord/747432407757488179?color=%237289FA&logo=discord&logoColor=%23FFF)](https://fossbilling.org/discord)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md) 
-[![CodeFactor](https://www.codefactor.io/repository/github/FOSSBilling/FOSSBilling/badge)](https://www.codefactor.io/repository/github/fossbilling/fossbilling)
-[![Financial Contributors](https://opencollective.com/FOSSBilling/tiers/badge.svg?color=brightgreen)](https://opencollective.com/fossbilling)
-[![Crowdin](https://badges.crowdin.net/e/c70c78b4ab1e71424ce53dcf6bca9b12/localized.svg)](https://fossbilling.crowdin.com/FOSSBilling)
+## 🏗️ Architecture
 
-</div>
+```
+[Prometheus] → [AlertManager] → [Webhook] → [Terraform] → [OpenStack] → [HestiaCP] → [FOSSBilling]
+     ↓              ↓            ↓           ↓            ↓           ↓            ↓
+  Monitoring    Alerting    Déclenchement  IaC        VM Creation  Auto-config  API Integration
+```
 
-> [!WARNING]
-> FOSSBilling is under active development but is currently very much beta software. This means that there may be stability or security issues, support is on an 'as available' basis, and it is not yet officially recommended for use in active production environments!
+## 📁 Structure du projet
 
-> [!IMPORTANT]
-> Please be aware that we are not currently strictly following SemVer, and there may be breaking changes at any time. Be careful and make sure you read [changelogs](https://fossbilling.org/docs/changelog) before updates!
+```
+├── monitoring/                 # Système de monitoring
+│   ├── prometheus-config.yml   # Configuration Prometheus
+│   ├── hestiacp_rules.yml      # Règles d'alerte
+│   └── hestiacp-metrics-exporter.py  # Exporter métriques HestiaCP
+├── terraform/                  # Infrastructure as Code
+│   ├── main.tf                 # Configuration Terraform
+│   ├── user_data.sh            # Script d'initialisation VM
+│   └── terraform.tfvars.example
+├── fossbilling-integration/    # Intégration FOSSBilling
+│   ├── fossbilling-api-client.php
+│   └── hestiacp-api-client.php
+├── orchestration/              # Scripts d'orchestration
+│   ├── deploy-new-hestiacp.php # Déploiement principal
+│   ├── webhook-handler.php     # Gestionnaire webhook
+│   └── config.json.example     # Configuration
+├── tests/                      # Tests et validation
+│   ├── test-deployment.sh      # Tests complets
+│   ├── test-fossbilling-api.php
+│   └── test-hestiacp-api.php
+└── README.md                   # Documentation
+```
 
-**FOSSBilling** is a free open source, billing and client management solution. Whatever the size of your online services business, whether a startup or established, FOSSBilling can help you to automate your invoicing, incoming payments, and client management and communication.
+## 🚀 Installation et Configuration
 
-If you run a web hosting business and are looking for an open-source alternative for billing and client management, then FOSSBilling is the answer. Although it is mostly used as a solution for hosting businesses, there is no reason why you can't use FOSSBilling for any other kind of online business, like digital downloads.
+### 1. Prérequis
 
-FOSSBilling is designed to be extensible and to integrate easily with your favorite server management software and payment gateways.
+- **OpenStack** : Cluster configuré et accessible
+- **Terraform** : Version >= 1.0
+- **PHP** : Version >= 7.4 avec extensions curl, json
+- **Prometheus** : Pour le monitoring
+- **FOSSBilling** : Instance configurée avec API
 
-📥 This is self-hosted software that is free for anyone to install — All you need is a some basic knowledge, a web server, running PHP and a MySQL database. For more details, check the [requirements](#requirements) section.
+### 2. Configuration
 
-## Contents
+1. **Copier les fichiers de configuration** :
+   ```bash
+   cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+   cp orchestration/config.json.example orchestration/config.json
+   ```
 
-- [Contents](#contents)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Contributing](#contributing)
-- [Star History](#star-history)
-- [Licensing](#licensing)
-- [Links](#links)
+2. **Configurer Terraform** :
+   ```bash
+   cd terraform/
+   # Éditer terraform.tfvars avec vos paramètres OpenStack
+   terraform init
+   terraform plan
+   ```
 
-## Requirements
+3. **Configurer l'orchestration** :
+   ```bash
+   # Éditer orchestration/config.json avec vos paramètres
+   ```
 
-To find the most up-to-date system requirements for FOSSBilling, please go to the [system requirements](https://fossbilling.org/docs/getting-started/requirements) on our website.
+4. **Configurer Prometheus** :
+   ```bash
+   # Copier monitoring/prometheus-config.yml vers votre Prometheus
+   # Copier monitoring/hestiacp_rules.yml vers votre Prometheus
+   ```
 
-## Installation
+### 3. Déploiement
 
-For instructions on installing FOSSBilling, check out our [getting started guide](https://fossbilling.org/docs/getting-started).  
+1. **Installer les dépendances PHP** :
+   ```bash
+   composer install
+   ```
 
-## Contributing
+2. **Configurer le webhook Prometheus** :
+   - URL : `http://your-server/orchestration/webhook-handler.php`
+   - Méthode : POST
 
-🖥️ Welcome, fellow developer! 🙂
+3. **Tester le système** :
+   ```bash
+   chmod +x tests/test-deployment.sh
+   ./tests/test-deployment.sh
+   ```
 
-First of all, thank you for your interest, and for taking your time to contribute to FOSSBilling.
+## 🔧 Utilisation
 
-FOSSBilling is undergoing a revival and major code update. We are making steps forward day by day but there is still a lot of work to do, and we are happy to welcome new contributors. 
+### Déploiement manuel
 
-We have a set of guidelines for those wishing to contribute to FOSSBilling, and we encourage you to take a look at them here: **[contributors' guidelines](https://github.com/FOSSBilling/FOSSBilling/blob/main/CONTRIBUTING.md)**.
+```bash
+php orchestration/deploy-new-hestiacp.php
+```
 
-Your [pull requests](https://github.com/FOSSBilling/FOSSBilling/pulls) will be highly welcomed. If you're looking for something to start with, you can check the [open issues](https://github.com/FOSSBilling/FOSSBilling/issues) on our GitHub repository.
+### Déploiement automatique
 
-## Star History
+Le système se déclenche automatiquement quand :
+- CPU > 85% pendant 3 minutes
+- RAM > 95% pendant 3 minutes  
+- Utilisateurs > 95% de la limite
 
-[![Star History Chart](https://api.star-history.com/svg?repos=FOSSBilling/FOSSBilling&type=Date)](https://star-history.com/#FOSSBilling/FOSSBilling&Date)
+### Monitoring
 
-**Got questions? Found a bug? Ideas for improvements?**
+- **Prometheus** : `http://prometheus:9090`
+- **Grafana** : Dashboards pour visualiser les métriques
+- **Logs** : `/var/log/hestiacp-automation.log`
 
-Don't hesitate to create an [issue](https://github.com/FOSSBilling/FOSSBilling/issues), start a discussion in the [FOSSBilling Forum](https://forum.fossbilling.org/), or join us on [Discord](https://fossbilling.org/discord) to say hi.
+## 📊 Métriques surveillées
 
-⭐ Not a developer? Feel free to help by starring the repository. It helps us catch the attention of new developers who'd like to contribute.
+- `hestiacp_users_count` : Nombre d'utilisateurs
+- `hestiacp_domains_count` : Nombre de domaines
+- `hestiacp_cpu_usage_percent` : Utilisation CPU
+- `hestiacp_memory_usage_percent` : Utilisation mémoire
+- `hestiacp_disk_usage_percent` : Utilisation disque
 
-## Licensing
+## 🔒 Sécurité
 
-FOSSBilling is open source software and is released under the Apache v2.0 license. See [LICENSE](https://github.com/FOSSBilling/FOSSBilling/blob/main/LICENSE) for the full license terms.
+- **Clés API** : Générées automatiquement pour chaque serveur
+- **Whitelist IP** : FOSSBilling ajouté automatiquement
+- **Firewall** : Règles configurées via Terraform
+- **HTTPS** : Certificats SSL gérés par HestiaCP
 
-This product includes the following third party work:
+## 🧪 Tests
 
-- Open Source Iconography by [Pictogrammers](https://pictogrammers.com/) licensed under the [Pictogrammers Free License](https://pictogrammers.com/docs/general/license/).
+```bash
+# Tests complets
+./tests/test-deployment.sh
 
-## Links
+# Test API FOSSBilling
+php tests/test-fossbilling-api.php
 
-- [Website](https://www.fossbilling.org/)
-- [Documentation](https://fossbilling.org/docs)
-- [Forum](https://forum.fossbilling.org)
-- [Twitter](https://twitter.com/FOSSBilling)
-- [Discord](https://fossbilling.org/discord)
+# Test API HestiaCP
+php tests/test-hestiacp-api.php HESTIACP_IP
+```
+
+## 📝 Logs et Debugging
+
+- **Logs d'orchestration** : `/var/log/hestiacp-automation.log`
+- **Logs Terraform** : `terraform/terraform.log`
+- **Logs HestiaCP** : `/var/log/hestia/`
+
+## 🔄 Maintenance
+
+### Mise à jour des configurations
+
+1. Modifier les fichiers de configuration
+2. Redémarrer les services
+3. Tester avec `./tests/test-deployment.sh`
+
+### Nettoyage des ressources
+
+```bash
+# Détruire les ressources Terraform
+cd terraform/
+terraform destroy
+
+# Nettoyer les logs
+rm -f /var/log/hestiacp-automation.log
+```
+
+## 🆘 Dépannage
+
+### Problèmes courants
+
+1. **Terraform échoue** :
+   - Vérifier les credentials OpenStack
+   - Vérifier les quotas de ressources
+
+2. **HestiaCP non accessible** :
+   - Vérifier les règles de firewall
+   - Vérifier l'installation HestiaCP
+
+3. **FOSSBilling ne voit pas le serveur** :
+   - Vérifier la clé API
+   - Vérifier la connectivité réseau
+
+### Logs utiles
+
+```bash
+# Logs d'orchestration
+tail -f /var/log/hestiacp-automation.log
+
+# Logs Terraform
+cd terraform/ && terraform show
+
+# Logs HestiaCP
+tail -f /var/log/hestia/hestia.log
+```
+
+## 📈 Évolutions possibles
+
+- **Load Balancing** : Répartition de charge entre serveurs
+- **Auto-scaling** : Ajustement automatique des ressources
+- **Backup automatique** : Sauvegarde des configurations
+- **Monitoring avancé** : Alertes personnalisées
+- **Multi-région** : Déploiement sur plusieurs régions
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche feature
+3. Commiter les changements
+4. Pousser vers la branche
+5. Créer une Pull Request
+
+## 📄 Licence
+
+MIT License - Voir le fichier LICENSE pour plus de détails.
+
+## 📞 Support
+
+- **Documentation** : [Wiki du projet]
+- **Issues** : [GitHub Issues]
+- **Email** : support@your-domain.com

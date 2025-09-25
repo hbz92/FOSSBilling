@@ -1,0 +1,68 @@
+# Architecture d'Automatisation HestiaCP + FOSSBilling
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                                MONITORING LAYER                                │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  Prometheus  ──→  Grafana  ──→  AlertManager  ──→  Webhook Handler            │
+│     ↑                                                                           │
+│     └─── HestiaCP Server 1 (Métriques)                                        │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              AUTOMATION LAYER                                  │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  Deploy Orchestrator  ──→  Terraform  ──→  OpenStack API                     │
+│         ↑                                                                       │
+│         └─── FOSSBilling API Client                                            │
+│         └─── HestiaCP API Client                                               │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              OPENSTACK CLOUD                                   │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  New HestiaCP VM  ──→  HestiaCP Server 2  ──→  Users 101-200                 │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            INTEGRATION LAYER                                   │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  FOSSBilling  ──→  HestiaCP Server 1 (Users 1-100)                           │
+│       └───→  HestiaCP Server 2 (Users 101-200)                               │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+## Flux d'exécution :
+
+1. MONITORING : Prometheus surveille HestiaCP Server 1
+2. ALERTE : Quand seuil atteint → AlertManager → Webhook
+3. AUTOMATION : Deploy Orchestrator lance Terraform
+4. CLOUD : OpenStack crée nouvelle VM HestiaCP
+5. CONFIGURATION : HestiaCP Server 2 configuré automatiquement
+6. INTEGRATION : FOSSBilling ajoute le nouveau serveur
+7. ROUTING : Nouvelles commandes → HestiaCP Server 2
+
+## Composants techniques :
+
+### Monitoring
+- Prometheus : Collecte des métriques
+- Grafana : Visualisation des données
+- AlertManager : Gestion des alertes
+- Webhook : Déclenchement automatique
+
+### Automation
+- Deploy Orchestrator : Orchestration du déploiement
+- Terraform : Infrastructure as Code
+- API Clients : Intégration FOSSBilling/HestiaCP
+
+### Cloud
+- OpenStack : Plateforme cloud
+- VM : Machine virtuelle HestiaCP
+- Network : Configuration réseau automatique
+
+### Integration
+- FOSSBilling : Gestion des commandes
+- HestiaCP : Hébergement des utilisateurs
+- Load Balancing : Répartition des charges

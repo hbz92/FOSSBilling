@@ -1,0 +1,35 @@
+# Configuration Prometheus pour monitoring HestiaCP
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+rule_files:
+  - "hestiacp_rules.yml"
+
+scrape_configs:
+  # HestiaCP Node Exporter
+  - job_name: 'hestiacp-node'
+    static_configs:
+      - targets: ['hestiacp-server:9100']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # HestiaCP Custom Metrics
+  - job_name: 'hestiacp-custom'
+    static_configs:
+      - targets: ['hestiacp-server:8080']
+    scrape_interval: 60s
+    metrics_path: /api/metrics
+
+  # FOSSBilling Metrics
+  - job_name: 'fossbilling'
+    static_configs:
+      - targets: ['fossbilling-server:8080']
+    scrape_interval: 60s
+    metrics_path: /api/metrics
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
